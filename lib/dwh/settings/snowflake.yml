@@ -1,0 +1,45 @@
+
+# Date Literal Formats
+date_format: "%Y-%m-%d"
+date_time_format: "%Y-%m-%d %H:%M:%S"
+date_time_tz_format: "%Y-%m-%d %H:%M:%S %Z"
+date_type: "string" # alternative is int, integer, dateint
+day_name_format: "Day"
+abbreviated_day_name_format: "Dy"
+month_name_format: "Month"
+abbreviated_month_name_format: "Mon"
+
+# Date functions patterns
+current_date: "current_date()"
+current_time: "current_time()"
+current_timestamp: "current_timestamp()"
+
+date_add: "dateadd(@unit, @val, @exp)"
+date_diff: "datediff(@unit, @start_exp, @end_exp)"
+date_format_sql: "TO_VARCHAR(@exp, '@format')"
+date_literal: "'@val'::DATE"
+date_time_literal: "'@val'::TIMESTAMP"
+extract_year: 'year(@exp)'
+extract_month: 'month(@exp)'
+extract_quarter: 'quarter(@exp)'
+extract_day_of_year: 'DAYOFYEAR(@exp)'
+extract_day_of_month: 'day(@exp)'
+extract_day_of_week: 'DAYOFWEEK(@exp)'
+extract_week_of_year: 'week(@exp)'
+extract_hour: 'hour(@exp)'
+extract_minute: 'minute(@exp)'
+extract_year_month: 'cast((year(@exp) || month(@exp)) as integer)'
+default_week_start_day: "monday"
+week_start_day: "monday"
+sunday_week_start_day: "dateadd(day, -1,date_trunc('week', dateadd(day,1, @exp)))"
+monday_week_start_day: "dateadd(day, 1,date_trunc('week', dateadd(day,-1, @exp)))"
+
+# array operations
+array_in_list: "ARRAY_CONTAINS(@exp, ARRAY_CONSTRUCT(@list))"
+array_exclude_list: "NOT ARRAY_CONTAINS(@exp, ARRAY_CONSTRUCT(@list))"
+apply_advanced_filtering_on_array_projections: false # druid needs a having clause or un-nesting
+array_unnest_join: "LATERAL FLATTEN(INPUT => @exp) @alias"
+
+# null handling
+if_null: "NVL(@exp, @when_null)"
+null_if_zero: "NULLIFZERO(@exp)"

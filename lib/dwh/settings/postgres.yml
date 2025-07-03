@@ -1,0 +1,23 @@
+
+date_add: "(@exp + '@val @unit'::interval)"
+date_diff: "age(@start_exp, @end_exp)"
+date_format_sql: "TO_CHAR(@exp, '@format')"
+day_name_format: "Day"
+abbreviated_day_name_format: "Dy"
+month_name_format: "Month"
+abbreviated_month_name_format: "Mon"
+
+extract_year: 'extract(year from @exp)'
+extract_month: 'extract(month from @exp)'
+extract_quarter: 'extract(quarter from @exp)'
+extract_day_of_year: 'extract(DOY from @exp)'
+extract_day_of_month: 'extract(DAY from @exp)'
+extract_day_of_week: 'extract(DOW from @exp)'
+extract_week_of_year: 'extract(WEEK from @exp)'
+extract_hour: 'extract(HOUR from @exp)'
+extract_minute: 'extract(MINUTE from @exp)'
+extract_year_month: 'cast((extract(year from @exp)::varchar || extract(month from @exp)::varchar) as integer)'
+
+# array operations
+array_in_list: "@exp && ARRAY[@list]" # list is comma separated
+array_exclude_list: "NOT (@exp && ARRAY[@list])" # list is comma separated

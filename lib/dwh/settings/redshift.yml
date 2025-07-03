@@ -1,0 +1,52 @@
+
+# quotes and string lit
+quote: "\"@exp\""
+string_literal: "'@exp'"
+
+# Date Literal Formats
+date_format: "%Y-%m-%d"
+date_time_format: "%Y-%m-%d %H:%M:%S"
+date_time_tz_format: "%Y-%m-%d %H:%M:%S %Z"
+date_type: "string" # alternative is int, integer, dateint
+day_name_format: "Day"
+abbreviated_day_name_format: "Dy"
+month_name_format: "Month" 
+abbreviated_month_name_format: "Mon"
+
+# Date functions patterns
+current_date: "current_date"
+current_time: "current_time"
+current_timestamp: "current_timestamp"
+truncate_date: "date_trunc('@unit', @exp)"
+date_add: "dateadd(@unit, @val, @exp)"
+date_diff: "datediff(@unit, @start_exp, @end_exp)"
+date_format_sql: "TO_CHAR(@exp, '@format')"
+date_literal: "'@val'"
+date_time_literal: "TIMESTAMP '@val'"
+extract_year: 'EXTRACT(YEAR FROM @exp)'
+extract_month: 'EXTRACT(MONTH FROM @exp)'
+extract_quarter: 'EXTRACT(QUARTER FROM @exp)'
+extract_day_of_year: 'EXTRACT(DOY FROM @exp)'
+extract_day_of_month: 'EXTRACT(DAY FROM @exp)'
+extract_day_of_week: 'EXTRACT(DOW FROM @exp)'
+extract_week_of_year: 'EXTRACT(WEEK FROM @exp)'
+extract_hour: 'EXTRACT(HOUR FROM @exp)'
+extract_minute: 'EXTRACT(MINUTE FROM @exp)'
+extract_year_month: "TO_CHAR(@exp, 'YYYYMM')::INTEGER"
+default_week_start_day: "sunday" # Redshift uses Sunday as default
+week_start_day: "sunday"
+sunday_week_start_day: "DATEADD(day, -1, DATE_TRUNC(WEEK, DATEADD(DAY, 1, @exp)))"
+monday_week_start_day: "DATEADD(day, 1, DATE_TRUNC(WEEK, DATEADD(day, -1, @exp)))"
+
+# string functions
+trim: "trim(@exp)"
+lower_case: "lower(@exp)"
+upper_case: "upper(@exp)"
+
+# null handling
+if_null: "COALESCE(@exp, @when_null)"
+null_if: "NULLIF(@exp, @target)"
+null_if_zero: "NULLIF(@exp, 0)"
+
+# array operations
+supports_array_functions: false

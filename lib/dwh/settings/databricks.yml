@@ -1,0 +1,51 @@
+
+# quotes and string lit
+quote: "\"@exp\""
+string_literal: "'@exp'"
+
+# Date Literal Formats
+date_format: "%Y-%m-%d"
+date_time_format: "%Y-%m-%d %H:%M:%S"
+date_time_tz_format: "%Y-%m-%d %H:%M:%S %Z"
+date_type: "string" # alternative is int, integer, dateint
+day_name_format: "EEEE"
+abbreviated_day_name_format: "EEE"
+month_name_format: "MMMM"
+abbreviated_month_name_format: "MMM"
+
+date_add: "date_add(@unit, @val, @exp)"
+date_diff: "date_diff(@unit, @start_exp, @end_exp)"
+date_format_sql: "date_format(@exp, '@format')"
+extract_day_of_year: 'dayofyear(@exp)'
+extract_day_of_week: 'dayofweek(@exp)'
+extract_week_of_year: 'weekofyear(@exp)'
+extract_year_month: 'cast(concat(year(@exp), lpad(month(@exp), 2, "0")) as int)'
+
+cast: "CAST(@exp AS @type)"
+
+# string functions
+trim: "trim(@exp)"
+lower_case: "lower(@exp)"
+upper_case: "upper(@exp)"
+
+# null handling
+if_null: "COALESCE(@exp, @when_null)"
+null_if: "NULLIF(@exp, @target)"
+null_if_zero: "NULLIF(@exp, 0)"
+
+# Relevant db capabilities for query gen
+supports_table_join: true
+supports_full_join: true
+supports_cross_join: true
+supports_sub_queries: true
+supports_common_table_expressions: true
+supports_temp_tables: true
+create_temp_table_template: "CREATE TEMPORARY TABLE @table AS \n@sql"
+supports_window_functions: true
+extend_ending_date_to_last_hour_of_day: false # druid needs this for inclusive filtering
+
+# array operations
+array_in_list: "exists(@exp, x -> x IN (@list))"
+array_exclude_list: "not exists(@exp, x -> x IN (@list))"
+array_unnest_join: "LATERAL VIEW explode(@exp) AS @alias"
+
