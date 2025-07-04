@@ -3,10 +3,10 @@ module DWH
     attr_reader :schema_type, :data_type, :name, :precision, :scale, :max_char_length
 
     def initialize(name:, data_type:, precision: nil, scale: nil, schema_type: nil, max_char_length: nil)
-      @name       = name.downcase
-      @precision  = precision
-      @scale      = scale
-      @data_type  = data_type&.downcase
+      @name = name.downcase
+      @precision = precision
+      @scale = scale
+      @data_type = data_type&.downcase
       @schema_type = schema_type&.downcase
       @max_char_length = max_char_length
     end
@@ -19,7 +19,7 @@ module DWH
       schema_type == "measure"
     end
 
-    DEFAULT_RULES = { "_" => " ", "id" => "ID", "desc" => "Description" }
+    DEFAULT_RULES = {"_" => " ", "id" => "ID", "desc" => "Description"}
     def namify(rules = DEFAULT_RULES)
       named = name.clone
 
@@ -47,9 +47,9 @@ module DWH
       when "boolean"
         "boolean"
       when "number"
-        if precision.to_i >= 38 && scale.to_i==0
+        if precision.to_i >= 38 && scale.to_i == 0
           "bigint"
-        elsif !scale.blank? && scale.to_i>0
+        elsif !scale.blank? && scale.to_i > 0
           "decimal"
         else
           "integer"

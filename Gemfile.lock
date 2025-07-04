@@ -2,11 +2,15 @@ PATH
   remote: .
   specs:
     dwh (0.1.0)
+      csv (~> 3.3.5)
+      jwt (~> 2.10.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.3)
+    base64 (0.3.0)
+    csv (3.3.5)
     date (3.4.1)
     erb (5.0.1)
     io-console (0.8.0)
@@ -15,6 +19,8 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.12.2)
+    jwt (2.10.1)
+      base64
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     minitest (5.25.5)

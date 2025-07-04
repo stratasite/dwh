@@ -1,6 +1,5 @@
 module DWH
   module Behaviors
-
     # In druid when you do specific time range you need
     # to apply the last hour of the day to the date value
     # to get all inclusive data for that date.
@@ -58,6 +57,5 @@ module DWH
       settings[:cross_universe_measure_filtering_strategy] == "both" ||
         settings[:cross_universe_measure_filtering_strategy] == "final"
     end
-
   end
 end

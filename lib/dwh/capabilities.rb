@@ -3,8 +3,8 @@ module DWH
     def supports_table_join?
       settings[:supports_table_join]
     end
-    alias supports_joins? supports_table_join?
-    alias supports_table_joins? supports_table_join?
+    alias_method :supports_joins?, :supports_table_join?
+    alias_method :supports_table_joins?, :supports_table_join?
 
     def supports_full_join?
       settings[:supports_full_join]

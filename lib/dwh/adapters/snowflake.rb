@@ -1,10 +1,8 @@
-require 'jwt'
+require "jwt"
 
 module DWH
   module Adapters
-
     class Snowflake < Adapter
-
       define_config :host, required: true, message: "server host ip address or domain name"
       define_config :account_identifier, required: false, message: "snowflake account identifier"
       define_config :username, required: true, message: "connection username"
@@ -29,10 +27,10 @@ module DWH
         @connection = Faraday.new(
           url: "https://#{config[:host].split("/").first}",
           headers: {
-            'Content-Type' => 'application/json',
-            'Authorization' => "Bearer #{jwt_token}",
-            'X-Snowflake-Authorization-Token-Type' => 'KEYPAIR_JWT',
-            'User-Agent' =>  Mando.configuration.app_name
+            "Content-Type" => "application/json",
+            "Authorization" => "Bearer #{jwt_token}",
+            "X-Snowflake-Authorization-Token-Type" => "KEYPAIR_JWT",
+            "User-Agent" => Mando.configuration.app_name
           },
           request: {
             timeout: config[:query_timeout]
@@ -59,7 +57,7 @@ module DWH
         TIME_OUTPUT_FORMAT: "HH24:MI:SS"
       }
       def execute(sql, io = nil, memory_row_limit: 20000, stats: nil)
-        with_debug(sql){
+        with_debug(sql) {
           resp = connection.post(SNOWFLAKE_STATEMENTS) do |req|
             req.body = {
               statement: sql,
@@ -97,7 +95,7 @@ module DWH
       end
 
       def metadata(table, catalog: nil, schema: nil, database: nil)
-        db_table    = Table.new table,schema: schema, catalog: catalog
+        db_table = Table.new table, schema: schema, catalog: catalog
         db = database || config[:database]
         sql = "select column_name, data_type, numeric_precision, numeric_scale, character_maximum_length from #{db}.information_schema.columns"
         where = ["table_name='#{db_table.physical_name.upcase}'"]
@@ -110,11 +108,11 @@ module DWH
         cols = execute(sql)
         cols.each do |col|
           db_table << Column.new(
-            name:               col[0]&.downcase,
-            data_type:          col[1]&.downcase,
-            precision:          col[2]&.downcase,
-            scale:              col[3]&.downcase,
-            max_char_length:    col[4]&.downcase
+            name: col[0]&.downcase,
+            data_type: col[1]&.downcase,
+            precision: col[2]&.downcase,
+            scale: col[3]&.downcase,
+            max_char_length: col[4]&.downcase
           )
         end
 
@@ -133,8 +131,8 @@ module DWH
 
         {
           date_start: result[0][1],
-          date_end:   result[0][2],
-          row_count:  result[0][0],
+          date_end: result[0][2],
+          row_count: result[0][0]
         }
       end
 
@@ -154,10 +152,10 @@ module DWH
 
       protected
 
-      def fetch_data(result, io=nil, memory_row_limit=nil, stats=nil)
+      def fetch_data(result, io = nil, memory_row_limit = nil, stats = nil)
         partitions = result.dig("resultSetMetaData", "partitionInfo")
         stats = validate_and_reset_stats(stats) if stats
-        if partitions.size==1
+        if partitions.size == 1
           if io
             update_stats_and_io(result, stats, io, memory_row_limit)
             io.rewind
@@ -170,15 +168,15 @@ module DWH
         end
       end
 
-      def fetch_partitions(result, stats=nil, io=nil, memory_row_limit=nil)
+      def fetch_partitions(result, stats = nil, io = nil, memory_row_limit = nil)
         data = result["data"]
         update_stats_and_io(result, stats, io, memory_row_limit) if io
 
         partitions = result.dig("resultSetMetaData", "partitionInfo")
         url = "#{SNOWFLAKE_STATEMENTS}/#{result["statementHandle"]}?partition="
         partitions[1..].each.with_index(1) do |_, index|
-          logger.debug "Fetching partition #{index} of #{partitions.length-1} for statement handle: #{result["statementHandle"]}"
-          resp = connection.get(url+index.to_s)
+          logger.debug "Fetching partition #{index} of #{partitions.length - 1} for statement handle: #{result["statementHandle"]}"
+          resp = connection.get(url + index.to_s)
           unless resp.status == 200
             raise ArgumentError.new("Could not data partitions from Snowflake: #{resp.body}")
           end
@@ -194,7 +192,7 @@ module DWH
 
       def update_stats_and_io(result, stats, io, memory_row_limit)
         rows = result["data"]
-        return if rows.length==0
+        return if rows.length == 0
 
         rows.each do |row|
           update_stats(stats, row, memory_row_limit) if stats
@@ -211,7 +209,7 @@ module DWH
           # need to poll for status
           poll(result)
         else
-          msg = result["message"] ? result["message"] : result
+          msg = result["message"] || result
           raise ArgumentError.new(msg)
         end
       end
@@ -230,7 +228,7 @@ module DWH
           elsif resp.status == 200
             return poll_result
           else
-            msg = poll_result["message"] ? poll_result["message"] : poll_result
+            msg = poll_result["message"] || poll_result
             raise ArgumentError.new("Could not poll snowflake for status: #{msg}")
           end
         end
@@ -245,12 +243,12 @@ module DWH
           iss: "#{qualified_username}.SHA256:#{public_key_fp}",
           sub: "#{qualified_username}",
           iat: Time.now.to_i,
-          exp: expires_at.to_i, # Token is valid for 1 hour
-        }, private_key, 'RS256')
+          exp: expires_at.to_i # Token is valid for 1 hour
+        }, private_key, "RS256")
       end
 
       def account_identifier
-        @account_identifier ||= (config[:account_identifier] || config[:host].split('.').first).upcase
+        @account_identifier ||= (config[:account_identifier] || config[:host].split(".").first).upcase
       end
 
       def private_key
@@ -267,9 +265,6 @@ module DWH
           Digest::SHA256.digest(private_key.public_key.to_der)
         )
       end
-
     end
-
   end
 end
-

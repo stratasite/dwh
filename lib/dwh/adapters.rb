@@ -1,9 +1,14 @@
 require "csv"
+require_relative "settings"
+require_relative "capabilities"
+require_relative "functions"
+require_relative "behaviors"
+require_relative "logger"
 
 module DWH
   module Adapters
     class Adapter
-      extend  Settings
+      extend Settings
       include Capabilities
       include Functions
       include Behaviors
@@ -12,9 +17,9 @@ module DWH
       def self.define_config(name, options = {})
         @config_definitions ||= {}
         @config_definitions[name.to_sym] = {
-          required:   options[:required] || false,
-          default:    options[:default],
-          message:    options[:message] || "Invalid or missing parameter: #{name}"
+          required: options[:required] || false,
+          default: options[:default],
+          message: options[:message] || "Invalid or missing parameter: #{name}"
         }
       end
 
@@ -33,9 +38,7 @@ module DWH
         valid_config?
       end
 
-      def settings
-        @settings
-      end
+      attr_reader :settings
 
       def alter_settings(changes = {})
         @settings.merge!(changes)
@@ -188,7 +191,7 @@ module DWH
         end
 
         stats.total_rows += 1
-        stats.max_page_size = [ row.to_s.bytesize, stats.max_page_size ].max
+        stats.max_page_size = [row.to_s.bytesize, stats.max_page_size].max
       end
 
       # Used for streaming executions. Reset
@@ -196,7 +199,7 @@ module DWH
       def validate_and_reset_stats(stats)
         return if stats.nil?
 
-        [ :rows, :total_rows, :max_page_size ].each do |key|
+        [:rows, :total_rows, :max_page_size].each do |key|
           unless stats.respond_to?(key)
             raise ArgumentError.new("#{key} is missing in stats object.")
           end
@@ -217,7 +220,7 @@ module DWH
         missing_params = definitions.select { |name, options| options[:required] && !config.key?(name) }
         if missing_params.any?
           error_messages = missing_params.map { |name, options| "Missing #{name} param - #{options[:message]}" }
-          raise "#{adapter_name}Adapter: #{error_messages.join(', ')}"
+          raise "#{adapter_name}Adapter: #{error_messages.join(", ")}"
         end
 
         # Apply default values
@@ -226,6 +229,5 @@ module DWH
         end
       end
     end
-
   end
 end

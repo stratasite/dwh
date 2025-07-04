@@ -41,7 +41,7 @@ module DWH
       end
     end
 
-    def start_reaper(frequency=300)
+    def start_reaper(frequency = 300)
       logger.info "Starting DB Adapter reaper process"
       # FIXME: the gem added reap methods but didnt release it yet.
       Thread.new do
@@ -58,6 +58,5 @@ module DWH
         end
       end
     end
-
   end
 end

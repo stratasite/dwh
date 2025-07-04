@@ -1,4 +1,3 @@
-
 module DWH
   module Adapters
     class Postgres < Adapter
@@ -13,10 +12,10 @@ module DWH
         return @connection if @connection
 
         properties = {
-          host:     config[:host],
-          port:     config[:port],
-          dbname:   config[:database],
-          user:     config[:username],
+          host: config[:host],
+          port: config[:port],
+          dbname: config[:database],
+          user: config[:username],
           password: config[:password]
         }.merge(extra_connection_params)
 
@@ -33,15 +32,15 @@ module DWH
       end
 
       def tables
-        if schema?
-          sql = <<-SQL
-                        SELECT table_schema || '.' || table_name#{' '}
+        sql = if schema?
+          <<-SQL
+                        SELECT table_schema || '.' || table_name#{" "}
                         FROM information_schema.tables
                         WHERE table_schema in (#{qualified_schema_name})
           SQL
         else
-          sql = <<-SQL
-                        SELECT table_name#{' '}
+          <<-SQL
+                        SELECT table_name#{" "}
                         FROM information_schema.tables
           SQL
         end
@@ -68,7 +67,7 @@ module DWH
       end
 
       def metadata(table, catalog: nil, schema: nil)
-        db_table    = Table.new table, schema: schema
+        db_table = Table.new table, schema: schema
 
         schema_where = ""
         if db_table.schema.present?
@@ -87,11 +86,11 @@ module DWH
         cols = execute(sql, "object")
         cols.each do |col|
           db_table << Column.new(
-            name:               col["column_name"],
-            data_type:          col["data_type"],
-            precision:          col["numeric_precision"],
-            scale:              col["numeric_scale"],
-            max_char_length:    col["character_maximum_length"]
+            name: col["column_name"],
+            data_type: col["data_type"],
+            precision: col["numeric_precision"],
+            scale: col["numeric_scale"],
+            max_char_length: col["character_maximum_length"]
           )
         end
 
@@ -136,14 +135,13 @@ module DWH
       def date_add(unit, val, exp)
         if unit.downcase.strip == "quarter"
           unit = "months"
-          val = val.to_i*3
+          val = val.to_i * 3
         end
         gsk(:date_add)
           .gsub("@UNIT", unit)
           .gsub("@VAL", val.to_s)
           .gsub("@EXP", exp)
       end
-
 
       private
 

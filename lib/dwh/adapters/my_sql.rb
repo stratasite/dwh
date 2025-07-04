@@ -1,4 +1,3 @@
-
 # TODO: this is barely implemented only connection and tables are kind of implemented
 module DWH
   module Adapters
@@ -24,14 +23,13 @@ module DWH
           # Timeout Settings
           connect_timeout: 10,
           read_timeout: config[:query_timeout]
-
         }.merge(extra_connection_params)
 
         @connection = Mysql2::Client.new(properties)
       end
 
       def tables
-        query = """
+        query = "
                   SELECT
                     t.table_name,
                     t.table_type,
@@ -45,7 +43,7 @@ module DWH
                   FROM information_schema.tables t
                   WHERE t.table_schema = '#{@connection.escape(config[:database])}'
                   ORDER BY t.table_name
-        """
+        "
 
         connection.exec(query)
       end
@@ -68,7 +66,7 @@ module DWH
       end
 
       def metadata(table, catalog: nil, schema: nil)
-        db_table    = Table.new table, schema: schema
+        db_table = Table.new table, schema: schema
 
         schema_where = ""
         if db_table.schema.present?
@@ -87,11 +85,11 @@ module DWH
         cols = execute(sql, "object")
         cols.each do |col|
           db_table << Column.new(
-            name:               col["column_name"],
-            data_type:          col["data_type"],
-            precision:          col["numeric_precision"],
-            scale:              col["numeric_scale"],
-            max_char_length:    col["character_maximum_length"]
+            name: col["column_name"],
+            data_type: col["data_type"],
+            precision: col["numeric_precision"],
+            scale: col["numeric_scale"],
+            max_char_length: col["character_maximum_length"]
           )
         end
 

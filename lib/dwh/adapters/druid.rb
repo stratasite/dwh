@@ -1,4 +1,3 @@
-
 module DWH
   module Adapters
     class Druid < Adapter
@@ -60,7 +59,7 @@ module DWH
 
         response = connection.post(url) do |req|
           req.headers["Content-Type"] = "application/json"
-          req.body = { interval: interval }.to_json
+          req.body = {interval: interval}.to_json
         end
 
         logger.debug response.status
@@ -72,19 +71,19 @@ module DWH
         WHERE TABLE_SCHEMA = 'druid' AND TABLE_NAME = '#{table}'
         SQL
 
-        stats       = stats(table)
-        db_table    = Table.new "table", **stats
-        cols        = execute(sql, "object")
-        st          = table_druid_schema_types(table, stats[:date_end])
+        stats = stats(table)
+        db_table = Table.new "table", **stats
+        cols = execute(sql, "object")
+        st = table_druid_schema_types(table, stats[:date_end])
 
         cols.each do |col|
           db_table << Column.new(
-            name:               col["COLUMN_NAME"],
-            schema_type:        st[:metrics].include?(col["COLUMN_NAME"]) ? "measure" : "dimension",
-            data_type:          col["DATA_TYPE"],
-            precision:          col["NUMERIC_PRECISION"],
-            scale:              col["NUMERIC_SCALE"],
-            max_char_length:    col["CHARACTER_MAXIMUM_LENGTH"]
+            name: col["COLUMN_NAME"],
+            schema_type: st[:metrics].include?(col["COLUMN_NAME"]) ? "measure" : "dimension",
+            data_type: col["DATA_TYPE"],
+            precision: col["NUMERIC_PRECISION"],
+            scale: col["NUMERIC_SCALE"],
+            max_char_length: col["CHARACTER_MAXIMUM_LENGTH"]
           )
         end
 
@@ -104,7 +103,7 @@ module DWH
           req.body = {
             query: sql,
             resultFormat: format,
-            context: { sqlTimeZone: "Etc/UTC" }
+            context: {sqlTimeZone: "Etc/UTC"}
           }.merge(extra_query_params)
             .to_json
         end
@@ -121,16 +120,15 @@ module DWH
       def execute_stream(sql, io, memory_row_limit: 20000, stats: nil)
         logger.debug "=== Executing Stream: #{sql} ==="
 
-        rows  = []
+        rows = []
         stats = validate_and_reset_stats(stats)
 
         resp = connection.post(DRUID_SQL) do |req|
           req.headers["Content-Type"] = "application/json"
-          req.body = { query: sql, resultFormat: "csv"
-                       # added timezone here due to druid bug
-                       # where date sub query joins failed without it.
-                       # context: { sqlTimeZone: 'Etc/UTC'}
-          }.merge(extra_query_params).to_json
+          req.body = {query: sql, resultFormat: "csv"}
+          # added timezone here due to druid bug
+          # where date sub query joins failed without it.
+          # context: { sqlTimeZone: 'Etc/UTC'}.merge(extra_query_params).to_json
 
           parseable_row = ""
           req.options.on_data = proc do |chunk, chunk_size|
@@ -157,7 +155,7 @@ module DWH
       protected
 
       def table_druid_schema_types(table, last_date)
-        start_date = Date.parse(last_date)-1
+        start_date = Date.parse(last_date) - 1
         url_friendly_interval = "#{start_date}_#{last_date}"
         url = "/druid/coordinator/v1/datasources/#{table}/intervals/#{url_friendly_interval}?full"
 
@@ -186,17 +184,15 @@ module DWH
       end
 
       def update_streaming_stats(stats, chunk_size, line_count)
-        stats.max_page_size = [ chunk_size, stats.max_page_size ].max
+        stats.max_page_size = [chunk_size, stats.max_page_size].max
         stats.total_rows += line_count
       end
 
       def process_streaming_rows(parseable_row, rows, chunk)
-        begin
-          rows.concat(CSV.parse(parseable_row, skip_blanks: true))
-          parseable_row.clear
-        rescue CSV::MalformedCSVError
-          logger.debug("Unparseable:\n #{chunk}")
-        end
+        rows.concat(CSV.parse(parseable_row, skip_blanks: true))
+        parseable_row.clear
+      rescue CSV::MalformedCSVError
+        logger.debug("Unparseable:\n #{chunk}")
       end
     end
   end
