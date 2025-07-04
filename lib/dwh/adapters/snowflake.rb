@@ -30,7 +30,7 @@ module DWH
             "Content-Type" => "application/json",
             "Authorization" => "Bearer #{jwt_token}",
             "X-Snowflake-Authorization-Token-Type" => "KEYPAIR_JWT",
-            "User-Agent" => Mando.configuration.app_name
+            "User-Agent" => "Ruby dwh-#{VERSION}" 
           },
           request: {
             timeout: config[:query_timeout]

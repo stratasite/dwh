@@ -1,3 +1,4 @@
+require 'connection_pool'
 module DWH
   module Factory
     include Logger
@@ -11,7 +12,7 @@ module DWH
       if has_adapter?(adapter_name)
         adapters[adapter_name.to_sym]
       else
-        raise "Adapter '#{adapter_name}' not found. Did you forget to register it: Mando::Adapters::Db.register(MyAdapterClass)"
+        raise "Adapter '#{adapter_name}' not found. Did you forget to register it: DWH.register(MyAdapterClass)"
       end
     end
 

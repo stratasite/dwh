@@ -21,7 +21,7 @@ module DWH
         logger.warn "#{adapter_name} Adapter didn't have a settings YAML file. Using only base settings."
       end
 
-      @adapter_settings.transform_keys(&:to_sym)
+      @adapter_settings.transform_keys!(&:to_sym)
     end
 
     def settings_file

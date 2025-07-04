@@ -1,3 +1,5 @@
+require_relative "column"
+
 module DWH
   class Table
     attr_reader :physical_name, :schema, :catalog, :columns
@@ -43,11 +45,11 @@ module DWH
     end
 
     def has_catalog_and_schema?
-      catalog.present? && schema.present?
+      catalog && schema
     end
 
     def has_catalog_or_schema?
-      catalog.present? || schema.present?
+      catalog || schema
     end
 
     def to_h
@@ -75,12 +77,12 @@ module DWH
         metadata = JSON.parse(metadata)
       end
 
-      metadata.symbolize_keys!
+      metadata.transform_keys!(&:to_sym)
       table = new(physical_name, row_count: metadata[:row_count],
         date_start: metadata[:date_start], date_end: metadata[:date_end])
 
       metadata[:columns]&.each do |col|
-        col.symbolize_keys!
+        col.transform_keys!(&:to_sym)
         table << Column.new(
           name: col[:name],
           data_type: col[:data_type],

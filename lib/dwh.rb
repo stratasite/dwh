@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-
 require_relative "dwh/version"
 require_relative "dwh/logger"
 require_relative "dwh/factory"
 require_relative "dwh/adapters"
+require_relative "dwh/table"
 require_relative "dwh/adapters/druid"
 require_relative "dwh/adapters/trino"
 require_relative "dwh/adapters/postgres"

@@ -35,7 +35,8 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "csv", "~> 3.3.5"
   spec.add_dependency "jwt", "~> 2.10.1"
-
+  spec.add_dependency "logger"
+  spec.add_dependency "connection_pool", "~> 2.4"
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
 end

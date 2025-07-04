@@ -30,11 +30,14 @@ module DWH
       attr_reader :config
 
       def initialize(config)
-        @config = config.symbolize_keys
+        @config = config.transform_keys(&:to_sym)
         # Per instance customization of general settings
         # So you can have multiple connections to Trino
         # but exhibit diff behavior
-        @settings = self.class.adapter_settings.merge((config[:settings] || {}).symbolize_keys!)
+        @settings = self.class.adapter_settings.merge(
+          (config[:settings] || {}).transform_keys(&:to_sym)
+        )
+
         valid_config?
       end
 

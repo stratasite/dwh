@@ -35,7 +35,7 @@ module DWH
 
     # When a filter on a Date time field can be applied to multiple
     # tables in the join tree should we apply to all of them or
-    # just the first one. (First one in Draco has the highest cardinality.)
+    # just the first one. 
     def greedy_apply_date_filters
       settings[:greedy_apply_date_filters]
     end
