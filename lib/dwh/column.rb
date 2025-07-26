@@ -19,15 +19,14 @@ module DWH
       schema_type == "measure"
     end
 
-    DEFAULT_RULES = {"_+" => " ", "\s+id" => "ID", "desc" => "Description"}
+    DEFAULT_RULES = {/[_+]+/ => " ", /\s+id$/i => " ID", /desc/i => "Description"}
     def namify(rules = DEFAULT_RULES)
-      named = name.clone
-
+      named = name.titleize keep_id_suffix: true
       rules.each do |k, v|
-        named = named.gsub(/#{k}/, v)
+        named = named.gsub(Regexp.new(k), v)
       end
 
-      named.titleize keep_id_suffix: true
+      named
     end
 
     def normalized_data_type

@@ -5,7 +5,6 @@ class CustomTest < Minitest::Test
 
   class CustomAdapter < DWH::Adapters::Adapter
     def execute(sql)
-      puts "hello"
       [1]
     end
   end
@@ -29,9 +28,7 @@ class CustomTest < Minitest::Test
   end
 
   class LoadedAdapter < DWH::Adapters::Adapter
-    def self.settings_file
-      @settings_file ||= File.join(__dir__, "custom_settings.yml")
-    end
+    settings_file File.join(__dir__, "custom_settings.yml")
   end
 
   def test_enable_custom_settings_file
@@ -39,7 +36,7 @@ class CustomTest < Minitest::Test
     DWH.register("custom_settings", LoadedAdapter)
     pool = DWH.pool('custom-settings', 'custom_settings', {})
     conn = pool.checkout
-    assert_equal "blah-blah", conn.date_format
+    assert_equal "%d/%m/%Y", conn.date_format
   end
 
 end

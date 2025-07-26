@@ -101,17 +101,22 @@ module DWH
         config[:schema].present?
       end
 
-      def execute(sql, format = "array")
-        result = with_debug(sql) { connection.exec(sql) }
+      
+      def execute(sql, format:  "array", retries: 0)
 
-        if result == "array"
-          return result.values
+        result = with_debug(sql){ with_retry(retries){ connection.exec(sql) }}
+
+        case format
+        when "array"
+          result.values
+        when "object"
+          array_to_object(result)
+        else
+          result
         end
-
-        result
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil)
+      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil, retries: 0)
         stats = validate_and_reset_stats(stats)
 
         with_debug(sql) do
@@ -143,10 +148,21 @@ module DWH
           .gsub("@EXP", exp)
       end
 
+      def valid_config?
+        super
+        require "pg"
+      rescue LoadError
+          raise ConfigError, "Required 'pg' gem missing. Please add it to your Gemfile."
+      end
+
       private
 
       def qualified_schema_name
         @qualified_schema_name ||= config[:schema].split(",").map { |s| "'#{s}'" }.join(",")
+      end
+
+      def array_to_object(pg_result)
+        []
       end
     end
   end

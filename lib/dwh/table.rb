@@ -77,12 +77,12 @@ module DWH
         metadata = JSON.parse(metadata)
       end
 
-      metadata.transform_keys!(&:to_sym)
+      metadata.symbolize_keys!
       table = new(physical_name, row_count: metadata[:row_count],
         date_start: metadata[:date_start], date_end: metadata[:date_end])
 
       metadata[:columns]&.each do |col|
-        col.transform_keys!(&:to_sym)
+        col.symbolize_keys!
         table << Column.new(
           name: col[:name],
           data_type: col[:data_type],

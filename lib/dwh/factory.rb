@@ -1,4 +1,5 @@
 require 'connection_pool'
+
 module DWH
   module Factory
     include Logger

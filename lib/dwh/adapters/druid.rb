@@ -22,14 +22,6 @@ module DWH
         )
       end
 
-      def set_user_context(user: nil, password: nil, timeout: nil)
-        connection.options.timeout = timeout if timeout
-      end
-
-      def reset_user_context
-        connection.options.timeout = config[:query_timeout]
-      end
-
       def tables(catalog: nil, schema: nil)
         resp = connection.get(DRUID_DATASOURCES) do |req|
           req.options.timeout = 30
@@ -45,11 +37,11 @@ module DWH
 
         result = execute(sql)
 
-        {
-          date_start: result[0][0],
-          date_end: result[0][1],
-          row_count: result[0][2]
-        }
+        TableStats.new(
+          row_count: result[0][2], 
+          date_start: result[0][0], 
+          date_end: result[0][1]
+        )
       end
 
       def drop_unused_segments(table, interval)
@@ -90,49 +82,47 @@ module DWH
         db_table
       end
 
-      # Execute sql on druid and return response.
-      #
-      # @param sql [String] actual sql
-      # @param format [String] - array | object - default is array
-      # @return [Array]
-      def execute(sql, format = "array")
-        logger.debug "=== Executing: #{sql} ==="
-
-        resp = connection.post(DRUID_SQL) do |req|
-          req.headers["Content-Type"] = "application/json"
-          req.body = {
-            query: sql,
-            resultFormat: format,
-            context: {sqlTimeZone: "Etc/UTC"}
-          }.merge(extra_query_params)
-            .to_json
-        end
+      def execute(sql, format:  "array", retries: 0)
+        format = format == "native" ? "array" : format
+        resp = with_debug(sql) {
+          with_retry(retries) do
+            connection.post(DRUID_SQL) do |req|
+              req.headers["Content-Type"] = "application/json"
+              req.body = {
+                query: sql,
+                resultFormat: format,
+                context: {sqlTimeZone: "Etc/UTC"}
+              }.merge(extra_query_params)
+                .to_json
+            end
+          end
+        }
 
         if resp.status != 200
-          raise ArgumentError.new("Could not execute #{sql}: \n #{resp.body}")
+          raise ExecutionError, "Could not execute #{sql}: \n #{resp.body}"
         end
-
-        logger.debug "=== Finished ==="
 
         JSON.parse(resp.body)
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil)
-        logger.debug "=== Executing Stream: #{sql} ==="
-
+      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil, retries: 0)
         rows = []
         stats = validate_and_reset_stats(stats)
 
-        resp = connection.post(DRUID_SQL) do |req|
-          req.headers["Content-Type"] = "application/json"
-          req.body = {query: sql, resultFormat: "csv"}
-          # added timezone here due to druid bug
-          # where date sub query joins failed without it.
-          # context: { sqlTimeZone: 'Etc/UTC'}.merge(extra_query_params).to_json
+        resp =with_debug(sql) do
+          with_retry(retries) do
+            connection.post(DRUID_SQL) do |req|
+              req.headers["Content-Type"] = "application/json"
+              req.body = {query: sql, resultFormat: "csv"}
+              # added timezone here due to druid bug
+              # where date sub query joins failed without it.
+              # context: { sqlTimeZone: 'Etc/UTC'}.merge(extra_query_params).to_json
 
-          parseable_row = ""
-          req.options.on_data = proc do |chunk, chunk_size|
-            handle_streaming_chunk(chunk, chunk_size, io, stats, rows, parseable_row, memory_row_limit)
+              parseable_row = ""
+              req.options.on_data = proc do |chunk, chunk_size|
+                handle_streaming_chunk(chunk, chunk_size, io, stats, rows, parseable_row, memory_row_limit)
+              end
+            end
           end
         end
 
@@ -144,12 +134,30 @@ module DWH
         io.rewind
         # Raise exception on failed runs
         unless resp.success?
-          raise ArgumentError.new(io.read)
+          raise ExecutionError.new(io.read)
         end
 
-        logger.debug "=== Finished Stream ==="
-
         io
+      end
+      
+      def stream(sql, &block)
+        on_data_calls = 0
+        with_debug(sql){
+          connection.post(DRUID_SQL) do |req|
+            req.headers["Content-Type"] = "application/json"
+            req.body = {query: sql, resultFormat: "csv"}.to_json
+            # added timezone here due to druid bug
+            # where date sub query joins failed without it.
+            # context: { sqlTimeZone: 'Etc/UTC'}.merge(extra_query_params).to_json
+
+            req.options.on_data = proc do |chunk, chunk_size|
+              block.call chunk.force_encoding("utf-8")
+              on_data_calls += 1
+            end
+          end
+        }
+        
+        on_data_calls
       end
 
       protected

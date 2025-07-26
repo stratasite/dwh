@@ -3,6 +3,7 @@
 require "test_helper"
 
 class TestTableAndColumn < Minitest::Test
+
   def test_column_initialization
     column = DWH::Column.new(
       name: "TEST_NAME",
@@ -37,6 +38,9 @@ class TestTableAndColumn < Minitest::Test
 
     column = DWH::Column.new(name: "product_desc", data_type: "varchar")
     assert_equal "Product Description", column.namify
+    
+    column = DWH::Column.new(name: "tide_id", data_type: "varchar")
+    assert_equal "Tide ID", column.namify
   end
 
   def test_column_normalized_data_type
