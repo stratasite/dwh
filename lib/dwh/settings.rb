@@ -1,4 +1,5 @@
 require "yaml"
+
 module DWH
   module Settings
     include Logger
@@ -32,6 +33,9 @@ module DWH
       @adapter_settings.symbolize_keys!
     end
 
+    # By default settings_file are expected to be in a 
+    # relative directory called settings. If not, 
+    # change the settings file with call to settings_file_path FILE_PATH
     def settings_file
       @settings_file ||= File.join(__dir__, "settings", "#{adapter_name}.yml")
     end
@@ -41,7 +45,8 @@ module DWH
     #
     # It will reload settings if adapter settings has already
     # been loaded.
-    def settings_file=(file)
+    # @param [String] file - path or file name string
+    def settings_file_path(file)
       @settings_file = file
       if !@adapter_settings.nil?
         @adapter_settings = nil

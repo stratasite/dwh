@@ -28,11 +28,11 @@ class CustomTest < Minitest::Test
   end
 
   class LoadedAdapter < DWH::Adapters::Adapter
-    settings_file File.join(__dir__, "custom_settings.yml")
+    settings_file_path File.join(__dir__, "custom_settings.yml")
   end
 
   def test_enable_custom_settings_file
-    LoadedAdapter.settings_file = File.join __dir__, "custom_settings.yml"
+    LoadedAdapter.settings_file_path File.join __dir__, "custom_settings.yml"
     DWH.register("custom_settings", LoadedAdapter)
     pool = DWH.pool('custom-settings', 'custom_settings', {})
     conn = pool.checkout
