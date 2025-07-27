@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+
 require "faraday"
-require 'active_support/core_ext/string/inflections'
-require 'active_support/core_ext/hash/keys'
+require "active_support/core_ext/string/inflections"
+require "active_support/core_ext/hash/keys"
 require "active_support/core_ext/object/blank"
 
 require_relative "dwh/version"
@@ -20,6 +21,7 @@ module DWH
   # ConfigError catches issues related to how an
   # adapter was configured and instantiated.
   class ConfigError < StandardError; end
+
   # ExecutionError are thrown when there is a failuire
   # to execute calls against the remote db server.
   class ExecutionError < StandardError; end
@@ -27,7 +29,7 @@ module DWH
   # UnspportedCapability are thrown when calling a function
   # that the target database does not support.
   class UnsupportedCapability < StandardError; end
-  
+
   INT_TYPES = %w[int integer bigint tinyint smallint]
   DEC_TYPES = %w[real float double decimal]
   STRING_TYPES = %w[string char varchar varbinary json]

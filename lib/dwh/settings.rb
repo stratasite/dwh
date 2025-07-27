@@ -33,14 +33,14 @@ module DWH
       @adapter_settings.symbolize_keys!
     end
 
-    # By default settings_file are expected to be in a 
-    # relative directory called settings. If not, 
+    # By default settings_file are expected to be in a
+    # relative directory called settings. If not,
     # change the settings file with call to settings_file_path FILE_PATH
     def settings_file
       @settings_file ||= File.join(__dir__, "settings", "#{adapter_name}.yml")
     end
- 
-    # Allows the manual configuration of where to 
+
+    # Allows the manual configuration of where to
     # load default database settings from.
     #
     # It will reload settings if adapter settings has already
@@ -55,7 +55,7 @@ module DWH
     end
 
     def adapter_name
-      self.name.demodulize.downcase
+      name.demodulize.downcase
     end
 
     def using_base_settings?
@@ -63,4 +63,3 @@ module DWH
     end
   end
 end
-

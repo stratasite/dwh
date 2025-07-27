@@ -1,10 +1,9 @@
 require "test_helper"
 
 class AdapterTest < Minitest::Test
-
   class MyDB < DWH::Adapters::Adapter
     define_config :db_name, required: true
-    define_config :schema, default: "public"  
+    define_config :schema, default: "public"
   end
 
   def setup
@@ -19,7 +18,7 @@ class AdapterTest < Minitest::Test
     assert_equal "public", MyDB.config_definitions[:schema][:default]
     assert_equal "public", mydb.config[:schema], "instance should use default value"
     assert_equal "not_default_db", mydb.config[:db_name]
-    
+
     assert_raises DWH::ConfigError do
       MyDB.new({schema: "ewh"})
     end
@@ -31,17 +30,17 @@ class AdapterTest < Minitest::Test
   end
 
   def test_correct_date_output
-    f = @adapter.date_format_sql("'#{Date.today.to_s}'", 'yyyyMMdd')
-    assert_equal "DATE_FORMAT('#{Date.today.to_s}', 'yyyyMMdd')",f
+    f = @adapter.date_format_sql("'#{Date.today}'", "yyyyMMdd")
+    assert_equal "DATE_FORMAT('#{Date.today}', 'yyyyMMdd')", f
   end
 
   def test_ruby_date_to_literal_conversion
     o = @adapter.date_lit(Date.today)
-    assert_equal "'#{Date.today.strftime('%Y-%m-%d')}'", o
+    assert_equal "'#{Date.today.strftime("%Y-%m-%d")}'", o
 
     n = Time.now
     o = @adapter.timestamp_lit(n)
-    assert_equal "TIMESTAMP '#{n.strftime('%Y-%m-%d %H:%M:%S')}'", o
+    assert_equal "TIMESTAMP '#{n.strftime("%Y-%m-%d %H:%M:%S")}'", o
   end
 
   def test_upper_lower_trim
@@ -54,6 +53,4 @@ class AdapterTest < Minitest::Test
     assert_equal '"my_col"', @adapter.quote("my_col")
     assert_equal "'myString'", @adapter.string_lit("myString")
   end
-
 end
-

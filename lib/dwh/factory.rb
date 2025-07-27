@@ -1,4 +1,4 @@
-require 'connection_pool'
+require "connection_pool"
 
 module DWH
   module Factory

@@ -8,7 +8,7 @@ class TestDwh < Minitest::Test
   end
 
   def test_table_stats_date_parsing
-    s=DWH::TableStats.new(row_count: 1000, date_start: Time.now.to_s, date_end: (Time.now+1).to_s)
+    s = DWH::TableStats.new(row_count: 1000, date_start: Time.now.to_s, date_end: (Time.now + 1).to_s)
     assert s.date_start.is_a?(DateTime)
   end
 end

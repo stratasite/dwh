@@ -38,8 +38,8 @@ module DWH
         result = execute(sql)
 
         TableStats.new(
-          row_count: result[0][2], 
-          date_start: result[0][0], 
+          row_count: result[0][2],
+          date_start: result[0][0],
           date_end: result[0][1]
         )
       end
@@ -82,8 +82,8 @@ module DWH
         db_table
       end
 
-      def execute(sql, format:  "array", retries: 0)
-        format = format == "native" ? "array" : format
+      def execute(sql, format: "array", retries: 0)
+        format = (format == "native") ? "array" : format
         resp = with_debug(sql) {
           with_retry(retries) do
             connection.post(DRUID_SQL) do |req|
@@ -109,7 +109,7 @@ module DWH
         rows = []
         stats = validate_and_reset_stats(stats)
 
-        resp =with_debug(sql) do
+        resp = with_debug(sql) do
           with_retry(retries) do
             connection.post(DRUID_SQL) do |req|
               req.headers["Content-Type"] = "application/json"
@@ -139,10 +139,10 @@ module DWH
 
         io
       end
-      
+
       def stream(sql, &block)
         on_data_calls = 0
-        with_debug(sql){
+        with_debug(sql) {
           connection.post(DRUID_SQL) do |req|
             req.headers["Content-Type"] = "application/json"
             req.body = {query: sql, resultFormat: "csv"}.to_json
@@ -156,7 +156,7 @@ module DWH
             end
           end
         }
-        
+
         on_data_calls
       end
 

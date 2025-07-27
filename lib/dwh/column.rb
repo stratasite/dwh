@@ -5,7 +5,7 @@ module DWH
     def initialize(name:, data_type:, precision: 0, scale: 0, schema_type: nil, max_char_length: nil)
       @name = name.downcase
       @precision = precision.is_a?(String) ? precision.to_i : precision
-      @scale = scale.is_a?(String) ? scale.to_i : scale 
+      @scale = scale.is_a?(String) ? scale.to_i : scale
       @data_type = data_type&.downcase
       @schema_type = schema_type&.downcase
       @max_char_length = max_char_length

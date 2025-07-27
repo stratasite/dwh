@@ -30,7 +30,7 @@ module DWH
             "Content-Type" => "application/json",
             "Authorization" => "Bearer #{jwt_token}",
             "X-Snowflake-Authorization-Token-Type" => "KEYPAIR_JWT",
-            "User-Agent" => "Ruby dwh-#{VERSION}" 
+            "User-Agent" => "Ruby dwh-#{VERSION}"
           },
           request: {
             timeout: config[:query_timeout]
@@ -186,7 +186,7 @@ module DWH
             update_stats_and_io(part_res, stats, io, memory_row_limit)
         end
 
-        io.rewind if io
+        io&.rewind
         io.present? ? io : data
       end
 
@@ -241,7 +241,7 @@ module DWH
       def jwt_token
         @jwt ||= JWT.encode({
           iss: "#{qualified_username}.SHA256:#{public_key_fp}",
-          sub: "#{qualified_username}",
+          sub: qualified_username,
           iat: Time.now.to_i,
           exp: expires_at.to_i # Token is valid for 1 hour
         }, private_key, "RS256")

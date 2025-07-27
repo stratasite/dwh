@@ -92,23 +92,19 @@ module DWH
       # Converts a Ruby Date into SQL compatible
       # literal value.
       def date_lit(date)
-        if date.respond_to?(:strftime)
-          date_literal(date.strftime(date_format))
-        else
+        if date.is_a?(String)
           date = Date.parse(date)
-          date_literal(date.strftime(date_format))
         end
+        date_literal(date.strftime(date_format))
       end
 
       # Converts a Ruby Date into SQL compatible
       # timestamp literal value.
       def timestamp_lit(date)
-        if date.respond_to?(:strftime)
-          date_time_literal(date.strftime(date_time_format))
-        else
+        if date.is_a?(String)
           date = DateTime.parse(date)
-          date_time_literal(date.strftime(date_time_format))
         end
+        date_time_literal(date.strftime(date_time_format))
       end
 
       def default_week_start_day

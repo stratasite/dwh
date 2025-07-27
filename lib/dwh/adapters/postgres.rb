@@ -101,10 +101,8 @@ module DWH
         config[:schema].present?
       end
 
-      
-      def execute(sql, format:  "array", retries: 0)
-
-        result = with_debug(sql){ with_retry(retries){ connection.exec(sql) }}
+      def execute(sql, format: "array", retries: 0)
+        result = with_debug(sql) { with_retry(retries) { connection.exec(sql) } }
 
         case format
         when "array"
@@ -152,7 +150,7 @@ module DWH
         super
         require "pg"
       rescue LoadError
-          raise ConfigError, "Required 'pg' gem missing. Please add it to your Gemfile."
+        raise ConfigError, "Required 'pg' gem missing. Please add it to your Gemfile."
       end
 
       private

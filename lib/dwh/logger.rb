@@ -26,7 +26,7 @@ module DWH
       end
 
       def standalone_logger
-        logger = ::Logger.new(STDOUT)
+        logger = ::Logger.new($stdout)
         logger.level = log_level
         logger.formatter = proc do |severity, datetime, progname, msg|
           "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity} DWH: #{msg}\n"

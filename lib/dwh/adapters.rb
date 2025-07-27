@@ -24,7 +24,7 @@ module DWH
       #   define_config :username, required: true, message: "login id of the current user"
       #   define_config :port, required: true, default: 5432
       # end
-      # 
+      #
       # ==== Parameters
       #
       #   *name*: The name of the configuration option
@@ -60,7 +60,7 @@ module DWH
       end
 
       # This is the actual runtime settings used by the adapter
-      # once initialized. During intialization settings could be 
+      # once initialized. During intialization settings could be
       # overridden. Settings are different from configuration in that
       # settings control behaviour and syntax while configuration
       # determins how we connect.
@@ -78,17 +78,17 @@ module DWH
       # running alter_settings.
       def reset_settings
         @settings = @original_settings
-      end 
+      end
 
       def connection
         raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
       end
 
       def close
-        @connection.close if @connection
+        @connection&.close
       end
 
-      # Execute sql on db. 
+      # Execute sql on db.
       #
       #
       # @param sql [String] actual sql

@@ -3,7 +3,6 @@
 require "test_helper"
 
 class TestTableAndColumn < Minitest::Test
-
   def test_column_initialization
     column = DWH::Column.new(
       name: "TEST_NAME",
@@ -38,7 +37,7 @@ class TestTableAndColumn < Minitest::Test
 
     column = DWH::Column.new(name: "product_desc", data_type: "varchar")
     assert_equal "Product Description", column.namify
-    
+
     column = DWH::Column.new(name: "tide_id", data_type: "varchar")
     assert_equal "Tide ID", column.namify
   end
@@ -145,7 +144,7 @@ class TestTableAndColumn < Minitest::Test
   def test_table_add_column
     table = DWH::Table.new("users")
     column = DWH::Column.new(name: "id", data_type: "int")
-    
+
     table << column
     assert_equal 1, table.columns.length
     assert_equal column, table.columns.first
@@ -204,7 +203,7 @@ class TestTableAndColumn < Minitest::Test
     table = DWH::Table.new("users")
     column1 = DWH::Column.new(name: "ID", data_type: "int")
     column2 = DWH::Column.new(name: "NAME", data_type: "varchar")
-    
+
     table << column1
     table << column2
 
@@ -268,7 +267,7 @@ class TestTableAndColumn < Minitest::Test
   def test_table_from_json_string
     json_string = '{"row_count": 500, "columns": [{"name": "id", "data_type": "int", "schema_type": "dimension"}]}'
     table = DWH::Table.from_hash_or_json("test_table", json_string)
-    
+
     assert_equal "test_table", table.physical_name
     assert_equal 500, table.row_count
     assert_equal 1, table.columns.length
