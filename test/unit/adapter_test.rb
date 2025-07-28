@@ -4,6 +4,13 @@ class AdapterTest < Minitest::Test
   class MyDB < DWH::Adapters::Adapter
     define_config :db_name, required: true
     define_config :schema, default: "public"
+    define_config :port, required: true, default: 3001
+
+    def execute_stream(_sql, _io, stats:)
+      5.times do |i|
+        stats << [i, 0, 0]
+      end
+    end
   end
 
   def setup
@@ -12,8 +19,6 @@ class AdapterTest < Minitest::Test
   end
 
   def test_define_config
-    # Need to load default class level settings first
-    MyDB.load_settings
     mydb = MyDB.new(db_name: "not_default_db")
     assert_equal "public", MyDB.config_definitions[:schema][:default]
     assert_equal "public", mydb.config[:schema], "instance should use default value"
@@ -52,5 +57,15 @@ class AdapterTest < Minitest::Test
   def test_lits_and_quotes
     assert_equal '"my_col"', @adapter.quote("my_col")
     assert_equal "'myString'", @adapter.string_lit("myString")
+  end
+
+  def test_streaming_stats
+    mdb = MyDB.new db_name: "dwh"
+    stats = DWH::StreamingStats.new(4)
+    mdb.execute_stream("nil", StringIO.new, stats: stats)
+
+    assert_equal 4, stats.data.size
+    assert_equal 5, stats.total_rows
+    assert_equal 9, stats.max_row_size
   end
 end

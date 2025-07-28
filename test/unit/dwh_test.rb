@@ -11,4 +11,11 @@ class TestDwh < Minitest::Test
     s = DWH::TableStats.new(row_count: 1000, date_start: Time.now.to_s, date_end: (Time.now + 1).to_s)
     assert s.date_start.is_a?(DateTime)
   end
+
+  def test_base_adapters_registered
+    count = Dir.glob("lib/dwh/adapters/*.rb").count
+    assert_equal count, DWH.adapters.size
+
+    assert DWH.adapter?(:snowflake)
+  end
 end

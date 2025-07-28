@@ -59,7 +59,7 @@ module DWH
         res.flatten
       end
 
-      def has_table?(table, catalog: nil, schema: nil)
+      def table?(table, catalog: nil, schema: nil)
         db_table = Table.new(table, catalog: catalog, schema: schema)
 
         query = ["SHOW TABLES"]
@@ -71,7 +71,7 @@ module DWH
         query << "LIKE '#{db_table.physical_name}'"
 
         res = execute(query.compact.join(" "), retries: 1)
-        if res.length > 0
+        if !res.empty?
           res.flatten.include?(db_table.physical_name)
         else
           false
@@ -119,26 +119,26 @@ module DWH
       end
 
       def execute(sql, retries: 2)
-        result = with_debug(sql) {
+        result = with_debug(sql) do
           with_retry(retries) { connection.run(sql) }
-        }
+        end
 
         result[1]
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil)
+      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil)
         stats = validate_and_reset_stats(stats)
 
-        with_debug(sql) {
-          with_retry(3) {
+        with_debug(sql) do
+          with_retry(3) do
             connection.query(sql) do |result|
               result.each_row do |row|
                 update_stats(stats, row, memory_row_limit)
                 io << CSV.generate_line(row)
               end
             end
-          }
-        }
+          end
+        end
 
         io.rewind
         io

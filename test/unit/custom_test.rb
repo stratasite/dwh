@@ -2,7 +2,7 @@ require "test_helper"
 
 class CustomTest < Minitest::Test
   class CustomAdapter < DWH::Adapters::Adapter
-    def execute(sql)
+    def execute(_sql)
       [1]
     end
   end
@@ -11,8 +11,13 @@ class CustomTest < Minitest::Test
     DWH.register("custom_adapter", CustomAdapter)
   end
 
+  def teardown
+    DWH.unregister("custom_adapter")
+    DWH.unregister("custom_settings")
+  end
+
   def test_custom_adapter_can_be_registered
-    assert DWH.has_adapter? "custom_adapter"
+    assert DWH.adapter? "custom_adapter"
   end
 
   def test_custom_adapter_exec

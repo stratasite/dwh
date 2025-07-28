@@ -17,6 +17,7 @@ module DWH
     # an adapter is initialized.
     def load_settings
       return unless @adapter_settings.nil?
+
       logger.debug "+++ LOADING SETTINGS: #{name} +++"
 
       @using_base = true
@@ -48,10 +49,10 @@ module DWH
     # @param [String] file - path or file name string
     def settings_file_path(file)
       @settings_file = file
-      if !@adapter_settings.nil?
-        @adapter_settings = nil
-        load_settings
-      end
+      return if @adapter_settings.nil?
+
+      @adapter_settings = nil
+      load_settings
     end
 
     def adapter_name

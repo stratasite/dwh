@@ -1,4 +1,5 @@
 module DWH
+  # Captures column metadata for a target table.
   class Column
     attr_reader :schema_type, :data_type, :name, :precision, :scale, :max_char_length
 
@@ -19,7 +20,7 @@ module DWH
       schema_type == "measure"
     end
 
-    DEFAULT_RULES = {/[_+]+/ => " ", /\s+id$/i => " ID", /desc/i => "Description"}
+    DEFAULT_RULES = {/[_+]+/ => " ", /\s+id$/i => " ID", /desc/i => "Description"}.freeze
     def namify(rules = DEFAULT_RULES)
       named = name.titleize keep_id_suffix: true
       rules.each do |k, v|
@@ -46,9 +47,9 @@ module DWH
       when "boolean"
         "boolean"
       when "number"
-        if precision >= 38 && scale == 0
+        if precision >= 38 && scale.zero?
           "bigint"
-        elsif scale > 0
+        elsif scale.positive?
           "decimal"
         else
           "integer"

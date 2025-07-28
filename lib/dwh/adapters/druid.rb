@@ -84,7 +84,7 @@ module DWH
 
       def execute(sql, format: "array", retries: 0)
         format = (format == "native") ? "array" : format
-        resp = with_debug(sql) {
+        resp = with_debug(sql) do
           with_retry(retries) do
             connection.post(DRUID_SQL) do |req|
               req.headers["Content-Type"] = "application/json"
@@ -96,16 +96,14 @@ module DWH
                 .to_json
             end
           end
-        }
-
-        if resp.status != 200
-          raise ExecutionError, "Could not execute #{sql}: \n #{resp.body}"
         end
+
+        raise ExecutionError, "Could not execute #{sql}: \n #{resp.body}" if resp.status != 200
 
         JSON.parse(resp.body)
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil, retries: 0)
+      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil, retries: 0)
         rows = []
         stats = validate_and_reset_stats(stats)
 
@@ -133,16 +131,14 @@ module DWH
 
         io.rewind
         # Raise exception on failed runs
-        unless resp.success?
-          raise ExecutionError.new(io.read)
-        end
+        raise ExecutionError.new(io.read) unless resp.success?
 
         io
       end
 
       def stream(sql, &block)
         on_data_calls = 0
-        with_debug(sql) {
+        with_debug(sql) do
           connection.post(DRUID_SQL) do |req|
             req.headers["Content-Type"] = "application/json"
             req.body = {query: sql, resultFormat: "csv"}.to_json
@@ -150,12 +146,12 @@ module DWH
             # where date sub query joins failed without it.
             # context: { sqlTimeZone: 'Etc/UTC'}.merge(extra_query_params).to_json
 
-            req.options.on_data = proc do |chunk, chunk_size|
+            req.options.on_data = proc do |chunk, _chunk_size|
               block.call chunk.force_encoding("utf-8")
               on_data_calls += 1
             end
           end
-        }
+        end
 
         on_data_calls
       end
@@ -171,9 +167,7 @@ module DWH
           req.options.timeout = 30
         end
 
-        if resp.status != 200
-          raise ArgumentError.new("Could not fetch druid schema types: \n #{resp.body}")
-        end
+        raise ArgumentError.new("Could not fetch druid schema types: \n #{resp.body}") if resp.status != 200
 
         res = JSON.parse(resp.body)
         meta = res.flatten[1].flatten(4)[1]["metadata"]

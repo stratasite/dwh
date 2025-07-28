@@ -7,7 +7,8 @@ module DWH
       define_config :account_identifier, required: false, message: "snowflake account identifier"
       define_config :username, required: true, message: "connection username"
       define_config :private_key, required: true, message: "private key file path or private key"
-      define_config :public_key_fp, required: false, message: "optional public key finger print. will derive if omitted."
+      define_config :public_key_fp, required: false,
+        message: "optional public key finger print. will derive if omitted."
       define_config :query_timeout, required: false, default: 3600, message: "query execution timeout in seconds"
       define_config :role, required: false, default: nil, message: "role to connect with"
       define_config :warehouse, required: false, default: nil, message: "snowflake warehouse to connect to"
@@ -15,9 +16,7 @@ module DWH
       define_config :schema, required: false, default: nil, message: "schema to connect to"
 
       def connection
-        if @connection.present? && !expired?
-          return @connection
-        end
+        return @connection if @connection.present? && !expired?
 
         if @connection.present? && expired?
           logger.debug "Resetting expired connection"
@@ -43,7 +42,7 @@ module DWH
         @connection = nil
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil)
+      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil)
         execute(sql, io, memory_row_limit: memory_row_limit, stats: stats)
       end
 
@@ -56,8 +55,8 @@ module DWH
         TIMESTAMP_LTZ_OUTPUT_FORMAT: "YYYY-MM-DD HH24:MI:SS TZH",
         TIME_OUTPUT_FORMAT: "HH24:MI:SS"
       }
-      def execute(sql, io = nil, memory_row_limit: 20000, stats: nil)
-        with_debug(sql) {
+      def execute(sql, io = nil, memory_row_limit: 20_000, stats: nil)
+        with_debug(sql) do
           resp = connection.post(SNOWFLAKE_STATEMENTS) do |req|
             req.body = {
               statement: sql,
@@ -77,7 +76,7 @@ module DWH
           # otherwise it will return the parsed response body.
           result = handle_response(resp)
           fetch_data(result, io, memory_row_limit, stats)
-        }
+        end
       end
 
       def tables(catalog: nil, schema: nil, database: nil)
@@ -177,13 +176,15 @@ module DWH
         partitions[1..].each.with_index(1) do |_, index|
           logger.debug "Fetching partition #{index} of #{partitions.length - 1} for statement handle: #{result["statementHandle"]}"
           resp = connection.get(url + index.to_s)
-          unless resp.status == 200
-            raise ArgumentError.new("Could not data partitions from Snowflake: #{resp.body}")
-          end
+          raise ArgumentError.new("Could not data partitions from Snowflake: #{resp.body}") unless resp.status == 200
+
           part_res = JSON.parse(resp.body)
 
-          io.nil? ? data = data.concat(part_res["data"]) :
+          if io.nil?
+            data = data.concat(part_res["data"])
+          else
             update_stats_and_io(part_res, stats, io, memory_row_limit)
+          end
         end
 
         io&.rewind

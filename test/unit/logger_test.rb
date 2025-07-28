@@ -74,7 +74,7 @@ class TestLogger < Minitest::Test
     output = StringIO.new
     logger = Logger.new(output)
     logger.level = Logger::INFO
-    logger.formatter = proc do |severity, datetime, progname, msg|
+    logger.formatter = proc do |severity, datetime, _progname, msg|
       "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity} DWH: #{msg}\n"
     end
 

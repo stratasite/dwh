@@ -1,10 +1,12 @@
 module DWH
+  # This module will handle database features that one might be
+  # interested in. Not every database necessarily supports
+  # all ANSI SQL features.  This minimal at this point and focused
+  # on analytical Query use cases for Strata [https://www.strata.site]
   module Capabilities
     def supports_table_join?
       settings[:supports_table_join]
     end
-    alias_method :supports_joins?, :supports_table_join?
-    alias_method :supports_table_joins?, :supports_table_join?
 
     def supports_full_join?
       settings[:supports_full_join]

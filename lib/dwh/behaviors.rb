@@ -1,4 +1,12 @@
 module DWH
+  # The Behaviors module will help us write SQL queries that are
+  # optimized for the target database.  These are setup primarily for
+  # the purposes of Strata.  However, any sql writer can use this to
+  # write better sql.
+  #
+  # For exmaple temp_table_type will tell us what the preferred temporary
+  # table strategy should be.  intermediate_measure_filter? will let us know
+  # if an aggregation should be filtered in a CTE, final pass, or both.
   module Behaviors
     # In druid when you do specific time range you need
     # to apply the last hour of the day to the date value
@@ -49,13 +57,11 @@ module DWH
     end
 
     def intermediate_measure_filter?
-      settings[:cross_universe_measure_filtering_strategy] == "both" ||
-        settings[:cross_universe_measure_filtering_strategy] == "intermediate"
+      %w[both intermediate].include?(settings[:cross_universe_measure_filtering_strategy])
     end
 
     def final_measure_filter?
-      settings[:cross_universe_measure_filtering_strategy] == "both" ||
-        settings[:cross_universe_measure_filtering_strategy] == "final"
+      %w[both final].include?(settings[:cross_universe_measure_filtering_strategy])
     end
   end
 end

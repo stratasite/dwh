@@ -1,25 +1,31 @@
+# frozen_string_literal: true
+
 require_relative "column"
 
 module DWH
+  # Container to map to a data warehouse table.
+  # If you initialize with a fuly qualified table name
+  # , it will automatically create catalog and schema components.
+  #
+  # This is the object returned from +metadata+ method call of an adapter
+  #
+  # ==== Examples
+  #   Table.new("dwh.public.hello_world_table")
+  #
+  #   table_stats_instance = adapter.stats("my_table", schema: "dwh")
+  #   Table.new("my_table", schema: "dwh", stats: table_stats_instance)
   class Table
-    attr_reader :physical_name, :schema, :catalog, :columns
-    attr_accessor :date_start, :date_end, :row_count
+    attr_reader :physical_name, :schema, :catalog, :columns, :table_stats
 
-    def initialize(physical_name, schema: nil, catalog: nil, row_count: nil,
-      date_start: nil, date_end: nil)
+    def initialize(physical_name, schema: nil, catalog: nil, table_stats: nil)
       parts = physical_name.split(".")
 
       @physical_name = parts.last
-      @row_count = row_count
-      @date_start = date_start
-      @date_end = date_end
-
+      @table_stats = table_stats
       @catalog = catalog
       @schema = schema
 
-      if @catalog.nil? && parts.length > 2
-        @catalog = parts.first
-      end
+      @catalog = parts.first if @catalog.nil? && parts.length > 2
 
       if @schema.nil?
         if parts.length == 2
@@ -44,12 +50,16 @@ module DWH
       [catalog, schema].compact.join(".")
     end
 
-    def has_catalog_and_schema?
+    def catalog_and_schema?
       catalog && schema
     end
 
-    def has_catalog_or_schema?
+    def catalog_or_schema?
       catalog || schema
+    end
+
+    def stats
+      @table_stats
     end
 
     def to_h
@@ -57,15 +67,13 @@ module DWH
         physical_name: physical_name,
         schema: schema,
         catalog: catalog,
-        row_count: row_count,
-        date_start: date_start,
-        date_end: date_end,
-        columns: columns.map(&:to_h)
+        columns: columns.map(&:to_h),
+        stats: table_stats&.to_h
       }
     end
 
     def size
-      @row_count
+      @table_stats&.row_count || 0
     end
 
     def find_column(name)
@@ -73,13 +81,11 @@ module DWH
     end
 
     def self.from_hash_or_json(physical_name, metadata)
-      if metadata.is_a?(String)
-        metadata = JSON.parse(metadata)
-      end
-
+      metadata = JSON.parse(metadata) if metadata.is_a?(String)
       metadata.symbolize_keys!
-      table = new(physical_name, row_count: metadata[:row_count],
-        date_start: metadata[:date_start], date_end: metadata[:date_end])
+
+      stats = TableStats.new(**metadata[:stats].symbolize_keys) if metadata.key?(:stats)
+      table = new(physical_name, table_stats: stats)
 
       metadata[:columns]&.each do |col|
         col.symbolize_keys!

@@ -114,7 +114,7 @@ module DWH
         end
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil, retries: 0)
+      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil, retries: 0)
         stats = validate_and_reset_stats(stats)
 
         with_debug(sql) do
@@ -159,7 +159,7 @@ module DWH
         @qualified_schema_name ||= config[:schema].split(",").map { |s| "'#{s}'" }.join(",")
       end
 
-      def array_to_object(pg_result)
+      def array_to_object(_pg_result)
         []
       end
     end

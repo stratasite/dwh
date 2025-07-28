@@ -27,6 +27,7 @@ module DWH
     # @param list [String] - comma separated list
     def array_in_list(exp, list)
       raise UnsupportedCapability unless supports_array_functions?
+
       gsk(:array_in_list).gsub("@EXP", exp).gsub("@LIST", list)
     end
 
@@ -37,6 +38,7 @@ module DWH
     # @param list [String] - comma separated list
     def array_exclude_list(exp, list)
       raise UnsupportedCapability unless supports_array_functions?
+
       gsk(:array_exclude_list).gsub("@EXP", exp).gsub("@LIST", list)
     end
 
@@ -64,6 +66,10 @@ module DWH
     # table a with table b.. You will pass in the table b
     # name expression here.
     #
+    # ==== Example
+    #
+    # adapter.cross_join("schema.table_b")
+    #
     # @param relation [String] - table name or table exp
     def cross_join(relation)
       gsk(:cross_join).sub("@RELATION", relation)
@@ -71,6 +77,7 @@ module DWH
 
     def array_unnest_join(exp, table_alias)
       raise UnsupportedCapability unless supports_array_functions?
+
       gsk(:array_unnest_join)
         .gsub("@EXP", exp)
         .gsub("@ALIAS", table_alias)

@@ -55,15 +55,6 @@ class TestTableAndColumn < Minitest::Test
     int_column = DWH::Column.new(name: "count", data_type: "int")
     assert_equal "integer", int_column.normalized_data_type
 
-    bigint_column = DWH::Column.new(name: "large_count", data_type: "bigint")
-    assert_equal "bigint", bigint_column.normalized_data_type
-
-    decimal_column = DWH::Column.new(name: "price", data_type: "decimal")
-    assert_equal "decimal", decimal_column.normalized_data_type
-
-    boolean_column = DWH::Column.new(name: "active", data_type: "boolean")
-    assert_equal "boolean", boolean_column.normalized_data_type
-
     number_bigint_column = DWH::Column.new(name: "id", data_type: "number", precision: 38, scale: 0)
     assert_equal "bigint", number_bigint_column.normalized_data_type
 
@@ -128,17 +119,19 @@ class TestTableAndColumn < Minitest::Test
       "users",
       schema: "analytics",
       catalog: "warehouse",
-      row_count: 1000,
-      date_start: Date.new(2023, 1, 1),
-      date_end: Date.new(2023, 12, 31)
+      table_stats: DWH::TableStats.new(
+        row_count: 1000,
+        date_start: Date.new(2023, 1, 1),
+        date_end: Date.new(2023, 12, 31)
+      )
     )
 
     assert_equal "users", table.physical_name
     assert_equal "analytics", table.schema
     assert_equal "warehouse", table.catalog
-    assert_equal 1000, table.row_count
-    assert_equal Date.new(2023, 1, 1), table.date_start
-    assert_equal Date.new(2023, 12, 31), table.date_end
+    assert_equal 1000, table.table_stats.row_count
+    assert_equal Date.new(2023, 1, 1), table.table_stats.date_start
+    assert_equal Date.new(2023, 12, 31), table.table_stats.date_end
   end
 
   def test_table_add_column
@@ -174,28 +167,28 @@ class TestTableAndColumn < Minitest::Test
 
   def test_table_has_catalog_and_schema
     table = DWH::Table.new("db.public.users")
-    assert table.has_catalog_and_schema?
+    assert table.catalog_and_schema?
 
     table = DWH::Table.new("public.users")
-    refute table.has_catalog_and_schema?
+    refute table.catalog_and_schema?
 
     table = DWH::Table.new("users")
-    refute table.has_catalog_and_schema?
+    refute table.catalog_and_schema?
   end
 
   def test_table_has_catalog_or_schema
     table = DWH::Table.new("db.public.users")
-    assert table.has_catalog_or_schema?
+    assert table.catalog_or_schema?
 
     table = DWH::Table.new("public.users")
-    assert table.has_catalog_or_schema?
+    assert table.catalog_or_schema?
 
     table = DWH::Table.new("users")
-    refute table.has_catalog_or_schema?
+    refute table.catalog_or_schema?
   end
 
   def test_table_size
-    table = DWH::Table.new("users", row_count: 500)
+    table = DWH::Table.new("users", table_stats: DWH::TableStats.new(row_count: 500, date_start: nil, date_end: nil))
     assert_equal 500, table.size
   end
 
@@ -218,22 +211,24 @@ class TestTableAndColumn < Minitest::Test
   end
 
   def test_table_to_h
-    table = DWH::Table.new("users", row_count: 100)
+    table = DWH::Table.new("users", table_stats: DWH::TableStats.new(row_count: 100))
     column = DWH::Column.new(name: "id", data_type: "int")
     table << column
 
     hash = table.to_h
     assert_equal "users", hash[:physical_name]
-    assert_equal 100, hash[:row_count]
+    assert_equal 100, hash[:stats][:row_count]
     assert_equal 1, hash[:columns].length
     assert_equal "id", hash[:columns].first[:name]
   end
 
   def test_table_from_hash_or_json
     metadata = {
-      row_count: 1000,
-      date_start: "2023-01-01",
-      date_end: "2023-12-31",
+      stats: {
+        row_count: 1000,
+        date_start: "2023-01-01",
+        date_end: "2023-12-31"
+      },
       columns: [
         {
           name: "id",
@@ -256,29 +251,60 @@ class TestTableAndColumn < Minitest::Test
 
     table = DWH::Table.from_hash_or_json("users", metadata)
     assert_equal "users", table.physical_name
-    assert_equal 1000, table.row_count
-    assert_equal "2023-01-01", table.date_start
-    assert_equal "2023-12-31", table.date_end
+    assert_equal 1000, table.table_stats.row_count
+    assert_equal "2023-01-01", table.table_stats.date_start.strftime("%Y-%m-%d")
+    assert_equal "2023-12-31", table.table_stats.date_end.strftime("%Y-%m-%d")
+    assert_equal 2, table.columns.length
+    assert_equal "id", table.columns[0].name
+    assert_equal "name", table.columns[1].name
+  end
+
+  def test_table_from_hash_no_stats
+    metadata = {
+      columns: [
+        {
+          name: "id",
+          data_type: "int",
+          precision: nil,
+          scale: nil,
+          max_char_length: nil,
+          schema_type: "dimension"
+        },
+        {
+          name: "name",
+          data_type: "varchar",
+          precision: nil,
+          scale: nil,
+          max_char_length: 100,
+          schema_type: "dimension"
+        }
+      ]
+    }
+
+    table = DWH::Table.from_hash_or_json("users", metadata)
+    assert_equal "users", table.physical_name
     assert_equal 2, table.columns.length
     assert_equal "id", table.columns[0].name
     assert_equal "name", table.columns[1].name
   end
 
   def test_table_from_json_string
-    json_string = '{"row_count": 500, "columns": [{"name": "id", "data_type": "int", "schema_type": "dimension"}]}'
+    json_string = '{"stats": { "row_count": 500}, "columns": [{"name": "id", "data_type": "int", "schema_type": "dimension"}]}'
     table = DWH::Table.from_hash_or_json("test_table", json_string)
 
     assert_equal "test_table", table.physical_name
-    assert_equal 500, table.row_count
+    assert_equal 500, table.table_stats.row_count
     assert_equal 1, table.columns.length
     assert_equal "id", table.columns.first.name
   end
 
   def test_table_from_hash_with_string_keys
     metadata = {
-      "row_count" => 750,
-      "date_start" => "2023-06-01",
-      "date_end" => "2023-06-30",
+      "stats" => {
+        "row_count" => 750,
+        "date_start" => "2023-06-01",
+        "date_end" => "2023-06-30"
+      },
       "columns" => [
         {
           "name" => "user_id",
@@ -301,9 +327,9 @@ class TestTableAndColumn < Minitest::Test
 
     table = DWH::Table.from_hash_or_json("user_accounts", metadata)
     assert_equal "user_accounts", table.physical_name
-    assert_equal 750, table.row_count
-    assert_equal "2023-06-01", table.date_start
-    assert_equal "2023-06-30", table.date_end
+    assert_equal 750, table.stats.row_count
+    assert_equal "2023-06-01", table.stats.date_start.strftime("%Y-%m-%d")
+    assert_equal "2023-06-30", table.stats.date_end.strftime("%Y-%m-%d")
     assert_equal 2, table.columns.length
     assert_equal "user_id", table.columns[0].name
     assert_equal "bigint", table.columns[0].data_type

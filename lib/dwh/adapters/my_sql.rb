@@ -100,7 +100,7 @@ module DWH
         with_debug(sql) { connection.query(sql) }
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20000, stats: nil)
+      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil)
         stats = validate_and_reset_stats(stats)
 
         with_debug(sql) do

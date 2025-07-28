@@ -9,15 +9,19 @@ module DWH
       adapters[adapter_name.to_sym] = adapter_class
     end
 
-    def get_adapter(adapter_name)
-      if has_adapter?(adapter_name)
-        adapters[adapter_name.to_sym]
-      else
-        raise "Adapter '#{adapter_name}' not found. Did you forget to register it: DWH.register(MyAdapterClass)"
-      end
+    def unregister(adapter_name)
+      adapters.delete adapter_name.to_sym
     end
 
-    def has_adapter?(adapter_name)
+    def get_adapter(adapter_name)
+      unless adapter?(adapter_name)
+        raise "Adapter '#{adapter_name}' not found. Did you forget to register it: DWH.register(MyAdapterClass)"
+      end
+
+      adapters[adapter_name.to_sym]
+    end
+
+    def adapter?(adapter_name)
       adapters.has_key?(adapter_name.to_sym)
     end
 

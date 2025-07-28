@@ -42,11 +42,22 @@ module DWH
       end
 
       def extract_day_name(exp, abbreviate = false)
-        abbreviate ? date_format_sql(exp, gsk(:abbreviated_day_name_format)) : date_format_sql(exp, gsk(:day_name_format))
+        if abbreviate
+          date_format_sql(exp,
+            gsk(:abbreviated_day_name_format))
+        else
+          date_format_sql(exp, gsk(:day_name_format))
+        end
       end
 
       def extract_month_name(exp, abbreviate = false)
-        abbreviate ? date_format_sql(exp, gsk(:abbreviated_month_name_format)) : date_format_sql(exp, gsk(:month_name_format))
+        if abbreviate
+          date_format_sql(exp,
+            gsk(:abbreviated_month_name_format))
+        else
+          date_format_sql(exp,
+            gsk(:month_name_format))
+        end
       end
     end
   end

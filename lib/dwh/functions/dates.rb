@@ -33,7 +33,7 @@ module DWH
         settings[:current_timestamp]
       end
 
-      TIMESTAMPABLE_UNITS = ["millisecond", "second", "minute", "hour"]
+      TIMESTAMPABLE_UNITS = %w[millisecond second minute hour]
       def truncate_date(unit, exp)
         unit = unit.strip.downcase
         res = if unit == "week" && adjust_week_start_day?
@@ -92,18 +92,14 @@ module DWH
       # Converts a Ruby Date into SQL compatible
       # literal value.
       def date_lit(date)
-        if date.is_a?(String)
-          date = Date.parse(date)
-        end
+        date = Date.parse(date) if date.is_a?(String)
         date_literal(date.strftime(date_format))
       end
 
       # Converts a Ruby Date into SQL compatible
       # timestamp literal value.
       def timestamp_lit(date)
-        if date.is_a?(String)
-          date = DateTime.parse(date)
-        end
+        date = DateTime.parse(date) if date.is_a?(String)
         date_time_literal(date.strftime(date_time_format))
       end
 
