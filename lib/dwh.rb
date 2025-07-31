@@ -1,20 +1,20 @@
-require "faraday"
-require "active_support/core_ext/string/inflections"
-require "active_support/core_ext/hash/keys"
-require "active_support/core_ext/object/blank"
+require 'faraday'
+require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/hash/keys'
+require 'active_support/core_ext/object/blank'
 
-require_relative "dwh/version"
-require_relative "dwh/logger"
-require_relative "dwh/streaming_stats"
-require_relative "dwh/factory"
-require_relative "dwh/adapters"
-require_relative "dwh/table"
-require_relative "dwh/table_stats"
-require_relative "dwh/adapters/druid"
-require_relative "dwh/adapters/trino"
-require_relative "dwh/adapters/postgres"
-require_relative "dwh/adapters/snowflake"
-require_relative "dwh/adapters/my_sql"
+require_relative 'dwh/version'
+require_relative 'dwh/logger'
+require_relative 'dwh/streaming_stats'
+require_relative 'dwh/factory'
+require_relative 'dwh/adapters'
+require_relative 'dwh/table'
+require_relative 'dwh/table_stats'
+require_relative 'dwh/adapters/druid'
+require_relative 'dwh/adapters/trino'
+require_relative 'dwh/adapters/postgres'
+require_relative 'dwh/adapters/snowflake'
+require_relative 'dwh/adapters/my_sql'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -44,7 +44,7 @@ module DWH
   INT_TYPES = %w[int integer bigint tinyint smallint].freeze
   DEC_TYPES = %w[real float double decimal].freeze
   STRING_TYPES = %w[string char varchar varbinary json].freeze
-  TIMESTAMP_TYPES = ["timestamp with time zone", "timestamp(p)", "timestamp"].freeze
+  TIMESTAMP_TYPES = ['timestamp with time zone', 'timestamp(p)', 'timestamp'].freeze
   DATE_TYPES = %w[date].freeze
 
   extend Factory

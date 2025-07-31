@@ -1,35 +1,35 @@
-require "jwt"
+require 'jwt'
 
 module DWH
   module Adapters
     class Snowflake < Adapter
-      define_config :host, required: true, message: "server host ip address or domain name"
-      define_config :account_identifier, required: false, message: "snowflake account identifier"
-      define_config :username, required: true, message: "connection username"
-      define_config :private_key, required: true, message: "private key file path or private key"
+      define_config :host, required: true, message: 'server host ip address or domain name'
+      define_config :account_identifier, required: false, message: 'snowflake account identifier'
+      define_config :username, required: true, message: 'connection username'
+      define_config :private_key, required: true, message: 'private key file path or private key'
       define_config :public_key_fp, required: false,
-        message: "optional public key finger print. will derive if omitted."
-      define_config :query_timeout, required: false, default: 3600, message: "query execution timeout in seconds"
-      define_config :role, required: false, default: nil, message: "role to connect with"
-      define_config :warehouse, required: false, default: nil, message: "snowflake warehouse to connect to"
-      define_config :database, required: false, default: nil, message: "default namespace or database to connect to"
-      define_config :schema, required: false, default: nil, message: "schema to connect to"
+                                    message: 'optional public key finger print. will derive if omitted.'
+      define_config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
+      define_config :role, required: false, default: nil, message: 'role to connect with'
+      define_config :warehouse, required: false, default: nil, message: 'snowflake warehouse to connect to'
+      define_config :database, required: false, default: nil, message: 'default namespace or database to connect to'
+      define_config :schema, required: false, default: nil, message: 'schema to connect to'
 
       def connection
         return @connection if @connection.present? && !expired?
 
         if @connection.present? && expired?
-          logger.debug "Resetting expired connection"
+          logger.debug 'Resetting expired connection'
           reset_connection
         end
 
         @connection = Faraday.new(
-          url: "https://#{config[:host].split("/").first}",
+          url: "https://#{config[:host].split('/').first}",
           headers: {
-            "Content-Type" => "application/json",
-            "Authorization" => "Bearer #{jwt_token}",
-            "X-Snowflake-Authorization-Token-Type" => "KEYPAIR_JWT",
-            "User-Agent" => "Ruby dwh-#{VERSION}"
+            'Content-Type' => 'application/json',
+            'Authorization' => "Bearer #{jwt_token}",
+            'X-Snowflake-Authorization-Token-Type' => 'KEYPAIR_JWT',
+            'User-Agent' => "Ruby dwh-#{VERSION}"
           },
           request: {
             timeout: config[:query_timeout]
@@ -46,14 +46,14 @@ module DWH
         execute(sql, io, memory_row_limit: memory_row_limit, stats: stats)
       end
 
-      SNOWFLAKE_STATEMENTS = "/api/v2/statements".freeze
+      SNOWFLAKE_STATEMENTS = '/api/v2/statements'.freeze
       DEFAULT_PARAMETERS = {
-        DATE_OUTPUT_FORMAT: "YYYY-MM-DD",
-        TIMESTAMP_OUTPUT_FORMAT: "YYYY-MM-DD HH24:MI:SS",
-        TIMESTAMP_TZ_OUTPUT_FORMAT: "YYYY-MM-DD HH24:MI:SS TZH",
-        TIMESTAMP_NTZ_OUTPUT_FORMAT: "YYYY-MM-DD HH24:MI:SS",
-        TIMESTAMP_LTZ_OUTPUT_FORMAT: "YYYY-MM-DD HH24:MI:SS TZH",
-        TIME_OUTPUT_FORMAT: "HH24:MI:SS"
+        DATE_OUTPUT_FORMAT: 'YYYY-MM-DD',
+        TIMESTAMP_OUTPUT_FORMAT: 'YYYY-MM-DD HH24:MI:SS',
+        TIMESTAMP_TZ_OUTPUT_FORMAT: 'YYYY-MM-DD HH24:MI:SS TZH',
+        TIMESTAMP_NTZ_OUTPUT_FORMAT: 'YYYY-MM-DD HH24:MI:SS',
+        TIMESTAMP_LTZ_OUTPUT_FORMAT: 'YYYY-MM-DD HH24:MI:SS TZH',
+        TIME_OUTPUT_FORMAT: 'HH24:MI:SS'
       }
       def execute(sql, io = nil, memory_row_limit: 20_000, stats: nil)
         with_debug(sql) do
@@ -67,8 +67,8 @@ module DWH
               role: config[:role]&.upcase,
               parameters: DEFAULT_PARAMETERS
             }.compact
-              .merge(extra_query_params)
-              .to_json
+                       .merge(extra_query_params)
+                       .to_json
           end
 
           # This will handle all the different response
@@ -86,8 +86,8 @@ module DWH
         where << "table_schema='#{schema.upcase}'" if schema
         where << "table_catalog='#{catalog.upcase}'" if catalog
 
-        sql << " where " if where.size > 0
-        sql << where.join(" and ")
+        sql << ' where ' if where.size > 0
+        sql << where.join(' and ')
 
         res = execute(sql)
         res.flatten
@@ -101,8 +101,8 @@ module DWH
         where << "table_schema='#{db_table.schema.upcase}'" if db_table.schema
         where << "table_catalog='#{db_table.catalog.upcase}'" if db_table.catalog
 
-        sql << " where " if where.size > 0
-        sql << where.join(" and ")
+        sql << ' where ' if where.size > 0
+        sql << where.join(' and ')
 
         cols = execute(sql)
         cols.each do |col|
@@ -152,7 +152,7 @@ module DWH
       protected
 
       def fetch_data(result, io = nil, memory_row_limit = nil, stats = nil)
-        partitions = result.dig("resultSetMetaData", "partitionInfo")
+        partitions = result.dig('resultSetMetaData', 'partitionInfo')
         stats = validate_and_reset_stats(stats) if stats
         if partitions.size == 1
           if io
@@ -160,7 +160,7 @@ module DWH
             io.rewind
             io
           else
-            result["data"]
+            result['data']
           end
         else
           fetch_partitions(result, stats, io, memory_row_limit)
@@ -168,20 +168,20 @@ module DWH
       end
 
       def fetch_partitions(result, stats = nil, io = nil, memory_row_limit = nil)
-        data = result["data"]
+        data = result['data']
         update_stats_and_io(result, stats, io, memory_row_limit) if io
 
-        partitions = result.dig("resultSetMetaData", "partitionInfo")
-        url = "#{SNOWFLAKE_STATEMENTS}/#{result["statementHandle"]}?partition="
+        partitions = result.dig('resultSetMetaData', 'partitionInfo')
+        url = "#{SNOWFLAKE_STATEMENTS}/#{result['statementHandle']}?partition="
         partitions[1..].each.with_index(1) do |_, index|
-          logger.debug "Fetching partition #{index} of #{partitions.length - 1} for statement handle: #{result["statementHandle"]}"
+          logger.debug "Fetching partition #{index} of #{partitions.length - 1} for statement handle: #{result['statementHandle']}"
           resp = connection.get(url + index.to_s)
           raise ArgumentError.new("Could not data partitions from Snowflake: #{resp.body}") unless resp.status == 200
 
           part_res = JSON.parse(resp.body)
 
           if io.nil?
-            data = data.concat(part_res["data"])
+            data = data.concat(part_res['data'])
           else
             update_stats_and_io(part_res, stats, io, memory_row_limit)
           end
@@ -192,7 +192,7 @@ module DWH
       end
 
       def update_stats_and_io(result, stats, io, memory_row_limit)
-        rows = result["data"]
+        rows = result['data']
         return if rows.length == 0
 
         rows.each do |row|
@@ -210,26 +210,26 @@ module DWH
           # need to poll for status
           poll(result)
         else
-          msg = result["message"] || result
+          msg = result['message'] || result
           raise ArgumentError.new(msg)
         end
       end
 
       def poll(result)
-        logger.debug "Polling snowflake for query status: #{result["statementHandle"]}"
+        logger.debug "Polling snowflake for query status: #{result['statementHandle']}"
         sleep_time = 0.25
 
         loop do
-          resp = connection.get("#{SNOWFLAKE_STATEMENTS}/#{result["statementHandle"]}")
+          resp = connection.get("#{SNOWFLAKE_STATEMENTS}/#{result['statementHandle']}")
           poll_result = JSON.parse(resp.body)
           if resp.status == 202
-            logger.debug "Polling #{poll_result["statementHandle"]}. Sleeping #{sleep_time}secs..."
+            logger.debug "Polling #{poll_result['statementHandle']}. Sleeping #{sleep_time}secs..."
             sleep(sleep_time)
             sleep_time = [sleep_time * 2, 30].min
           elsif resp.status == 200
             return poll_result
           else
-            msg = poll_result["message"] || poll_result
+            msg = poll_result['message'] || poll_result
             raise ArgumentError.new("Could not poll snowflake for status: #{msg}")
           end
         end
@@ -241,15 +241,15 @@ module DWH
 
       def jwt_token
         @jwt ||= JWT.encode({
-          iss: "#{qualified_username}.SHA256:#{public_key_fp}",
-          sub: qualified_username,
-          iat: Time.now.to_i,
-          exp: expires_at.to_i # Token is valid for 1 hour
-        }, private_key, "RS256")
+                              iss: "#{qualified_username}.SHA256:#{public_key_fp}",
+                              sub: qualified_username,
+                              iat: Time.now.to_i,
+                              exp: expires_at.to_i # Token is valid for 1 hour
+                            }, private_key, 'RS256')
       end
 
       def account_identifier
-        @account_identifier ||= (config[:account_identifier] || config[:host].split(".").first).upcase
+        @account_identifier ||= (config[:account_identifier] || config[:host].split('.').first).upcase
       end
 
       def private_key

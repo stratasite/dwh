@@ -1,4 +1,4 @@
-require "connection_pool"
+require 'connection_pool'
 
 module DWH
   module Factory
@@ -14,9 +14,7 @@ module DWH
     end
 
     def get_adapter(adapter_name)
-      unless adapter?(adapter_name)
-        raise "Adapter '#{adapter_name}' not found. Did you forget to register it: DWH.register(MyAdapterClass)"
-      end
+      raise "Adapter '#{adapter_name}' not found. Did you forget to register it: DWH.register(MyAdapterClass)" unless adapter?(adapter_name)
 
       adapters[adapter_name.to_sym]
     end
@@ -48,7 +46,7 @@ module DWH
     end
 
     def start_reaper(frequency = 300)
-      logger.info "Starting DB Adapter reaper process"
+      logger.info 'Starting DB Adapter reaper process'
       # FIXME: the gem added reap methods but didnt release it yet.
       Thread.new do
         loop do

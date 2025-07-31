@@ -13,14 +13,14 @@ module DWH
     end
 
     def dim?
-      schema_type == "dimension"
+      schema_type == 'dimension'
     end
 
     def measure?
-      schema_type == "measure"
+      schema_type == 'measure'
     end
 
-    DEFAULT_RULES = {/[_+]+/ => " ", /\s+id$/i => " ID", /desc/i => "Description"}.freeze
+    DEFAULT_RULES = { /[_+]+/ => ' ', /\s+id$/i => ' ID', /desc/i => 'Description' }.freeze
     def namify(rules = DEFAULT_RULES)
       named = name.titleize keep_id_suffix: true
       rules.each do |k, v|
@@ -32,30 +32,30 @@ module DWH
 
     def normalized_data_type
       case data_type
-      when "varchar", "string", "text", "char", "varbinary"
-        "string"
-      when "date"
-        "date"
-      when "date_time", "datetime", "timestamp", "time"
-        "date_time"
-      when "int", "integer", "smallint", "tinyint"
-        "integer"
-      when "bigint", "bit_int", "big_integer"
-        "bigint"
-      when "decimal", "double", "float", "real", "dec", "numeric"
-        "decimal"
-      when "boolean"
-        "boolean"
-      when "number"
+      when 'varchar', 'string', 'text', 'char', 'varbinary'
+        'string'
+      when 'date'
+        'date'
+      when 'date_time', 'datetime', 'time', /timestamp/
+        'date_time'
+      when 'int', 'integer', 'smallint', 'tinyint'
+        'integer'
+      when 'bigint', 'bit_int', 'big_integer'
+        'bigint'
+      when 'decimal', 'double', 'float', 'real', 'dec', 'numeric'
+        'decimal'
+      when 'boolean'
+        'boolean'
+      when 'number'
         if precision >= 38 && scale.zero?
-          "bigint"
+          'bigint'
         elsif scale.positive?
-          "decimal"
+          'decimal'
         else
-          "integer"
+          'integer'
         end
       else
-        "string"
+        'string'
       end
     end
 

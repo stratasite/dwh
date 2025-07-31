@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "test_helper"
+require 'test_helper'
 
 class TestDwh < Minitest::Test
   def test_that_it_has_a_version_number
@@ -13,7 +13,7 @@ class TestDwh < Minitest::Test
   end
 
   def test_base_adapters_registered
-    count = Dir.glob("lib/dwh/adapters/*.rb").count
+    count = Dir.glob('lib/dwh/adapters/*.rb').count
     assert_equal count, DWH.adapters.size
 
     assert DWH.adapter?(:snowflake)

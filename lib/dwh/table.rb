@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "column"
+require_relative 'column'
 
 module DWH
   # Container to map to a data warehouse table.
@@ -18,7 +18,7 @@ module DWH
     attr_reader :physical_name, :schema, :catalog, :columns, :table_stats
 
     def initialize(physical_name, schema: nil, catalog: nil, table_stats: nil)
-      parts = physical_name.split(".")
+      parts = physical_name.split('.')
 
       @physical_name = parts.last
       @table_stats = table_stats
@@ -43,11 +43,11 @@ module DWH
     end
 
     def fully_qualified_table_name
-      [catalog, schema, physical_name].compact.join(".")
+      [catalog, schema, physical_name].compact.join('.')
     end
 
     def fully_qualified_schema_name
-      [catalog, schema].compact.join(".")
+      [catalog, schema].compact.join('.')
     end
 
     def catalog_and_schema?

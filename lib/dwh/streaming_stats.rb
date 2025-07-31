@@ -30,7 +30,7 @@ module DWH
     #
     # @param [Array] row
     def <<(row)
-      raise ArgumentError, "Row must be an array" unless row.is_a?(Array)
+      raise ArgumentError, 'Row must be an array' unless row.is_a?(Array)
 
       @mutex.synchronize do
         @data << row unless @data.size >= @in_memory_limit

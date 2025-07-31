@@ -1,6 +1,6 @@
-require_relative "functions/dates"
-require_relative "functions/extract_date_part"
-require_relative "functions/nulls"
+require_relative 'functions/dates'
+require_relative 'functions/extract_date_part'
+require_relative 'functions/nulls'
 
 module DWH
   module Functions
@@ -9,15 +9,15 @@ module DWH
     include Nulls
 
     def trim(exp)
-      gsk(:trim).gsub("@EXP", exp)
+      gsk(:trim).gsub('@EXP', exp)
     end
 
     def lower_case(exp)
-      gsk(:lower_case).gsub("@EXP", exp)
+      gsk(:lower_case).gsub('@EXP', exp)
     end
 
     def upper_case(exp)
-      gsk(:upper_case).gsub("@EXP", exp)
+      gsk(:upper_case).gsub('@EXP', exp)
     end
 
     # Generates sql test to see if any values from the passed
@@ -28,7 +28,7 @@ module DWH
     def array_in_list(exp, list)
       raise UnsupportedCapability unless supports_array_functions?
 
-      gsk(:array_in_list).gsub("@EXP", exp).gsub("@LIST", list)
+      gsk(:array_in_list).gsub('@EXP', exp).gsub('@LIST', list)
     end
 
     # Generates sql test to see if any values from the passed
@@ -39,7 +39,7 @@ module DWH
     def array_exclude_list(exp, list)
       raise UnsupportedCapability unless supports_array_functions?
 
-      gsk(:array_exclude_list).gsub("@EXP", exp).gsub("@LIST", list)
+      gsk(:array_exclude_list).gsub('@EXP', exp).gsub('@LIST', list)
     end
 
     # Applies adapter specific quotes around the given
@@ -49,7 +49,7 @@ module DWH
     # @param exp [String] - column, alias, table name
     # @return [String] - quoted string
     def quote(exp)
-      gsk(:quote).sub("@EXP", exp)
+      gsk(:quote).sub('@EXP', exp)
     end
 
     # Applies adapter specific string literal translation around the given
@@ -58,7 +58,7 @@ module DWH
     # @param exp [String] - some string value
     # @return [String] - single quoted string
     def string_lit(exp)
-      gsk(:string_literal).sub("@EXP", exp.gsub("'", "''"))
+      gsk(:string_literal).sub('@EXP', exp.gsub("'", "''"))
     end
 
     # Applies adapter specific cross join expression
@@ -72,15 +72,15 @@ module DWH
     #
     # @param relation [String] - table name or table exp
     def cross_join(relation)
-      gsk(:cross_join).sub("@RELATION", relation)
+      gsk(:cross_join).sub('@RELATION', relation)
     end
 
     def array_unnest_join(exp, table_alias)
       raise UnsupportedCapability unless supports_array_functions?
 
       gsk(:array_unnest_join)
-        .gsub("@EXP", exp)
-        .gsub("@ALIAS", table_alias)
+        .gsub('@EXP', exp)
+        .gsub('@ALIAS', table_alias)
     end
 
     # Shortcut to get settings value

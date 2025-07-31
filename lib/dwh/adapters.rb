@@ -1,9 +1,9 @@
-require "csv"
-require_relative "settings"
-require_relative "capabilities"
-require_relative "functions"
-require_relative "behaviors"
-require_relative "logger"
+require 'csv'
+require_relative 'settings'
+require_relative 'capabilities'
+require_relative 'functions'
+require_relative 'behaviors'
+require_relative 'logger'
 
 module DWH
   module Adapters
@@ -121,7 +121,7 @@ module DWH
       #     - For example: Postgres using pg client will return PG::Result
       # @param retries [Integer] number of retries in case of failure. Default is 0
       # @return [Array[]] | [Hash] | Native
-      def execute(sql, format: "array", retries: 0)
+      def execute(sql, format: 'array', retries: 0)
         raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
       end
 
@@ -208,7 +208,7 @@ module DWH
         begin
           attempts += 1
           yield
-        rescue => e
+        rescue StandardError => e
           if attempts < max_attempts
             logger.warn "Attempt #{attempts} failed with error: #{e.message}. Retrying..."
             retry
@@ -256,7 +256,7 @@ module DWH
         end
         if missing_params.any?
           error_messages = missing_params.map { |name, options| "Missing #{name} param - #{options[:message]}" }
-          raise ConfigError, "#{adapter_name} Adapter: #{error_messages.join(", ")}"
+          raise ConfigError, "#{adapter_name} Adapter: #{error_messages.join(', ')}"
         end
 
         # Apply default values

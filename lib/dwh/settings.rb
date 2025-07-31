@@ -1,4 +1,4 @@
-require "yaml"
+require 'yaml'
 
 module DWH
   module Settings
@@ -10,7 +10,7 @@ module DWH
 
     # This is the default base settings that each adapter can override
     # with its own yaml files.
-    BASE_SETTINGS_FILE = File.join(__dir__, "settings", "base.yml")
+    BASE_SETTINGS_FILE = File.join(__dir__, 'settings', 'base.yml')
 
     # This will load adapter level settings. These settings can be
     # overridden at runtime by calling alter_settings after
@@ -38,7 +38,7 @@ module DWH
     # relative directory called settings. If not,
     # change the settings file with call to settings_file_path FILE_PATH
     def settings_file
-      @settings_file ||= File.join(__dir__, "settings", "#{adapter_name}.yml")
+      @settings_file ||= File.join(__dir__, 'settings', "#{adapter_name}.yml")
     end
 
     # Allows the manual configuration of where to

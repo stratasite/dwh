@@ -1,4 +1,4 @@
-require "logger"
+require 'logger'
 
 module DWH
   module Logger
@@ -29,18 +29,18 @@ module DWH
         logger = ::Logger.new($stdout)
         logger.level = log_level
         logger.formatter = proc do |severity, datetime, _progname, msg|
-          "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity} DWH: #{msg}\n"
+          "[#{datetime.strftime('%Y-%m-%d %H:%M:%S')}] #{severity} DWH: #{msg}\n"
         end
         logger
       end
 
       def log_level
-        case ENV["DWH_LOG_LEVEL"]&.downcase
-        when "debug" then ::Logger::DEBUG
-        when "info" then ::Logger::INFO
-        when "warn" then ::Logger::WARN
-        when "error" then ::Logger::ERROR
-        when "fatal" then ::Logger::FATAL
+        case ENV['DWH_LOG_LEVEL']&.downcase
+        when 'debug' then ::Logger::DEBUG
+        when 'info' then ::Logger::INFO
+        when 'warn' then ::Logger::WARN
+        when 'error' then ::Logger::ERROR
+        when 'fatal' then ::Logger::FATAL
         else ::Logger::INFO
         end
       end

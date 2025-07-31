@@ -2,12 +2,12 @@
 module DWH
   module Adapters
     class MySql < Adapter
-      define_config :host, required: true, message: "server host ip address or domain name"
-      define_config :port, required: false, default: 3306, message: "port to connect to"
-      define_config :database, required: true, message: "name of database to connect to"
-      define_config :username, required: true, message: "connection username"
-      define_config :password, required: false, default: nil, message: "connection password"
-      define_config :query_timeout, required: false, default: 3600, message: "query execution timeout in seconds"
+      define_config :host, required: true, message: 'server host ip address or domain name'
+      define_config :port, required: false, default: 3306, message: 'port to connect to'
+      define_config :database, required: true, message: 'name of database to connect to'
+      define_config :username, required: true, message: 'connection username'
+      define_config :password, required: false, default: nil, message: 'connection password'
+      define_config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
 
       def connection
         return @connection if @connection
@@ -59,16 +59,16 @@ module DWH
         result = connection.exec(sql)
 
         {
-          date_start: result.first["date_start"],
-          date_end: result.first["date_end"],
-          row_count: result.first["row_count"]
+          date_start: result.first['date_start'],
+          date_end: result.first['date_end'],
+          row_count: result.first['row_count']
         }
       end
 
       def metadata(table, catalog: nil, schema: nil)
         db_table = Table.new table, schema: schema
 
-        schema_where = ""
+        schema_where = ''
         if db_table.schema.present?
           schema_where = "AND table_schema = '#{db_table.schema}'"
         elsif schema?
@@ -82,14 +82,14 @@ module DWH
                     #{schema_where}
         SQL
 
-        cols = execute(sql, "object")
+        cols = execute(sql, 'object')
         cols.each do |col|
           db_table << Column.new(
-            name: col["column_name"],
-            data_type: col["data_type"],
-            precision: col["numeric_precision"],
-            scale: col["numeric_scale"],
-            max_char_length: col["character_maximum_length"]
+            name: col['column_name'],
+            data_type: col['data_type'],
+            precision: col['numeric_precision'],
+            scale: col['numeric_scale'],
+            max_char_length: col['character_maximum_length']
           )
         end
 
@@ -119,7 +119,7 @@ module DWH
       private
 
       def qualified_schema_name
-        @qualified_schema_name ||= config[:schema].split(",").map { |s| "'#{s}'" }.join(",")
+        @qualified_schema_name ||= config[:schema].split(',').map { |s| "'#{s}'" }.join(',')
       end
     end
   end

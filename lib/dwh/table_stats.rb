@@ -9,7 +9,7 @@ module DWH
     attr_accessor :row_count, :date_start, :date_end
 
     def initialize(row_count: nil, date_start: nil, date_end: nil)
-      @row_count = row_count
+      @row_count = row_count.nil? ? 0 : row_count.to_i
       @date_start = date_start.is_a?(String) ? DateTime.parse(date_start) : date_start
       @date_end = date_end.is_a?(String) ? DateTime.parse(date_end) : date_end
     end

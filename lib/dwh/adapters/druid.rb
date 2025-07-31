@@ -1,20 +1,20 @@
 module DWH
   module Adapters
     class Druid < Adapter
-      DRUID_DATASOURCES = "/druid/coordinator/v1/datasources"
-      DRUID_SQL = "/druid/v2/sql/"
+      DRUID_DATASOURCES = '/druid/coordinator/v1/datasources'
+      DRUID_SQL = '/druid/v2/sql/'
       COLUMNS_FOR_TABLE = '"COLUMN_NAME","DATA_TYPE", "NUMERIC_PRECISION", "NUMERIC_SCALE", "CHARACTER_MAXIMUM_LENGTH"'
 
-      define_config :protocol, required: true, default: "http", message: "must be http or https"
-      define_config :host, required: true, message: "server host ip address or domain name"
-      define_config :port, required: true, message: "port to connect to"
-      define_config :query_timeout, required: false, default: 600, message: "query execution timeout in seconds"
+      define_config :protocol, required: true, default: 'http', message: 'must be http or https'
+      define_config :host, required: true, message: 'server host ip address or domain name'
+      define_config :port, required: true, message: 'port to connect to'
+      define_config :query_timeout, required: false, default: 600, message: 'query execution timeout in seconds'
 
       def connection
         @connection ||= Faraday.new(
           url: "#{config[:protocol]}://#{config[:host]}:#{config[:port]}",
           headers: {
-            "Content-Type" => "application/json"
+            'Content-Type' => 'application/json'
           },
           request: {
             timeout: config[:query_timeout]
@@ -29,7 +29,7 @@ module DWH
         JSON.parse resp.body
       end
 
-      def stats(table, date_column: "__time", catalog: nil, schema: nil)
+      def stats(table, date_column: '__time', catalog: nil, schema: nil)
         sql = <<-SQL
                     SELECT min(#{date_column}) DATE_START, max(__time) DATE_END, count(*) ROW_COUNT
                     FROM "#{table}"
@@ -47,11 +47,11 @@ module DWH
       def drop_unused_segments(table, interval)
         url = "/druid/coordinator/v1/datasources/#{table}/markUnused"
 
-        logger.debug "=== Dropping Segments ==="
+        logger.debug '=== Dropping Segments ==='
 
         response = connection.post(url) do |req|
-          req.headers["Content-Type"] = "application/json"
-          req.body = {interval: interval}.to_json
+          req.headers['Content-Type'] = 'application/json'
+          req.body = { interval: interval }.to_json
         end
 
         logger.debug response.status
@@ -64,36 +64,36 @@ module DWH
         SQL
 
         stats = stats(table)
-        db_table = Table.new "table", **stats
-        cols = execute(sql, "object")
+        db_table = Table.new 'table', **stats
+        cols = execute(sql, 'object')
         st = table_druid_schema_types(table, stats[:date_end])
 
         cols.each do |col|
           db_table << Column.new(
-            name: col["COLUMN_NAME"],
-            schema_type: st[:metrics].include?(col["COLUMN_NAME"]) ? "measure" : "dimension",
-            data_type: col["DATA_TYPE"],
-            precision: col["NUMERIC_PRECISION"],
-            scale: col["NUMERIC_SCALE"],
-            max_char_length: col["CHARACTER_MAXIMUM_LENGTH"]
+            name: col['COLUMN_NAME'],
+            schema_type: st[:metrics].include?(col['COLUMN_NAME']) ? 'measure' : 'dimension',
+            data_type: col['DATA_TYPE'],
+            precision: col['NUMERIC_PRECISION'],
+            scale: col['NUMERIC_SCALE'],
+            max_char_length: col['CHARACTER_MAXIMUM_LENGTH']
           )
         end
 
         db_table
       end
 
-      def execute(sql, format: "array", retries: 0)
-        format = (format == "native") ? "array" : format
+      def execute(sql, format: 'array', retries: 0)
+        format = format == 'native' ? 'array' : format
         resp = with_debug(sql) do
           with_retry(retries) do
             connection.post(DRUID_SQL) do |req|
-              req.headers["Content-Type"] = "application/json"
+              req.headers['Content-Type'] = 'application/json'
               req.body = {
                 query: sql,
                 resultFormat: format,
-                context: {sqlTimeZone: "Etc/UTC"}
+                context: { sqlTimeZone: 'Etc/UTC' }
               }.merge(extra_query_params)
-                .to_json
+                         .to_json
             end
           end
         end
@@ -110,13 +110,13 @@ module DWH
         resp = with_debug(sql) do
           with_retry(retries) do
             connection.post(DRUID_SQL) do |req|
-              req.headers["Content-Type"] = "application/json"
-              req.body = {query: sql, resultFormat: "csv"}
+              req.headers['Content-Type'] = 'application/json'
+              req.body = { query: sql, resultFormat: 'csv' }
               # added timezone here due to druid bug
               # where date sub query joins failed without it.
               # context: { sqlTimeZone: 'Etc/UTC'}.merge(extra_query_params).to_json
 
-              parseable_row = ""
+              parseable_row = ''
               req.options.on_data = proc do |chunk, chunk_size|
                 handle_streaming_chunk(chunk, chunk_size, io, stats, rows, parseable_row, memory_row_limit)
               end
@@ -140,14 +140,14 @@ module DWH
         on_data_calls = 0
         with_debug(sql) do
           connection.post(DRUID_SQL) do |req|
-            req.headers["Content-Type"] = "application/json"
-            req.body = {query: sql, resultFormat: "csv"}.to_json
+            req.headers['Content-Type'] = 'application/json'
+            req.body = { query: sql, resultFormat: 'csv' }.to_json
             # added timezone here due to druid bug
             # where date sub query joins failed without it.
             # context: { sqlTimeZone: 'Etc/UTC'}.merge(extra_query_params).to_json
 
             req.options.on_data = proc do |chunk, _chunk_size|
-              block.call chunk.force_encoding("utf-8")
+              block.call chunk.force_encoding('utf-8')
               on_data_calls += 1
             end
           end
@@ -170,15 +170,15 @@ module DWH
         raise ArgumentError.new("Could not fetch druid schema types: \n #{resp.body}") if resp.status != 200
 
         res = JSON.parse(resp.body)
-        meta = res.flatten[1].flatten(4)[1]["metadata"]
+        meta = res.flatten[1].flatten(4)[1]['metadata']
         {
-          dimensions: meta["dimensions"].split(","),
-          metrics: meta["metrics"].split(",")
+          dimensions: meta['dimensions'].split(','),
+          metrics: meta['metrics'].split(',')
         }
       end
 
       def handle_streaming_chunk(chunk, chunk_size, io, stats, rows, parseable_row, memory_row_limit = 20_000)
-        io.write chunk.force_encoding("utf-8")
+        io.write chunk.force_encoding('utf-8')
         update_streaming_stats(stats, chunk_size, chunk.lines.length) if stats
 
         parseable_row += chunk
