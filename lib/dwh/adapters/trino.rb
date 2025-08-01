@@ -1,15 +1,15 @@
 module DWH
   module Adapters
     class Trino < Adapter
-      define_config :host, required: true, message: 'server host ip address or domain name'
-      define_config :port, required: false, default: 8080, message: 'port to connect to'
-      define_config :ssl, required: false, default: false, message: 'use ssl?'
-      define_config :catalog, required: true, message: 'catalog to connect to'
-      define_config :schema, required: false, message: 'default schema'
-      define_config :username, required: true, message: 'connection username'
-      define_config :password, required: false, default: nil, message: 'connection password'
-      define_config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
-      define_config :source, required: false, default: 'dwh-gem', message: 'source param'
+      config :host, String, required: true, message: 'server host ip address or domain name'
+      config :port, String, required: false, default: 8080, message: 'port to connect to'
+      config :ssl, Boolean, required: false, default: false, message: 'use ssl?'
+      config :catalog, String, required: true, message: 'catalog to connect to'
+      config :schema, String, required: false, message: 'default schema'
+      config :username, String, required: true, message: 'connection username'
+      config :password, String, required: false, default: nil, message: 'connection password'
+      config :query_timeout, Integer, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :source, String, required: false, default: 'dwh-gem', message: 'source param'
 
       def connection
         return @connection if @connection

@@ -2,9 +2,9 @@ require 'test_helper'
 
 class AdapterTest < Minitest::Test
   class MyDB < DWH::Adapters::Adapter
-    define_config :db_name, required: true
-    define_config :schema, default: 'public'
-    define_config :port, required: true, default: 3001
+    config :db_name, String, required: true
+    config :schema, String, default: 'public'
+    config :port, Integer, required: true, default: 3001
 
     def execute_stream(_sql, _io, stats:)
       5.times do |i|
@@ -18,9 +18,9 @@ class AdapterTest < Minitest::Test
     @adapter = MyDB.new db_name: 'base_adapter_db'
   end
 
-  def test_define_config
+  def test_config
     mydb = MyDB.new(db_name: 'not_default_db')
-    assert_equal 'public', MyDB.config_definitions[:schema][:default]
+    assert_equal 'public', MyDB.configuration[:schema][:default]
     assert_equal 'public', mydb.config[:schema], 'instance should use default value'
     assert_equal 'not_default_db', mydb.config[:db_name]
 
@@ -67,5 +67,16 @@ class AdapterTest < Minitest::Test
     assert_equal 4, stats.data.size
     assert_equal 5, stats.total_rows
     assert_equal 9, stats.max_row_size
+  end
+
+  class MyDBWillError < DWH::Adapters::Adapter
+    config :db_name, required: true
+  end
+
+  def test_raise_error_unknown_type
+    MyDBWillError.load_settings
+    assert_raises DWH::ConfigError do
+      MyDBWillError.new(db_name: 'blue')
+    end
   end
 end

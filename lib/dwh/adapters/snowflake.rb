@@ -3,17 +3,17 @@ require 'jwt'
 module DWH
   module Adapters
     class Snowflake < Adapter
-      define_config :host, required: true, message: 'server host ip address or domain name'
-      define_config :account_identifier, required: false, message: 'snowflake account identifier'
-      define_config :username, required: true, message: 'connection username'
-      define_config :private_key, required: true, message: 'private key file path or private key'
-      define_config :public_key_fp, required: false,
+      config :host, required: true, message: 'server host ip address or domain name'
+      config :account_identifier, required: false, message: 'snowflake account identifier'
+      config :username, required: true, message: 'connection username'
+      config :private_key, required: true, message: 'private key file path or private key'
+      config :public_key_fp, required: false,
                                     message: 'optional public key finger print. will derive if omitted.'
-      define_config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
-      define_config :role, required: false, default: nil, message: 'role to connect with'
-      define_config :warehouse, required: false, default: nil, message: 'snowflake warehouse to connect to'
-      define_config :database, required: false, default: nil, message: 'default namespace or database to connect to'
-      define_config :schema, required: false, default: nil, message: 'schema to connect to'
+      config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :role, required: false, default: nil, message: 'role to connect with'
+      config :warehouse, required: false, default: nil, message: 'snowflake warehouse to connect to'
+      config :database, required: false, default: nil, message: 'default namespace or database to connect to'
+      config :schema, required: false, default: nil, message: 'schema to connect to'
 
       def connection
         return @connection if @connection.present? && !expired?

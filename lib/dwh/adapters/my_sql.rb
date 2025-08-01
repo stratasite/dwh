@@ -2,12 +2,12 @@
 module DWH
   module Adapters
     class MySql < Adapter
-      define_config :host, required: true, message: 'server host ip address or domain name'
-      define_config :port, required: false, default: 3306, message: 'port to connect to'
-      define_config :database, required: true, message: 'name of database to connect to'
-      define_config :username, required: true, message: 'connection username'
-      define_config :password, required: false, default: nil, message: 'connection password'
-      define_config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :host, required: true, message: 'server host ip address or domain name'
+      config :port, required: false, default: 3306, message: 'port to connect to'
+      config :database, required: true, message: 'name of database to connect to'
+      config :username, required: true, message: 'connection username'
+      config :password, required: false, default: nil, message: 'connection password'
+      config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
 
       def connection
         return @connection if @connection

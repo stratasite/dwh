@@ -11,14 +11,16 @@ module DWH
     #   port - defaults to standard 5432
     #   schema - defaults to public
     #   query_timeout - max time to allow query to run. default: 3600
+    #
+    # @see Adapter
     class Postgres < Adapter
-      define_config :host, required: true, message: 'server host ip address or domain name'
-      define_config :port, required: false, default: 5432, message: 'port to connect to'
-      define_config :database, required: true, message: 'name of database to connect to'
-      define_config :schema, default: 'public', message: 'schema name. defaults to "public"'
-      define_config :username, required: true, message: 'connection username'
-      define_config :password, required: false, default: nil, message: 'connection password'
-      define_config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :host, required: true, message: 'server host ip address or domain name'
+      config :port, required: false, default: 5432, message: 'port to connect to'
+      config :database, required: true, message: 'name of database to connect to'
+      config :schema, default: 'public', message: 'schema name. defaults to "public"'
+      config :username, required: true, message: 'connection username'
+      config :password, required: false, default: nil, message: 'connection password'
+      config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
 
       def connection
         return @connection if @connection
@@ -123,9 +125,12 @@ module DWH
         when 'array'
           result.values
         when 'object'
-          array_to_object(result)
-        else
+          result.to_a
+        when 'csv'
+        when 'native'
           result
+        else
+          raise UnsupportedCapability, "Unsupported format: #{format} for this #{name}"
         end
       end
 
@@ -172,10 +177,6 @@ module DWH
 
       def qualified_schema_name
         @qualified_schema_name ||= config[:schema].split(',').map { |s| "'#{s}'" }.join(',')
-      end
-
-      def array_to_object(pg_result)
-        pg_result.to_a
       end
     end
   end

@@ -37,6 +37,10 @@ module DWH
   # to execute calls against the remote db server.
   class ExecutionError < StandardError; end
 
+  # Connection erros are thrown when we fail to
+  # obtain a connection for the target database.
+  class ConnectionError < StandardError; end
+
   # UnspportedCapability are thrown when calling a function
   # that the target database does not support.
   class UnsupportedCapability < StandardError; end

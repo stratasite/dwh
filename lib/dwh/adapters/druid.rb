@@ -1,14 +1,15 @@
 module DWH
   module Adapters
+    # (include Adapter)
     class Druid < Adapter
-      DRUID_DATASOURCES = '/druid/coordinator/v1/datasources'
-      DRUID_SQL = '/druid/v2/sql/'
-      COLUMNS_FOR_TABLE = '"COLUMN_NAME","DATA_TYPE", "NUMERIC_PRECISION", "NUMERIC_SCALE", "CHARACTER_MAXIMUM_LENGTH"'
+      DRUID_DATASOURCES = '/druid/coordinator/v1/datasources'.freeze
+      DRUID_SQL = '/druid/v2/sql/'.freeze
+      COLUMNS_FOR_TABLE = '"COLUMN_NAME","DATA_TYPE", "NUMERIC_PRECISION", "NUMERIC_SCALE", "CHARACTER_MAXIMUM_LENGTH"'.freeze
 
-      define_config :protocol, required: true, default: 'http', message: 'must be http or https'
-      define_config :host, required: true, message: 'server host ip address or domain name'
-      define_config :port, required: true, message: 'port to connect to'
-      define_config :query_timeout, required: false, default: 600, message: 'query execution timeout in seconds'
+      config :protocol, String, required: true, default: 'http', message: 'must be http or https'
+      config :host, String, required: true, message: 'server host ip address or domain name'
+      config :port, Integer, required: true, message: 'port to connect to'
+      config :query_timeout, Integer, required: false, default: 600, message: 'query execution timeout in seconds'
 
       def connection
         @connection ||= Faraday.new(
@@ -167,7 +168,7 @@ module DWH
           req.options.timeout = 30
         end
 
-        raise ArgumentError.new("Could not fetch druid schema types: \n #{resp.body}") if resp.status != 200
+        raise ArgumentError, "Could not fetch druid schema types: \n #{resp.body}" if resp.status != 200
 
         res = JSON.parse(resp.body)
         meta = res.flatten[1].flatten(4)[1]['metadata']
