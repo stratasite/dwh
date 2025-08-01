@@ -276,6 +276,22 @@ module DWH
         self.class.name.demodulize
       end
 
+      # If any extra connection params were passed in the config
+      # object, this will return it.
+      #
+      # @return [Hash] default empty hash
+      def extra_connection_params
+        config[:extra_connection_params] || {}
+      end
+
+      # If the adapter supports it, will pass on extra query params
+      # from the config to the executor.
+      #
+      # @return [Hash] default empty hash
+      def extra_query_params
+        config[:extra_query_params] || {}
+      end
+
       protected
 
       # Checks if the required configurations and type is passed

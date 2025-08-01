@@ -1,6 +1,3 @@
-# docker-compose.test.yml
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15

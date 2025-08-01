@@ -1,56 +1,69 @@
 module DWH
   module Adapters
-    # Postgres adapter.
+    # Postgres adapter. Please ensure the pg gem is available before using this adapter.
+    # Generally, adapters should be created using {DWH::Factory#create DWH.create}. Where a configuration
+    # is passed in as options hash or argument list.
     #
-    # Required config params:
-    #   host - sever ip or host name
-    #   database - the database adapter will connect to
-    #   username - user to login with
+    # @example Basic connection with required only options
+    #   DWH.create(:postgres, {host: 'localhost', database: 'postgres',
+    #     username: 'postgres'})
     #
-    # Optional params
-    #   port - defaults to standard 5432
-    #   schema - defaults to public
-    #   query_timeout - max time to allow query to run. default: 3600
+    # @example Connection with cert based SSL connection
+    #   DWH.create(:postgres, {host: 'localhost', database: 'postgres',
+    #     username: 'postgres', ssl: true,
+    #     extra_connection_params: { sslmode: 'require' })
     #
-    # @see Adapter
+    #   valid sslmodes: disable, prefer, require, verify-ca, verify-full
+    #   For modes requiring Certs make sure you add the appropirate params
+    #   to extra_connection_params. (ie sslrootcert, sslcert etc.)
+    #
+    # @example Connection sending custom application name
+    #   DWH.create(:postgres, {host: 'localhost', database: 'postgres',
+    #     username: 'postgres', application_name: "Strata CLI" })
     class Postgres < Adapter
-      config :host, required: true, message: 'server host ip address or domain name'
-      config :port, required: false, default: 5432, message: 'port to connect to'
-      config :database, required: true, message: 'name of database to connect to'
-      config :schema, default: 'public', message: 'schema name. defaults to "public"'
-      config :username, required: true, message: 'connection username'
-      config :password, required: false, default: nil, message: 'connection password'
-      config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :host, String, required: true, message: 'server host ip address or domain name'
+      config :port, Integer, required: false, default: 5432, message: 'port to connect to'
+      config :database, String, required: true, message: 'name of database to connect to'
+      config :schema, String, default: 'public', message: 'schema name. defaults to "public"'
+      config :username, String, required: true, message: 'connection username'
+      config :password, String, required: false, default: nil, message: 'connection password'
+      config :query_timeout, String, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :ssl, Boolean, required: false, default: false, message: 'use ssl'
+      config :client_name, String, required: false, default: 'DWH Ruby Gem', message: 'The name of the connecting app'
 
+      # (see Adapter#connection)
       def connection
         return @connection if @connection
+
+        set_default_ssl_mode_if_needed
 
         properties = {
           host: config[:host],
           port: config[:port],
           dbname: config[:database],
           user: config[:username],
-          password: config[:password]
+          password: config[:password],
+          application_name: config[:client_name]
         }.merge(extra_connection_params)
-
         properties[:options] = "#{properties[:options]} -c statement_timeout=#{config[:query_timeout]}s"
 
         @connection = PG.connect(properties)
 
-        if schema?
-          # this could be comma separated list
-          @connection.exec("SET search_path TO #{config[:schema]}")
-        end
+        # this could be comma separated list
+        @connection.exec("SET search_path TO #{config[:schema]}") if schema?
 
         @connection
+      rescue StandardError => e
+        raise ConfigError, e.message
       end
 
-      def tables
-        sql = if schema?
+      # (see Adapter#tables)
+      def tables(**qualifiers)
+        sql = if schema? || qualifiers[:schema]
                 <<-SQL
                         SELECT table_schema || '.' || table_name#{' '}
                         FROM information_schema.tables
-                        WHERE table_schema in (#{qualified_schema_name})
+                        WHERE table_schema in (#{qualified_schema_name(qualifiers)})
                 SQL
               else
                 <<-SQL
@@ -63,10 +76,12 @@ module DWH
         result.values.flatten
       end
 
+      # (see Adapter#table?)
       def table?(table_name)
         tables.include?(table_name)
       end
 
+      # (see Adapter#stats)
       def stats(table, date_column: nil, schema: nil)
         sql = <<-SQL
                     SELECT count(*) ROW_COUNT
@@ -83,8 +98,9 @@ module DWH
         )
       end
 
-      def metadata(table, schema: nil)
-        db_table = Table.new table, schema: schema
+      # (see Adapter#metadata)
+      def metadata(table, **qualifiers)
+        db_table = Table.new table, schema: qualifiers[:schema]
 
         schema_where = ''
         if db_table.schema.present?
@@ -114,34 +130,43 @@ module DWH
         db_table
       end
 
+      # True if the configuration was setup with a schema.
       def schema?
         config[:schema].present?
       end
 
-      def execute(sql, format: 'array', retries: 0)
-        result = with_debug(sql) { with_retry(retries) { connection.exec(sql) } }
+      # (see Adapter#execute)
+      def execute(sql, format: :array, retries: 0)
+        begin
+          result = with_debug(sql) { with_retry(retries) { connection.exec(sql) } }
+        rescue StandardError => e
+          raise ExecutionError, e.message
+        end
 
-        case format
-        when 'array'
+        format = format.downcase if format.is_a?(String)
+        case format.to_sym
+        when :array
           result.values
-        when 'object'
+        when :object
           result.to_a
-        when 'csv'
-        when 'native'
+        when :csv
+          result_to_csv(result)
+        when :native
           result
         else
           raise UnsupportedCapability, "Unsupported format: #{format} for this #{name}"
         end
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil, retries: 0)
-        stats = validate_and_reset_stats(stats)
-
+      # (see Adapter#execute_stream)
+      def execute_stream(sql, io, stats: nil, retries: 0)
         with_debug(sql) do
-          connection.exec(sql) do |result|
-            result.each_row do |row|
-              update_stats(stats, row, memory_row_limit)
-              io.write(CSV.generate_line(row))
+          with_retry(retries) do
+            connection.exec(sql) do |result|
+              result.each_row do |row|
+                stats << row unless stats.nil?
+                io.write(CSV.generate_line(row))
+              end
             end
           end
         end
@@ -150,11 +175,23 @@ module DWH
         io
       end
 
+      # (see Adapter#stream)
+      def stream(sql, &block)
+        with_debug(sql) do
+          connection.exec(sql) do |result|
+            result.each_row do |row|
+              block.call(row)
+            end
+          end
+        end
+      end
+
       # Need to override default add method
       # since postgres doesn't support quarter as an
       # interval.
-      # TODO: Need to check if other db's also do not
-      # support Quarter as an interval unit.
+      # @param unit [String] Should be one of day, month, quarter etc
+      # @param val [String, Integer] The number of days to add
+      # @param exp [String] The sql expresssion to modify
       def date_add(unit, val, exp)
         if unit.downcase.strip == 'quarter'
           unit = 'months'
@@ -175,8 +212,24 @@ module DWH
 
       private
 
-      def qualified_schema_name
-        @qualified_schema_name ||= config[:schema].split(',').map { |s| "'#{s}'" }.join(',')
+      def set_default_ssl_mode_if_needed
+        return unless config[:ssl] && !extra_connection_params[:sslmode]
+
+        extra_connection_params[:sslmode] = 'require'
+      end
+
+      def qualified_schema_name(qualifiers = {})
+        qs = qualifiers[:schema] || config[:schema]
+        @qualified_schema_name ||= qs.split(',').map { |s| "'#{s}'" }.join(',')
+      end
+
+      def result_to_csv(result)
+        CSV.generate do |csv|
+          csv << result.fields
+          result.each do |row|
+            csv << row.values # default is hash
+          end
+        end
       end
     end
   end
