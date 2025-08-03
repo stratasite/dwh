@@ -6,6 +6,7 @@ require_relative 'behaviors'
 require_relative 'logger'
 
 module DWH
+  # Encapsulates functionality related to all Adapter implementations
   module Adapters
     class Boolean; end
 
@@ -59,7 +60,8 @@ module DWH
           type: type,
           required: options[:required] || false,
           default: options[:default],
-          message: options[:message] || "Invalid or missing parameter: #{name}"
+          message: options[:message] || "Invalid or missing parameter: #{name}",
+          allowed: options[:allowed] || []
         }
 
         define_method(name.to_sym) do
@@ -116,9 +118,31 @@ module DWH
 
       # Creates a connection to the target database and returns the
       # connection object or self
-      # @raise [ConnectionError] when a connection cannot be made
       def connection
         raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
+      end
+
+      # Tests the connection to the target database and returns true
+      # if successful, or raise Exception or false
+      # connection object or self
+      # @return [Boolean]
+      # @raise [ConnectionError] when a connection cannot be made
+      def test_connection(raise_exception: false)
+        raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
+      end
+
+      # Test connection and raise exception if connection
+      # fails.
+      # @return [Boolean]
+      # @raise [ConnectionError]
+      def connect!
+        test_connection(raise_exception: true)
+      end
+
+      # Tests whether the dtabase can be connected
+      # @return [Boolean]
+      def connect?
+        test_connection(raise_exception: false)
       end
 
       # Close the connection if it was created.
@@ -314,6 +338,8 @@ module DWH
             raise ConfigError,
                   "Adapter is not defined properly. Uknown configuration type #{opts[:type]} for #{name}. Should be a class like String, Integer etc."
           end
+
+          raise ConfigError, "Invalid value. Only allowed: #{opts[:allowed]}." if opts[:allowed].any? && !opts[:allowed].include?(config[name])
 
           config[name] = opts[:default] if opts[:default] && !config.key?(name)
 

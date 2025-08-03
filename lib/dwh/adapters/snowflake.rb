@@ -8,7 +8,7 @@ module DWH
       config :username, required: true, message: 'connection username'
       config :private_key, required: true, message: 'private key file path or private key'
       config :public_key_fp, required: false,
-                                    message: 'optional public key finger print. will derive if omitted.'
+                             message: 'optional public key finger print. will derive if omitted.'
       config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
       config :role, required: false, default: nil, message: 'role to connect with'
       config :warehouse, required: false, default: nil, message: 'snowflake warehouse to connect to'

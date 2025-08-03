@@ -79,4 +79,18 @@ class AdapterTest < Minitest::Test
       MyDBWillError.new(db_name: 'blue')
     end
   end
+
+  def test_raise_error_when_value_is_not_in_allowed_list
+    MyDBWillError.config :db_name, String, required: true
+    MyDBWillError.config :list, String, allowed: %w[a b]
+    MyDBWillError.load_settings
+    error = assert_raises DWH::ConfigError do
+      MyDBWillError.new(db_name: 'blue', list: 'c')
+    end
+
+    assert_match(/Invalid value/, error.message)
+
+    MyDBWillError.new(db_name: 'blue', list: 'b')
+    assert true, 'Will not reach if error was raised'
+  end
 end

@@ -1,0 +1,5 @@
+id,user_id,title,content,published,created_at,updated_at
+1,1,First Post,This is my first post content.,1,2024-01-01 13:00:00,2024-01-01 13:00:00
+2,1,Draft Post,This is a draft post.,0,2024-01-01 14:00:00,2024-01-01 14:00:00
+3,2,Jane's Post,Content from Jane.,1,2024-01-01 15:00:00,2024-01-01 15:00:00
+4,3,Bob's Thoughts,Some thoughts from Bob.,1,2024-01-01 16:00:00,2024-01-01 16:00:00

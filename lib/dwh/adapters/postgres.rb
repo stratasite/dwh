@@ -57,6 +57,16 @@ module DWH
         raise ConfigError, e.message
       end
 
+      # (see Adapter#test_connection)
+      def test_connection(raise_exception: false)
+        connection
+        true
+      rescue StandardError => e
+        raise ConnectionError, e.message if raise_exception
+
+        false
+      end
+
       # (see Adapter#tables)
       def tables(**qualifiers)
         sql = if schema? || qualifiers[:schema]

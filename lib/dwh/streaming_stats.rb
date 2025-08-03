@@ -59,5 +59,10 @@ module DWH
     def max_row_size
       @mutex.synchronize { @max_row_size }
     end
+
+    # Whether the in memory row limit was reached
+    def limit_reached?
+      data.size >= in_memory_limit
+    end
   end
 end

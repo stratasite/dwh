@@ -8,7 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./test/support/postgres:/docker-entrypoint-initdb.d
+      - ./postgres:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
       interval: 5s
@@ -25,7 +25,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./test/support/mysql:/docker-entrypoint-initdb.d
+      - ./mysql:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "test_user", "-ptest_password"]
       interval: 5s
@@ -41,7 +41,7 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - ./test/support/sqlserver:/opt/mssql-tools/bin/init
+      - ./sqlserver:/opt/mssql-tools/bin/init
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P TestPassword123! -Q 'SELECT 1'"]
       interval: 10s
