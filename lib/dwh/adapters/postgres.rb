@@ -92,12 +92,13 @@ module DWH
       end
 
       # (see Adapter#stats)
-      def stats(table, date_column: nil, schema: nil)
+      def stats(table, date_column: nil, **qualifiers)
+        table_name = qualifiers[:schema] ? "#{qualifiers[:schema]}.#{table}" : table
         sql = <<-SQL
                     SELECT count(*) ROW_COUNT
                         #{date_column.nil? ? nil : ", min(#{date_column}) DATE_START"}
                         #{date_column.nil? ? nil : ", max(#{date_column}) DATE_END"}
-                    FROM "#{table}"
+                    FROM "#{table_name}"
         SQL
 
         result = connection.exec(sql)
@@ -183,6 +184,8 @@ module DWH
 
         io.rewind
         io
+      rescue StandardError => e
+        raise ExecutionError, e.message
       end
 
       # (see Adapter#stream)

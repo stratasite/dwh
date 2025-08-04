@@ -1,14 +1,20 @@
-# TODO: this is barely implemented only connection and tables are kind of implemented
 module DWH
   module Adapters
+    # MySql Adapter. To use this adapter make sure you have the
+    # {https://github.com/brianmario/mysql2 MySql2 Gem} installed. You
+    # can also pass additional connection properties via {Adapter#extra_connection_params}
+    # config property.
     class MySql < Adapter
-      config :host, required: true, message: 'server host ip address or domain name'
-      config :port, required: false, default: 3306, message: 'port to connect to'
-      config :database, required: true, message: 'name of database to connect to'
-      config :username, required: true, message: 'connection username'
-      config :password, required: false, default: nil, message: 'connection password'
-      config :query_timeout, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :host, String, required: true, message: 'server host ip address or domain name'
+      config :port, Integer, required: false, default: 3306, message: 'port to connect to'
+      config :database, String, required: true, message: 'name of database to connect to'
+      config :username, String, required: true, message: 'connection username'
+      config :password, String, required: false, default: nil, message: 'connection password'
+      config :query_timeout, Integer, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :ssl, Boolean, required: false, default: false, message: 'use ssl'
+      config :client_name, String, required: false, default: 'DWH Ruby Gem', message: 'The name of the connecting app'
 
+      # (see Adapter#connection)
       def connection
         return @connection if @connection
 
@@ -22,104 +28,154 @@ module DWH
 
           # Timeout Settings
           connect_timeout: 10,
-          read_timeout: config[:query_timeout]
+          read_timeout: config[:query_timeout],
+          connect_attrs: {
+            program: config[:client_name]
+          }
         }.merge(extra_connection_params)
 
         @connection = Mysql2::Client.new(properties)
+      rescue StandardError => e
+        raise ConfigError, e.message
       end
 
+      # (see Adapter#test_connection)
+      def test_connection(raise_exception: false)
+        connection
+        true
+      rescue StandardError => e
+        raise ConnectionError, e.message if raise_exception
+
+        false
+      end
+
+      # (see Adapter#tables)
       def tables
+        schema = config[:database]
         query = "
                   SELECT
                     t.table_name,
                     t.table_type,
                     t.engine,
-                    t.table_rows,
-                    t.avg_row_length,
-                    ROUND((t.data_length + t.index_length) / 1024 / 1024, 2) as size_mb,
-                    t.create_time,
-                    t.update_time,
-                    t.table_comment
+                    t.table_rows
                   FROM information_schema.tables t
-                  WHERE t.table_schema = '#{@connection.escape(config[:database])}'
+                  WHERE t.table_schema = '#{schema}'
                   ORDER BY t.table_name
         "
 
-        connection.exec(query)
+        connection.query(query)
       end
 
-      def stats(table, date_column: nil, catalog: nil, schema: nil)
+      # (see Adapter#stats)
+      def stats(table, date_column: nil)
         sql = <<-SQL
-                    SELECT count(*) ROW_COUNT
-                        #{date_column.nil? ? nil : ", min(#{date_column}) DATE_START"}
-                        #{date_column.nil? ? nil : ", max(#{date_column}) DATE_END"}
-                    FROM "#{table}"
+                    SELECT count(*) row_count
+                        #{date_column.nil? ? nil : ", min(#{date_column}) date_start"}
+                        #{date_column.nil? ? nil : ", max(#{date_column}) date_end"}
+                    FROM #{table}
         SQL
 
-        result = connection.exec(sql)
+        result = connection.query(sql)
 
-        {
+        TableStats.new(
+          row_count: result.first['row_count'],
           date_start: result.first['date_start'],
-          date_end: result.first['date_end'],
-          row_count: result.first['row_count']
-        }
+          date_end: result.first['date_end']
+        )
       end
 
-      def metadata(table, catalog: nil, schema: nil)
-        db_table = Table.new table, schema: schema
-
-        schema_where = ''
-        if db_table.schema.present?
-          schema_where = "AND table_schema = '#{db_table.schema}'"
-        elsif schema?
-          schema_where = "AND table_schema in (#{qualified_schema_name})"
-        end
+      # (see Adapter#metadata)
+      def metadata(table)
+        db_table = Table.new table
+        schema_where = db_table.schema ? " AND table_schema = '#{db_table.schema}'" : ''
 
         sql = <<-SQL
-                    SELECT column_name, data_type, character_maximum_length, numeric_precision,numeric_scale
-                    FROM information_schema.columns
-                    WHERE table_name = '#{db_table.physical_name}'
-                    #{schema_where}
+        SELECT column_name, data_type, character_maximum_length, numeric_precision,numeric_scale
+        FROM information_schema.columns
+        WHERE lower(table_name) = lower('#{db_table.physical_name}')
+        #{schema_where}
         SQL
 
-        cols = execute(sql, 'object')
+        cols = execute(sql, format: :object)
         cols.each do |col|
           db_table << Column.new(
-            name: col['column_name'],
-            data_type: col['data_type'],
-            precision: col['numeric_precision'],
-            scale: col['numeric_scale'],
-            max_char_length: col['character_maximum_length']
+            name: col['COLUMN_NAME'],
+            data_type: col['DATA_TYPE'],
+            precision: col['NUMERIC_PRECISION'],
+            scale: col['NUMERIC_SCALE'],
+            max_char_length: col['CHARACTER_MAXIMUM_LENGTH']
           )
         end
 
         db_table
       end
 
-      def execute(sql)
-        with_debug(sql) { connection.query(sql) }
+      # (see Adapter#execute)
+      def execute(sql, format: :array, retries: 0)
+        begin
+          as_param = %i[array object].include?(format) ? format : :array
+          result = with_debug(sql) { with_retry(retries) { connection.query(sql, as: as_param) } }
+        rescue StandardError => e
+          raise ExecutionError, e.message
+        end
+
+        format = format.downcase if format.is_a?(String)
+        case format.to_sym
+        when :array, :object
+          result.to_a
+        when :csv
+          result_to_csv(result)
+        when :native
+          result
+        else
+          raise UnsupportedCapability, "Unsupported format: #{format} for this #{name}"
+        end
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil)
-        stats = validate_and_reset_stats(stats)
-
+      # (see Adapter#execute_stream)
+      def execute_stream(sql, io, stats: nil, retries: 0)
         with_debug(sql) do
-          connection.exec(sql) do |result|
-            result.each_row do |row|
-              update_stats(stats, row, memory_row_limit)
+          with_retry(retries) do
+            result = connection.query(sql, stream: true, as: :array, cache_rows: false)
+            result.each do |row|
               io.write(CSV.generate_line(row))
+              stats << row if stats
             end
           end
         end
 
         io.rewind
         io
+      rescue StandardError => e
+        raise ExecutionError, e.message
+      end
+
+      # (see Adapter#stream)
+      def stream(sql, &block)
+        with_debug(sql) do
+          result = connection.query(sql, as: :array, cache_rows: false)
+          result.each do |row|
+            block.call(row)
+          end
+        end
       end
 
       private
 
-      def qualified_schema_name
-        @qualified_schema_name ||= config[:schema].split(',').map { |s| "'#{s}'" }.join(',')
+      def valid_config?
+        super
+        require 'mysql2'
+      rescue LoadError
+        raise ConfigError, "Required 'MySql2' gem missing. Please add it to your Gemfile."
+      end
+
+      def result_to_csv(result)
+        CSV.generate do |csv|
+          csv << result.fields
+          result.each do |row|
+            csv << row
+          end
+        end
       end
     end
   end
