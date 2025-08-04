@@ -41,9 +41,10 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - ./sqlserver:/opt/mssql-tools/bin/init
+      - ./sqlserver:/mssql-init
+    entrypoint: ["/bin/bash", "/mssql-init/entrypoint.sh"]
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P TestPassword123! -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -Q 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10

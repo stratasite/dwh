@@ -1,13 +1,3 @@
--- SQL Server initialization script
-USE master;
-GO
-
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'test_db')
-BEGIN
-    CREATE DATABASE test_db;
-END
-GO
-
 USE test_db;
 GO
 
@@ -56,3 +46,4 @@ BEGIN
         (3, 'Bob''s Thoughts', 'Some thoughts from Bob.', 1);
 END
 GO
+
