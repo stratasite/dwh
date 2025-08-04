@@ -10,6 +10,11 @@ class RdbmsMySqlTest < Minitest::Test
 
   def test_basic_connection
     assert_equal 2, adapter.tables.size
+    assert adapter.connect?
+    failing = DWH.create(:mysql, { username: 'me', host: 'doesnotexist', database: 'doesntexist' })
+    assert_raises DWH::ConnectionError do
+      failing.connect!
+    end
   end
 
   def test_get_table_stats
@@ -32,7 +37,7 @@ class RdbmsMySqlTest < Minitest::Test
   def test_get_tables_for_another_schema
     tbls = adapter.tables(schema: 'performance_schema')
     assert_equal 8, tbls.size
-    assert(tbls.any? { it[0] == 'global_status' })
+    assert(tbls.any? { it[0] == 'global_statas' })
   end
 
   def test_get_md_other_schema_table
@@ -94,5 +99,30 @@ class RdbmsMySqlTest < Minitest::Test
                        password: 'test_password', database: 'test_db', ssl: true
                      })
     assert_equal 2, ssl.tables.size
+  end
+
+  def test_date_truncation
+    date = adapter.date_lit '2025-08-06'
+    %w[day week month quarter year].each do |unit|
+      sql = "SELECT #{adapter.truncate_date(unit, date)}"
+      res = adapter.execute(sql)
+      matcher = res[0][0]
+      case unit
+      when 'day'
+        assert_equal '2025-08-06', matcher.to_s
+      when 'week'
+        assert_equal '2025-08-04', matcher.to_s
+      when 'month'
+        assert_equal '2025-08-01', matcher.to_s
+      when 'quarter'
+        assert_equal '2025-07-01', matcher.to_s
+      when 'year'
+        assert_equal '2025-01-01', matcher.to_s
+      end
+    end
+
+    adapter.alter_settings({ week_start_day: 'sunday' })
+    res = adapter.execute("SELECT #{adapter.truncate_date('week', date)}")
+    assert_equal '2025-08-03', res[0][0].to_s
   end
 end

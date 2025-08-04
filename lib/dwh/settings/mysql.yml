@@ -1,49 +1,37 @@
-
 # quotes and string lit
-quote: "\"@exp\""
+quote: "`@exp`"
 string_literal: "'@exp'"
 
-# Date Literal Formats
-date_format: "%Y-%m-%d"
-date_time_format: "%Y-%m-%d %H:%M:%S"
-date_time_tz_format: "%Y-%m-%d %H:%M:%S %Z"
-date_type: "string" # alternative is int, integer, dateint
-day_name_format: "%W"
-abbreviated_day_name_format: "%a"
-month_name_format: "%M"
-abbreviated_month_name_format: "%b"
-
 # Date functions patterns
-current_date: "current_date"
-current_time: "current_time"
-current_timestamp: "current_timestamp"
-truncate_date: "date_trunc('@unit', @exp)"
-date_add: "date_add('@unit', @val, @exp)"
-date_diff: "date_diff('@unit', @start_exp, @end_exp)"
-date_format_sql: "date_format(@exp, '@format')"
+current_date: "CURDATE()"
+current_time: "CURTIME()"
+current_timestamp: "NOW()"
+truncate_date: "CUSTOM"
+date_add: "DATE_ADD(@exp, INTERVAL @val @unit)"
+date_diff: "DATEDIFF(@end_exp, @start_exp)"
+date_format_sql: "DATE_FORMAT(@exp, '@format')"
 date_literal: "'@val'"
-date_time_literal: "TIMESTAMP '@val'"
-extract_year: 'year(@exp)'
-extract_month: 'month(@exp)'
-extract_quarter: 'quarter(@exp)'
-extract_day_of_year: 'day_of_year(@exp)'
-extract_day_of_month: 'day(@exp)'
-extract_day_of_week: 'day_of_week(@exp)'
-extract_week_of_year: 'week(@exp)'
-extract_hour: 'hour(@exp)'
-extract_minute: 'minute(@exp)'
-extract_year_month: 'cast((year(@exp) || month(@exp)) as integer)'
-default_week_start_day: "monday"
+date_time_literal: "'@val'"
+extract_year: 'YEAR(@exp)'
+extract_month: 'MONTH(@exp)'
+extract_quarter: 'QUARTER(@exp)'
+extract_day_of_year: 'DAYOFYEAR(@exp)'
+extract_day_of_month: 'DAY(@exp)'
+extract_day_of_week: 'DAYOFWEEK(@exp)'
+extract_week_of_year: 'WEEK(@exp)'
+extract_hour: 'HOUR(@exp)'
+extract_minute: 'MINUTE(@exp)'
+extract_year_month: 'CAST(CONCAT(YEAR(@exp), LPAD(MONTH(@exp), 2, "0")) AS UNSIGNED)'
+default_week_start_day: "sunday"
 week_start_day: "monday"
-sunday_week_start_day: "date_add('day', -1,date_trunc('week', date_add('day',1, @exp)))"
-monday_week_start_day: "date_add('day', 1,date_trunc('week', date_add('day',-1, @exp)))"
-
+sunday_week_start_day: "DATE(DATE_SUB(@exp, INTERVAL dayofweek(@exp)-1 DAY ))"
+monday_week_start_day: "DATE(DATE_SUB(@exp, INTERVAL dayofweek(@exp)-2 DAY ))"
 cast: "CAST(@exp AS @type)"
 
 # string functions
-trim: "trim(@exp)"
-lower_case: "lower(@exp)"
-upper_case: "upper(@exp)"
+trim: "TRIM(@exp)"
+lower_case: "LCASE(@exp)"
+upper_case: "UCASE(@exp)"
 
 # null handling
 if_null: "COALESCE(@exp, @when_null)"
@@ -52,29 +40,28 @@ null_if_zero: "NULLIF(@exp, 0)"
 
 # Relevant db capabilities for query gen
 supports_table_join: true
-supports_full_join: true
+supports_full_join: false # MySQL doesn't support FULL OUTER JOIN
 supports_cross_join: true
 supports_sub_queries: true
-supports_common_table_expressions: true
+supports_common_table_expressions: true # MySQL 8.0+
 supports_temp_tables: true
 create_temp_table_template: "CREATE TEMPORARY TABLE @table AS \n@sql"
-supports_window_functions: true
-extend_ending_date_to_last_hour_of_day: false # druid needs this for inclusive filtering
+supports_window_functions: true # MySQL 8.0+
+extend_ending_date_to_last_hour_of_day: false
 
-# array operations
-array_in_list: "any_match(@exp, x -> x IN (@list)" # list is comma separated
-array_exclude_list: "none_match(@exp, x -> x IN (@list)" # list is comma separated
-array_unnest_join: "CROSS JOIN UNNEST(@exp) @alias"
+# array operations (MySQL has limited array support, using JSON functions for MySQL 8.0+)
+array_in_list: "JSON_OVERLAPS(@exp, JSON_ARRAY(@list))" # MySQL 8.0.17+
+array_exclude_list: "NOT JSON_OVERLAPS(@exp, JSON_ARRAY(@list))" # MySQL 8.0.17+
+array_unnest_join: "JOIN JSON_TABLE(@exp, '$[*]' COLUMNS (@alias JSON PATH '$')) AS @alias"
 
-# joins
 cross_join: "CROSS JOIN @relation"
 
 # sql output behavior
 temp_table_type: "cte" # options cte, subquery, temp
 temp_table_prefix: ""
+
 # Determines how measures across fact universes are combined.
-# Default is full join when supported.
-final_pass_measure_join_type: "full" # inner left right etc
-apply_advanced_filtering_on_array_projections: false # druid needs a having clause or un-nesting
+final_pass_measure_join_type: "left" # inner left right etc
+apply_advanced_filtering_on_array_projections: false
 greedy_apply_date_filters: true
 cross_universe_measure_filtering_strategy: "both" # both, final, intermediate

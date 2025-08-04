@@ -8,6 +8,21 @@ module DWH
     # MySql concept of database maps to schema in this adapter. This is only important
     # for the metadata methods where you want to pull up tables from a different
     # database   (aka schema).
+    #
+    # @example Connecting to Localhost
+    #   Please use 127.0.0.1 when using a local docker instance to run MySQl.
+    #   Otherwise the Gem will try to connect over unix socket.
+    #
+    #   DWH.create(:mysql, { host: '127.0.0.1', databse: 'mydb', username: 'me', password: 'mypwd', client_name: 'Strata CLI'})
+    #
+    # @example Connecting with SSL
+    #   DWH.create(:mysql, { host: '127.0.0.1', databse: 'mydb',
+    #       username: 'me', password: 'mypwd', ssl: true}) # this will default ssl_mode to required
+    #
+    # @example Modify the SSL mode. All extra ssl config can be passed this way.
+    #   DWH.create(:mysql, { host: '127.0.0.1', databse: 'mydb',
+    #       username: 'me', password: 'mypwd', ssl: true,
+    #       extra_connection_params: {ssl_mode: "verify"})
     class MySql < Adapter
       config :host, String, required: true, message: 'server host ip address or domain name'
       config :port, Integer, required: false, default: 3306, message: 'port to connect to'
@@ -165,6 +180,32 @@ module DWH
           result.each do |row|
             block.call(row)
           end
+        end
+      end
+
+      # Custom date truncation implementation. MySql doesn't offer
+      # a native function. We basially have to format it and convert back
+      # to date object.
+      # @see Dates#truncate_date
+      def truncate_date(unit, exp)
+        unit = unit.strip.downcase
+
+        case unit
+        when 'year'
+          "DATE(DATE_FORMAT(#{exp}, '%Y-01-01'))"
+        when 'quarter'
+          "DATE(DATE_ADD(DATE_FORMAT(#{exp}, '%Y-01-01'), INTERVAL (QUARTER(#{exp}) - 1) * 3 MONTH))"
+        when 'month'
+          "DATE(DATE_FORMAT(#{exp}, '%Y-%m-01'))"
+        when 'week'
+          gsk("#{settings[:week_start_day].downcase}_week_start_day")
+            .gsub('@EXP', exp)
+        when 'day', 'date'
+          "DATE(#{exp})"
+        when 'hour'
+          "TIMESTAMP(DATE_FORMAT(#{exp}, '%Y-%m-%d %H:00:00'))"
+        else
+          raise UnsupportedCapability, "Currently not supporting truncation at #{unit} level"
         end
       end
 

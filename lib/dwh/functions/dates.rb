@@ -33,7 +33,7 @@ module DWH
         settings[:current_timestamp]
       end
 
-      TIMESTAMPABLE_UNITS = %w[millisecond second minute hour]
+      TIMESTAMPABLE_UNITS = %w[millisecond second minute hour].freeze
       def truncate_date(unit, exp)
         unit = unit.strip.downcase
         res = if unit == 'week' && adjust_week_start_day?
