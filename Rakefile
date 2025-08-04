@@ -14,13 +14,13 @@ namespace :test do
       file = "test/support/compose.#{db_type}.yml"
       system("docker compose -f #{file} up -d") or raise "Failed to start #{db_type} containers"
 
-      sleep(2)
+      puts 'waiting 10 secs for docker....'
+      sleep(10)
       loop do
-        puts 'waiting for docker....'
         res = system("docker compose -f #{file} ps --services --filter status=running")
 
         if res
-          puts "Checking for setup file #{args}"
+          puts "Checking for setup file #{args[:setup_file]}"
           if args[:setup_file]
             require_relative args[:setup_file]
             sleep(10)

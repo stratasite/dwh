@@ -19,8 +19,8 @@ module DWH
 
     def initialize(row_count: nil, date_start: nil, date_end: nil)
       @row_count = row_count.nil? ? 0 : row_count.to_i
-      @date_start = date_start.is_a?(String) ? DateTime.parse(date_start) : DateTime.parse(date_start.to_s)
-      @date_end = date_end.is_a?(String) ? DateTime.parse(date_end) : DateTime.parse(date_end.to_s)
+      @date_start = parse_date(date_start)
+      @date_end = parse_date(date_end)
     end
 
     # Hash of the stats attributes
@@ -31,6 +31,21 @@ module DWH
         date_start: date_start,
         date_end: date_end
       }
+    end
+
+    private
+
+    def parse_date(date)
+      case date
+      when nil
+        date
+      when String
+        DateTime.parse(date)
+      when Time, Date
+        DateTime.parse(date.to_s)
+      else
+        raise ConfigError, "Unexpected date class: #{date.class.name}"
+      end
     end
   end
 end

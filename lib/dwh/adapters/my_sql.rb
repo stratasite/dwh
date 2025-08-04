@@ -4,6 +4,10 @@ module DWH
     # {https://github.com/brianmario/mysql2 MySql2 Gem} installed. You
     # can also pass additional connection properties via {Adapter#extra_connection_params}
     # config property.
+    #
+    # MySql concept of database maps to schema in this adapter. This is only important
+    # for the metadata methods where you want to pull up tables from a different
+    # database   (aka schema).
     class MySql < Adapter
       config :host, String, required: true, message: 'server host ip address or domain name'
       config :port, Integer, required: false, default: 3306, message: 'port to connect to'
@@ -17,6 +21,8 @@ module DWH
       # (see Adapter#connection)
       def connection
         return @connection if @connection
+
+        set_default_ssl_mode_if_needed
 
         properties = {
           # Connection Settings
@@ -50,8 +56,8 @@ module DWH
       end
 
       # (see Adapter#tables)
-      def tables
-        schema = config[:database]
+      def tables(**qualifiers)
+        schema = qualifiers[:schema] || config[:database]
         query = "
                   SELECT
                     t.table_name,
@@ -63,11 +69,13 @@ module DWH
                   ORDER BY t.table_name
         "
 
-        connection.query(query)
+        res = connection.query(query, as: :array)
+        res.to_a
       end
 
       # (see Adapter#stats)
-      def stats(table, date_column: nil)
+      def stats(table, date_column: nil, **qualifiers)
+        table = "#{qualifiers[:schema]}.#{table}" if qualifiers[:schema]
         sql = <<-SQL
                     SELECT count(*) row_count
                         #{date_column.nil? ? nil : ", min(#{date_column}) date_start"}
@@ -85,8 +93,8 @@ module DWH
       end
 
       # (see Adapter#metadata)
-      def metadata(table)
-        db_table = Table.new table
+      def metadata(table, **qualifiers)
+        db_table = Table.new table, schema: qualifiers[:schema]
         schema_where = db_table.schema ? " AND table_schema = '#{db_table.schema}'" : ''
 
         sql = <<-SQL
@@ -161,6 +169,12 @@ module DWH
       end
 
       private
+
+      def set_default_ssl_mode_if_needed
+        return unless config[:ssl] && !extra_connection_params[:ssl_mode]
+
+        extra_connection_params[:sslmode] = 'required'
+      end
 
       def valid_config?
         super

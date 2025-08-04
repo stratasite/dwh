@@ -29,6 +29,12 @@ class RdbmsMySqlTest < Minitest::Test
     assert_equal 'integer', boolcol.normalized_data_type
   end
 
+  def test_get_tables_for_another_schema
+    tbls = adapter.tables(schema: 'performance_schema')
+    assert_equal 8, tbls.size
+    assert(tbls.any? { it[0] == 'global_status' })
+  end
+
   def test_get_md_other_schema_table
     md = adapter.metadata('information_schema.tables')
     assert_equal 21, md.columns.size
@@ -82,15 +88,11 @@ class RdbmsMySqlTest < Minitest::Test
   end
 
   def test_ssl_connection
-    ssl = DWH.create(:postgres, {
-                       host: 'localhost',
-                       username: 'test_user',
-                       password: 'test_password',
-                       database: 'test_db',
-                       ssl: true,
-                       client_name: 'DWH Test'
+    ssl = DWH.create(:mysql,
+                     {
+                       host: '127.0.0.1', username: 'test_user',
+                       password: 'test_password', database: 'test_db', ssl: true
                      })
-
     assert_equal 2, ssl.tables.size
   end
 end
