@@ -32,19 +32,21 @@ module DWH
 
     def normalized_data_type
       case data_type
-      when 'varchar', 'string', 'text', 'char', 'varbinary'
+      when /binary/, 'image'
+        'binary'
+      when /varchar/, 'string', /text/, /char/
         'string'
       when 'date'
         'date'
-      when 'date_time', 'datetime', 'time', /timestamp/
+      when /date_time/, /datetime/, 'time', /timestamp/
         'date_time'
       when 'int', 'integer', 'smallint', 'tinyint'
         'integer'
       when 'bigint', 'bit_int', 'big_integer'
         'bigint'
-      when 'decimal', 'double', 'float', 'real', 'dec', 'numeric'
+      when 'decimal', 'double', 'float', 'real', 'dec', 'numeric', 'money'
         'decimal'
-      when 'boolean'
+      when 'boolean', 'bit'
         'boolean'
       when 'number'
         if precision >= 38 && scale.zero?

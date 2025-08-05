@@ -48,7 +48,7 @@ module DWH
 
         # If we are truncate above the timestamp level ie days, years etc
         # then we can cast the result to date
-        if unit.in?(TIMESTAMPABLE_UNITS)
+        if TIMESTAMPABLE_UNITS.include?(unit)
           res
         else
           cast(res, 'DATE')

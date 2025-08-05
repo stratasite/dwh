@@ -15,6 +15,7 @@ require_relative 'dwh/adapters/trino'
 require_relative 'dwh/adapters/postgres'
 require_relative 'dwh/adapters/snowflake'
 require_relative 'dwh/adapters/my_sql'
+require_relative 'dwh/adapters/sql_server'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -59,6 +60,7 @@ module DWH
   register(:trino, Adapters::Trino)
   register(:snowflake, Adapters::Snowflake)
   register(:mysql, Adapters::MySql)
+  register(:sqlserver, Adapters::SqlServer)
 
   # start_reaper
 end

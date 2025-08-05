@@ -24,7 +24,7 @@ module DWH
       @adapter_settings = YAML.load_file(BASE_SETTINGS_FILE)
 
       if File.exist?(settings_file)
-        @using_base = true
+        @using_base = false
         settings_from_file = YAML.load_file(settings_file) || {}
         @adapter_settings.merge!(settings_from_file)
       else

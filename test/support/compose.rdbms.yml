@@ -33,7 +33,7 @@ services:
       retries: 10
 
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       SA_PASSWORD: TestPassword123!
       ACCEPT_EULA: Y

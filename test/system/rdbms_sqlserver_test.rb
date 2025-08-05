@@ -1,22 +1,20 @@
 require 'test_helper'
 
-class RdbmsMySqlTest < Minitest::Test
+class RdbmsSqlServerTest < Minitest::Test
   def adapter
-    @adapter ||= DWH.create(:mysql, {
-                              host: '127.0.0.1', username: 'test_user',
-                              password: 'test_password', database: 'test_db'
-                            })
+    @adapter ||= DWH.create(:sqlserver,
+                            { host: 'localhost', username: 'sa', password: 'TestPassword123!', database: 'test_db' })
   end
 
   def test_not_using_base
     refute adapter.class.using_base_settings?, 'should not be using base since we have mysql.yml'
-    assert_equal '`hello`', adapter.quote('hello')
+    assert_equal '[hello]', adapter.quote('hello')
   end
 
   def test_basic_connection
     assert_equal 2, adapter.tables.size
     assert adapter.connect?
-    failing = DWH.create(:mysql, { username: 'me', host: 'doesnotexist', database: 'doesntexist' })
+    failing = DWH.create(:sqlserver, { username: 'me', host: 'doesnotexist', database: 'doesntexist' })
     assert_raises DWH::ConnectionError do
       failing.connect!
     end
@@ -27,27 +25,29 @@ class RdbmsMySqlTest < Minitest::Test
     assert_equal 4, stats.row_count
     assert stats.date_start.is_a?(Date)
     assert stats.date_end.is_a?(Date)
+    assert adapter.stats('users').row_count
   end
 
   def test_can_get_metadata
     md = adapter.metadata('posts')
     assert_equal 7, md.columns.size
+
     col = md.find_column('created_at')
     assert col, 'column should be found'
     assert_equal 'date_time', col.normalized_data_type
     boolcol = md.find_column('published')
-    assert_equal 'integer', boolcol.normalized_data_type
+    assert_equal 'boolean', boolcol.normalized_data_type
   end
 
   def test_get_tables_for_another_schema
-    tbls = adapter.tables(schema: 'performance_schema')
-    assert_equal 8, tbls.size
-    assert(tbls.any? { it[0] == 'global_status' })
+    tbls = adapter.tables(catalog: 'msdb')
+    assert_equal 223, tbls.size
+    assert(tbls.any? { it[0] == 'sysdatatypemappings' })
   end
 
   def test_get_md_other_schema_table
-    md = adapter.metadata('information_schema.tables')
-    assert_equal 21, md.columns.size
+    md = adapter.metadata('msdb.dbo.sysdatatypemappings')
+    assert_equal 22, md.columns.size
   end
 
   def test_execute_basic
@@ -76,7 +76,7 @@ class RdbmsMySqlTest < Minitest::Test
       when :csv
         assert_match(/John Doe,/, res)
       else
-        assert_equal Mysql2::Result, res.class
+        assert_equal TinyTds::Result, res.class
       end
     end
   end
@@ -95,15 +95,6 @@ class RdbmsMySqlTest < Minitest::Test
       str << it
     end
     assert_match(/First Post/, str.to_s)
-  end
-
-  def test_ssl_connection
-    ssl = DWH.create(:mysql,
-                     {
-                       host: '127.0.0.1', username: 'test_user',
-                       password: 'test_password', database: 'test_db', ssl: true
-                     })
-    assert_equal 2, ssl.tables.size
   end
 
   def test_date_truncation

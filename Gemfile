@@ -16,3 +16,4 @@ gem 'minitest', '~> 5.16'
 # as needed.
 gem 'mysql2'
 gem 'pg'
+gem 'tiny_tds'

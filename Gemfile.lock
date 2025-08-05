@@ -73,6 +73,10 @@ GEM
       io-console (~> 0.5)
     securerandom (0.4.1)
     stringio (3.1.7)
+    tiny_tds (3.2.1)
+      bigdecimal (~> 3)
+    tiny_tds (3.2.1-x86_64-linux-gnu)
+      bigdecimal (~> 3)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     uri (1.0.3)
@@ -89,6 +93,7 @@ DEPENDENCIES
   mysql2
   pg
   rake (~> 13.0)
+  tiny_tds
 
 BUNDLED WITH
    2.6.9
