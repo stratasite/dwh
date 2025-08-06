@@ -48,3 +48,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  trino:
+    image: trinodb/trino:latest
+    container_name: trino
+    ports:
+      - "8080:8080"  # Web UI and HTTP endpoint
+    # environment:
+      # - JAVA_HEAP_SIZE=2G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ui/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s

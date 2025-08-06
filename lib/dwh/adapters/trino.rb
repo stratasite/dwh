@@ -1,15 +1,33 @@
 module DWH
   module Adapters
+    # Trino adapter. This should work for Presto as well.
+    # This adapter requires the {https://github.com/treasure-data/trino-client-ruby trino-client-ruby} gem.
+    #
+    # Create adatper instances using {DWH::Factory#create DWH.create}.
+    #
+    # @example Basic connection with required only options
+    #   DWH.create(:trino, {host: 'localhost', catalog: 'native', username: 'Ajo'})
+    #
+    # @example Connect with extra http headers
+    #   DWH.create(:trino, {host: 'localhost', port: 8080,
+    #     catalog: 'native', username: 'Ajo',
+    #     extra_connection_params: {
+    #       http_headers: {
+    #         'X-Trino-User' => 'True User Name',
+    #         'X-Forwarded-Request' => '<request passed down from client'
+    #       }
+    #     }
+    #     })
     class Trino < Adapter
       config :host, String, required: true, message: 'server host ip address or domain name'
-      config :port, String, required: false, default: 8080, message: 'port to connect to'
+      config :port, Integer, required: true, default: 8080, message: 'port to connect to'
       config :ssl, Boolean, required: false, default: false, message: 'use ssl?'
       config :catalog, String, required: true, message: 'catalog to connect to'
       config :schema, String, required: false, message: 'default schema'
       config :username, String, required: true, message: 'connection username'
       config :password, String, required: false, default: nil, message: 'connection password'
       config :query_timeout, Integer, required: false, default: 3600, message: 'query execution timeout in seconds'
-      config :source, String, required: false, default: 'dwh-gem', message: 'source param'
+      config :client_name, String, required: false, default: 'DWH Ruby Gem', message: 'client name for tracking'
 
       def connection
         return @connection if @connection
@@ -21,29 +39,27 @@ module DWH
           user: config[:username],
           password: config[:password],
           query_timeout: config[:query_timeout],
-          source: config[:source]
+          source: config[:client_name]
         }.merge(extra_connection_params)
 
         @connection = ::Trino::Client.new(properties)
+      rescue StandardError => e
+        raise ConfigError, e.message
       end
 
-      def close
-        connection.close if @connection
+      # (see Adapter#test_conection)
+      def test_connection(raise_exception: false)
+        connection.run('select 1')
+        true
+      rescue ::Trino::Client::TrinoHttpError, Faraday::ConnectionFailed => e
+        raise ConnectionError, e.message if raise_exception
+
+        false
       end
 
-      def set_user_context(user: nil, password: nil, timeout: nil)
-        connection.instance_variable_get(:@options)[:query_timeout] = timeout if timeout
-        connection.instance_variable_get(:@options)[:user] = user if user
-        connection.instance_variable_get(:@options)[:password] = password if password
-      end
-
-      def reset_user_context
-        connection.instance_variable_get(:@options)[:query_timeout] = config[:query_timeout]
-        connection.instance_variable_get(:@options)[:user] = config[:username]
-        connection.instance_variable_get(:@options)[:password] = config[:password]
-      end
-
-      def tables(schema: nil, catalog: nil)
+      # (see Adapter#tables)
+      def tables(**qualifiers)
+        catalog, schema = qualifiers.values_at(:catalog, :schema)
         query = ['SHOW TABLES']
         query << 'FROM' if catalog || schema
 
@@ -54,32 +70,29 @@ module DWH
           query << schema
         end
 
-        res = execute(query.compact.join(' '), retries: 1)
-
-        res.flatten
+        _, rows = execute(query.compact.join(' '), retries: 1)
+        rows.flatten
       end
 
-      def table?(table, catalog: nil, schema: nil)
-        db_table = Table.new(table, catalog: catalog, schema: schema)
+      # (see Adapter#table?)
+      def table?(table, **qualifiers)
+        db_table = Table.new(table, **qualifiers)
 
         query = ['SHOW TABLES']
 
-        if db_table.has_catalog_or_schema?
+        if db_table.catalog_or_schema?
           query << 'FROM'
           query << db_table.fully_qualified_schema_name
         end
         query << "LIKE '#{db_table.physical_name}'"
 
-        res = execute(query.compact.join(' '), retries: 1)
-        if !res.empty?
-          res.flatten.include?(db_table.physical_name)
-        else
-          false
-        end
+        _, rows = execute(query.compact.join(' '), retries: 1)
+        !rows.empty?
       end
 
-      def stats(table, date_column: nil, catalog: nil, schema: nil)
-        db_table = Table.new(table, catalog: catalog, schema: schema)
+      # (see Adapter#stats)
+      def stats(table, date_column: nil, **qualifiers)
+        db_table = Table.new(table, **qualifiers)
         sql = <<-SQL
                     SELECT count(*) ROW_COUNT
                         #{date_column.nil? ? nil : ", min(#{date_column}) DATE_START"}
@@ -87,21 +100,22 @@ module DWH
                     FROM #{db_table.fully_qualified_table_name}
         SQL
 
-        result = execute(sql, retries: 1)
-        row = result[0]
+        _, rows = execute(sql, retries: 1)
+        row = rows[0]
 
-        {
+        TableStats.new(
           date_start: row[1],
           date_end: row[2],
           row_count: row[0]
-        }
+        )
       end
 
-      def metadata(table, catalog: nil, schema: nil)
-        db_table = Table.new table, schema: schema, catalog: catalog
+      # (see Adapter#metadata)
+      def metadata(table, **qualifiers)
+        db_table = Table.new table, **qualifiers
         sql = "SHOW COLUMNS FROM #{db_table.fully_qualified_table_name}"
 
-        cols = execute(sql, retries: 1)
+        _, cols = execute(sql, retries: 1)
 
         cols.each do |col|
           dt = col[1].start_with?('row(') ? 'struct' : col[1]
@@ -118,12 +132,27 @@ module DWH
         config.key?(:schema)
       end
 
-      def execute(sql, retries: 2)
+      # (see Adapter#execute)
+      def execute(sql, format: :array, retries: 2)
         result = with_debug(sql) do
-          with_retry(retries) { connection.run(sql) }
+          with_retry(retries) do
+            if format == :object
+              connection.run_with_names(sql)
+            else
+              connection.run(sql)
+            end
+          end
         end
 
-        result[1]
+        if format == :native
+          result
+        elsif format == :csv
+          result_to_csv(result)
+        else
+          result[1]
+        end
+      rescue ::Trino::Client::TrinoQueryError => e
+        raise ExecutionError, e.message
       end
 
       def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil)
@@ -142,6 +171,25 @@ module DWH
 
         io.rewind
         io
+      end
+
+      def valid_config?
+        super
+        require 'trino-client'
+      rescue LoadError
+        raise ConfigError, "Required 'trino-client' gem missing. Please add it to your Gemfile."
+      end
+
+      private
+
+      def result_to_csv(result)
+        columns, rows = result
+        CSV.generate do |csv|
+          csv << columns
+          rows.each do |row|
+            csv << row
+          end
+        end
       end
     end
   end
