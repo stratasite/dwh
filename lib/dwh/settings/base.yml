@@ -22,7 +22,7 @@ date_add: "DATE_ADD('@unit', @val, @exp)"
 date_diff: "DATE_DIFF('@unit', @start_exp, @end_exp)"
 date_format_sql: "DATE_FORMAT(@exp, '@format')"
 date_literal: "'@val'"
-date_time_literal: "TIMESTAMP '@val'"
+date_time_literal: "'@val'"
 extract_year: 'YEAR(@exp)'
 extract_month: 'MONTH(@exp)'
 extract_quarter: 'QUARTER(@exp)'
@@ -38,7 +38,7 @@ week_start_day: "monday"
 sunday_week_start_day: "DATE_ADD('day', -1,DATE_TRUNC('week', DATE_ADD('day',1, @exp)))"
 monday_week_start_day: "DATE_ADD('day', 1, DATE_TRUNC('week', DATE_ADD('day',-1, @exp)))"
 
-cast: "@exp::@type"
+cast: "CAST(@exp AS @type)"
 
 # string functions
 trim: "TRIM(@exp)"

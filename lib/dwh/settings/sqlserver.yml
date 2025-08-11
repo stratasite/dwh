@@ -9,7 +9,7 @@ date_time_tz_format: "%Y-%m-%d %H:%M:%S %Z"
 date_type: "string" # alternative is int, integer, dateint
 day_name_format: "dddd"
 abbreviated_day_name_format: "ddd"
-month_name_format: "MMMM"
+month_name_format: "mmmm"
 abbreviated_month_name_format: "MMM"
 
 # Date functions patterns

@@ -70,7 +70,7 @@ module DWH
           query << schema
         end
 
-        _, rows = execute(query.compact.join(' '), retries: 1)
+        rows = execute(query.compact.join(' '), retries: 1)
         rows.flatten
       end
 
@@ -86,7 +86,7 @@ module DWH
         end
         query << "LIKE '#{db_table.physical_name}'"
 
-        _, rows = execute(query.compact.join(' '), retries: 1)
+        rows = execute(query.compact.join(' '), retries: 1)
         !rows.empty?
       end
 
@@ -100,7 +100,7 @@ module DWH
                     FROM #{db_table.fully_qualified_table_name}
         SQL
 
-        _, rows = execute(sql, retries: 1)
+        rows = execute(sql, retries: 1)
         row = rows[0]
 
         TableStats.new(
@@ -115,7 +115,7 @@ module DWH
         db_table = Table.new table, **qualifiers
         sql = "SHOW COLUMNS FROM #{db_table.fully_qualified_table_name}"
 
-        _, cols = execute(sql, retries: 1)
+        _, cols = execute(sql, format: :native, retries: 1)
 
         cols.each do |col|
           dt = col[1].start_with?('row(') ? 'struct' : col[1]
@@ -144,25 +144,29 @@ module DWH
           end
         end
 
-        if format == :native
+        case format
+        when :native
           result
-        elsif format == :csv
+        when :csv
           result_to_csv(result)
-        else
+        when :array
           result[1]
+        when :object
+          result
+        else
+          raise UnsupportedCapability, "Unknown format type: #{format}. Should be :native, :array, :object, or :csv"
         end
       rescue ::Trino::Client::TrinoQueryError => e
         raise ExecutionError, e.message
       end
 
-      def execute_stream(sql, io, memory_row_limit: 20_000, stats: nil)
-        stats = validate_and_reset_stats(stats)
-
+      # (see Adapter#execute_stream)
+      def execute_stream(sql, io, stats: nil, retries: 1)
         with_debug(sql) do
-          with_retry(3) do
+          with_retry(retries) do
             connection.query(sql) do |result|
               result.each_row do |row|
-                update_stats(stats, row, memory_row_limit)
+                stats << row if stats
                 io << CSV.generate_line(row)
               end
             end
@@ -171,6 +175,15 @@ module DWH
 
         io.rewind
         io
+      end
+
+      # (see Adapter#stream)
+      def stream(sql, &block)
+        with_debug(sql) do
+          connection.query(sql) do |result|
+            result.each_row(&block)
+          end
+        end
       end
 
       def valid_config?
@@ -185,7 +198,7 @@ module DWH
       def result_to_csv(result)
         columns, rows = result
         CSV.generate do |csv|
-          csv << columns
+          csv << columns.map(&:name)
           rows.each do |row|
             csv << row
           end

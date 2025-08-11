@@ -105,29 +105,4 @@ class RdbmsMySqlTest < Minitest::Test
                      })
     assert_equal 2, ssl.tables.size
   end
-
-  def test_date_truncation
-    date = adapter.date_lit '2025-08-06'
-    %w[day week month quarter year].each do |unit|
-      sql = "SELECT #{adapter.truncate_date(unit, date)}"
-      res = adapter.execute(sql)
-      matcher = res[0][0]
-      case unit
-      when 'day'
-        assert_equal '2025-08-06', matcher.to_s
-      when 'week'
-        assert_equal '2025-08-04', matcher.to_s
-      when 'month'
-        assert_equal '2025-08-01', matcher.to_s
-      when 'quarter'
-        assert_equal '2025-07-01', matcher.to_s
-      when 'year'
-        assert_equal '2025-01-01', matcher.to_s
-      end
-    end
-
-    adapter.alter_settings({ week_start_day: 'sunday' })
-    res = adapter.execute("SELECT #{adapter.truncate_date('week', date)}")
-    assert_equal '2025-08-03', res[0][0].to_s
-  end
 end

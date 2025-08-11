@@ -11,7 +11,6 @@ module DWH
     #
     # @example Connect to Azuer SQL Server
     #   DWH.create(:sqlserver, {host: 'localhost', database: 'my_db', username: 'sa', azure: true})
-
     # @example Connection sending custom application name
     #   DWH.create(:sqlserver, {host: 'localhost', database: 'my_db', username: 'sa', client_name: 'Strata CLI'})
     #
@@ -212,6 +211,20 @@ module DWH
           result.each(empty_sets: true, cache_rows: false, timezone: :utc) do |row|
             block.call(row)
           end
+        end
+      end
+
+      def extract_day_name(exp, abbreviate: false)
+        exp = cast(exp, 'date') unless exp =~ /cast/i
+        super(exp, abbreviate: abbreviate).downcase
+      end
+
+      def extract_month_name(exp, abbreviate: false)
+        exp = cast(exp, 'date') unless exp =~ /cast/i
+        if abbreviate
+          "UPPER(LEFT(DATENAME(month, #{exp}), 3))"
+        else
+          "UPPER(DATENAME(month, #{exp}))"
         end
       end
 

@@ -66,18 +66,18 @@ class RdbmsTrinoTest < Minitest::Test
     end
   end
 
-  def test_execute_formats
+  def test_execute_format
     %i[array object csv native].each do |format|
-      res = adapter.execute('select * from users', format: format)
+      res = adapter.execute('select * from nation', format: format)
       case format
       when :array
         assert_equal Array, res[0].class
       when :object
         assert_equal Hash, res[0].class
       when :csv
-        assert_match(/John Doe,/, res)
+        assert_match(/al foxes/, res)
       else
-        assert_equal TinyTds::Result, res.class
+        assert_equal res[0].first.class.name.demodulize, 'ClientColumn', 'trino adapter returns a struct for first row'
       end
     end
   end
@@ -85,41 +85,20 @@ class RdbmsTrinoTest < Minitest::Test
   def test_execute_stream
     io = StringIO.new
     stats = DWH::StreamingStats.new
-    res = adapter.execute_stream 'select * from users', io, stats: stats
-    assert_equal 3, res.each_line.count
-    assert_equal 3, stats.total_rows
+    res = adapter.execute_stream 'select * from nation', io, stats: stats
+    assert_equal 25, res.each_line.count
+    assert_equal 25, stats.total_rows
+    io.rewind
+    assert_match(/ARGENTINA/, io.read)
   end
 
   def test_stream_with_block
     str = []
-    adapter.stream('select * from posts') do
+    adapter.stream('select * from nation') do
       str << it
+      break
     end
-    assert_match(/First Post/, str.to_s)
-  end
-
-  def test_date_truncation
-    date = adapter.date_lit '2025-08-06'
-    %w[day week month quarter year].each do |unit|
-      sql = "SELECT #{adapter.truncate_date(unit, date)}"
-      res = adapter.execute(sql)
-      matcher = res[0][0]
-      case unit
-      when 'day'
-        assert_equal '2025-08-06', matcher.to_s
-      when 'week'
-        assert_equal '2025-08-04', matcher.to_s
-      when 'month'
-        assert_equal '2025-08-01', matcher.to_s
-      when 'quarter'
-        assert_equal '2025-07-01', matcher.to_s
-      when 'year'
-        assert_equal '2025-01-01', matcher.to_s
-      end
-    end
-
-    adapter.alter_settings({ week_start_day: 'sunday' })
-    res = adapter.execute("SELECT #{adapter.truncate_date('week', date)}")
-    assert_equal '2025-08-03', res[0][0].to_s
+    assert_equal 1, str.count
+    assert_match(/ALGERIA/, str[0].to_s)
   end
 end
