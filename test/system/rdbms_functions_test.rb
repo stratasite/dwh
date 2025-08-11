@@ -87,6 +87,10 @@ class RdbmsFunctions < Minitest::Test
       sql = "select #{adapter.null_if(0, 0)}"
       res = adapter.execute(sql)
       assert_equal "#{adapter.adapter_name}: ", "#{adapter.adapter_name}: #{res[0][0]}"
+
+      sql = "select #{adapter.cast("'2025-08-06'", 'date')}"
+      res = adapter.execute(sql)
+      assert_equal "#{adapter.adapter_name}: 2025-08-06", "#{adapter.adapter_name}: #{res[0][0]}"
     end
   end
 end

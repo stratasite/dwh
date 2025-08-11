@@ -25,3 +25,9 @@ Lint/UnusedMethodArgument:
 
 Metrics/PerceivedComplexity:
   Enabled: false
+
+Style/SymbolProc:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false

@@ -40,12 +40,12 @@ class AdapterTest < Minitest::Test
   end
 
   def test_ruby_date_to_literal_conversion
-    o = @adapter.date_lit(Date.today)
+    o = @adapter.date_literal(Date.today)
     assert_equal "'#{Date.today.strftime('%Y-%m-%d')}'", o
 
     n = Time.now
-    o = @adapter.timestamp_lit(n)
-    assert_equal "TIMESTAMP '#{n.strftime('%Y-%m-%d %H:%M:%S')}'", o
+    o = @adapter.date_time_literal(n)
+    assert_equal "'#{n.strftime('%Y-%m-%d %H:%M:%S')}'", o
   end
 
   def test_upper_lower_trim

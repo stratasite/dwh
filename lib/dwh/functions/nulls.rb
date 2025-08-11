@@ -1,5 +1,6 @@
 module DWH
   module Functions
+    # Manages translations to Null handling Functions
     module Nulls
       # If the provided expression is null
       # then return the second expression.

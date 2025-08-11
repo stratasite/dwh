@@ -113,35 +113,21 @@ module DWH
           .gsub('@FORMAT', format)
       end
 
+      DATE_CLASSES = [Date, DateTime, Time].freeze
+
       # Generates a valid date literal string. Most db's
       # this is just single quoted value while others require
       # a date declaration.
-      # @param val [String] should be an actual formated date string.
+      # @param val [String, Date, DateTime, Time]
       def date_literal(val)
-        gsk(:date_literal)
-          .gsub('@VAL', val)
+        val = DATE_CLASSES.include?(val.class) ? val.strftime(date_format) : val
+        gsk(:date_literal).gsub('@VAL', val)
       end
 
+      # @param val [String, Date, DateTime, Time]
       def date_time_literal(val)
+        val = DATE_CLASSES.include?(val.class) ? val.strftime(date_time_format) : val
         gsk(:date_time_literal).gsub('@VAL', val)
-      end
-
-      # Converts a Ruby Date into SQL compatible
-      # literal value. If a string is passed it will parse
-      # the date into Ruby date then traslate it to a
-      # valid date
-      # @param date [Date, String]
-      def date_to_date_literal(date)
-        date = Date.parse(date) if date.is_a?(String)
-        date_literal(date.strftime(date_format))
-      end
-
-      # Converts a Ruby Date into SQL compatible
-      # timestamp literal value.
-      # @param timestamp [DateTime, String]
-      def timestamp_to_timestamp_literal(timestamp)
-        timestamp = DateTime.parse(timestamp) if timestamp.is_a?(String)
-        date_time_literal(timestamp.strftime(date_time_format))
       end
 
       # The current default week start day. This is how

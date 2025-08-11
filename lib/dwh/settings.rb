@@ -1,6 +1,19 @@
 require 'yaml'
 
 module DWH
+  # Functions related to loading and managing the Adapters
+  # settings. These settings should by default have the same name
+  # as the adapter but lower case and no camelcase.  i.e. MySql adapter
+  # has a settings file called mysql.yml.
+  #
+  # When creating a new adapter copy {settings/base.yml} and modify it
+  # to suit your adapters needs.
+  #
+  # An adapters settings are merged into the base settings config. So each adapter
+  # doesn't have to define every property when they are the same.
+  #
+  # By default the file will be looked for in relative location like settings/myadapter.yml.
+  # However, you can specify the locastion with (@see #settings_file_path)
   module Settings
     include Logger
 

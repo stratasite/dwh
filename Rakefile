@@ -41,9 +41,11 @@ namespace :test do
     task :run, [:db_type, :setup_file] do |_, args|
       db_type = args[:db_type]
       Rake::Task['test:system:setup'].invoke(db_type, args[:setup_file])
-      system('ruby -Ilib:test test/system/rdbms*.rb')
-      puts "Completed #{db_type} system tests"
+      Dir.glob('test/system/rdbms_*.rb') do |f|
+        system("ruby -Ilib:test #{f}")
+      end
     ensure
+      puts "Completed #{db_type} system tests"
       Rake::Task['test:system:teardown'].invoke(db_type)
     end
 

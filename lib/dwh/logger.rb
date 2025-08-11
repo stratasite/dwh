@@ -1,6 +1,7 @@
 require 'logger'
 
 module DWH
+  # Access a default logger for the gem.
   module Logger
     def logger
       DWH::Logger.logger
