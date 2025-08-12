@@ -10,7 +10,7 @@ module DWH
     # The default limit is 20,000 rows.
     attr_reader :in_memory_limit
 
-    def initialize(limit = 200_000)
+    def initialize(limit = 20_000)
       @in_memory_limit = limit
       @mutex = Mutex.new
       reset
