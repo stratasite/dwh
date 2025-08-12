@@ -85,7 +85,8 @@ module DWH
           #{table_schema_where}
         SQL
 
-        execute(sql)
+        res = execute(sql)
+        res.flatten
       ensure
         reset_current_database
       end

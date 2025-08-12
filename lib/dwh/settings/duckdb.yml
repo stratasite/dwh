@@ -1,0 +1,44 @@
+
+
+# Date Literal Formats
+day_name_format: "%A"
+abbreviated_day_name_format: "%a"
+month_name_format: "%B"
+abbreviated_month_name_format: "%b"
+
+# Date functions patterns
+date_add: "DATE_ADD(@exp, INTERVAL @val @unit)"
+date_diff: "DATE_DIFF('@unit', @start_exp, @end_exp)"
+date_format_sql: "STRFTIME(@exp, '@format')"
+date_literal: "DATE '@val'"
+date_time_literal: "TIMESTAMP '@val'"
+extract_year: "EXTRACT('YEAR' FROM @exp)"
+extract_month: "EXTRACT('MONTH' FROM @exp)"
+extract_quarter: "EXTRACT('QUARTER' FROM @exp)"
+extract_day_of_year: "EXTRACT('DOY' FROM @exp)"
+extract_day_of_month: "EXTRACT('DAY' FROM @exp)"
+extract_day_of_week: "EXTRACT('DAYOFWEEK' FROM @exp)"
+extract_week_of_year: "EXTRACT('WEEK' FROM @exp)"
+extract_hour: 'HOUR(@exp)'
+extract_minute: 'MINUTE(@exp)'
+extract_year_month: "(STRFTIME(@exp, '%Y') || STRFTIME(@exp, LOWER('%M')))::INTEGER"
+default_week_start_day: "monday"
+week_start_day: "monday"
+sunday_week_start_day: "(DATE_TRUNC('week', @exp + 1) - 1)"
+monday_week_start_day: "( DATE_TRUNC('week', @exp - 1) + 1 )"
+
+cast: "@exp::@type"
+
+# string functions
+trim: "TRIM(@exp)"
+lower_case: "LOWER(@exp)"
+upper_case: "UPPER(@exp)"
+
+# Relevant db capabilities for query gen
+create_temp_table_template: "CREATE TEMP TABLE @table AS \n@sql"
+
+# array operations
+array_in_list: "array_length(array_intersect(@exp, @list)) > 0"
+array_exclude_list: "array_length(array_intersect(@exp, @list)) = 0"
+array_unnest_join: ", LATERAL (SELECT UNNEST(@exp)) AS @alias"
+

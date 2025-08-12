@@ -44,6 +44,11 @@ class PostgresTest < Minitest::Test
     assert_equal 'boolean', boolcol.normalized_data_type
   end
 
+  def test_get_tables_from_other_schema
+    tables = adapter.tables(schema: 'pg_catalog')
+    assert tables.include?('pg_settings')
+  end
+
   def test_get_md_other_schema_table
     md = adapter.metadata('pg_stats', schema: 'pg_catalog')
     assert_equal 14, md.columns.size

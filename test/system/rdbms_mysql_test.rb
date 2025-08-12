@@ -42,7 +42,7 @@ class RdbmsMySqlTest < Minitest::Test
   def test_get_tables_for_another_schema
     tbls = adapter.tables(schema: 'performance_schema')
     assert_equal 8, tbls.size
-    assert(tbls.any? { it[0] == 'global_status' })
+    assert(tbls.any? { it == 'global_status' })
   end
 
   def test_get_md_other_schema_table

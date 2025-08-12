@@ -16,6 +16,7 @@ require_relative 'dwh/adapters/postgres'
 require_relative 'dwh/adapters/snowflake'
 require_relative 'dwh/adapters/my_sql'
 require_relative 'dwh/adapters/sql_server'
+require_relative 'dwh/adapters/duck_db'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -61,6 +62,7 @@ module DWH
   register(:snowflake, Adapters::Snowflake)
   register(:mysql, Adapters::MySql)
   register(:sqlserver, Adapters::SqlServer)
+  register(:duckdb, Adapters::DuckDb)
 
   # start_reaper
 end

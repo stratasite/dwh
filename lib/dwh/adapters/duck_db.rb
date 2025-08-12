@@ -10,32 +10,21 @@ module DWH
     # is passed in as options hash or argument list.
     #
     # @example Basic connection with required only options
-    #   DWH.create(:druid, {host: 'localhost',port: 8080, protocol: 'http'})
+    #   DWH.create(:duckdb, {file: 'path/to/my/duckdb' })
     #
-    # @example Connect with SSL and basic authorization
-    #   DWH.create(:druid, {host: 'localhost',port: 8080, protocol: 'http',
-    #       basic_auth: 'BASE_64 encoded authorization key'
-    #   })
-    #
-    # @example Sending custom client name and user information
-    #   DWH.create(:druid, {host: 'localhost',port: 8080,
-    #     client_name: 'Strata CLI', extra_connection_params: {
-    #       context: {
-    #         user: 'Ajo',
-    #         team: 'Engineering'
-    #       }
-    #     }})
+    # @example Open in read only mode. {https://duckdb.org/docs/stable/configuration/overview#configuration-reference config docs}
+    #   DWH.create(:duckdb, {file: 'path/to/my/duckdb' ,duck_config: { access_mode: "READ_ONLY"}})
     class DuckDb < Adapter
-      DATABASES = {}
       config :file, String, required: true, message: 'path/to/duckdb/db'
+      config :schema, String, required: false, default: 'main', message: 'schema defaults to main'
       config :duck_config, Hash, required: false, message: 'hash of valid DuckDb configuration options'
 
       # (see Adapter#connection)
       def connection
         return @connection if @connection
 
-        if DATABASES.key?(config[:file])
-          @db = DATABASES[config[:file]]
+        if self.class.databases.key?(config[:file])
+          @db = self.class.databases[config[:file]]
         else
           ducked_config = DuckDB::Config.new
           if config.key?(:duck_config)
@@ -44,7 +33,7 @@ module DWH
             end
           end
           @db = DuckDB::Database.open(config[:file], ducked_config)
-          DATABASES[config[:file]] = @db
+          self.class.databases[config[:file]] = @db
         end
 
         @connection = @db.connect
@@ -54,8 +43,12 @@ module DWH
         raise ConfigError, e.message
       end
 
+      def self.databases
+        @databases ||= {}
+      end
+
       def self.open_databases
-        DATABASES.size
+        databases.size
       end
 
       # DuckDB is an in process database so we don't want to
@@ -63,10 +56,17 @@ module DWH
       # we open one instance but many connections. Use this
       # method to close them all.
       def self.close_all
-        DATABASES.each_value(&:close)
-        DATABASES = {}
+        databases.each do |key, db|
+          db.close
+          databases.delete(key)
+        end
       end
 
+      # This disconnects the current connection but
+      # the db is still in process and can be reconnected
+      # to.
+      #
+      # (see Adapter#close)
       def close
         connection.disconnect
         @connection = nil
@@ -84,72 +84,64 @@ module DWH
 
       # (see Adapter#tables)
       def tables(**qualifiers)
-        sql = if schema? || qualifiers[:schema]
-                <<-SQL
-                        SELECT table_schema || '.' || table_name#{' '}
-                        FROM information_schema.tables
-                        WHERE table_schema in (#{qualified_schema_name(qualifiers)})
-                SQL
-              else
-                <<-SQL
-                        SELECT table_name#{' '}
-                        FROM information_schema.tables
-                SQL
-              end
+        catalog, schema = qualifiers.values_at(:catalog, :schema)
+        sql = 'SELECT table_name FROM duckdb_tables'
 
-        result = connection.exec(sql)
-        result.values.flatten
-      end
+        where = []
+        where << "database_name = '#{catalog}'" if catalog
 
-      # (see Adapter#table?)
-      def table?(table_name)
-        tables.include?(table_name)
+        where << if schema
+                   "schema_name = '#{schema}'"
+                 else
+                   "schema_name = '#{config[:schema]}'"
+                 end
+
+        res = execute("#{sql} WHERE #{where.join(' AND ')}")
+        res.flatten
       end
 
       # (see Adapter#stats)
       def stats(table, date_column: nil, **qualifiers)
-        table_name = qualifiers[:schema] ? "#{qualifiers[:schema]}.#{table}" : table
+        qualifiers[:schema] = config[:schema] unless qualifiers[:schema]
+        db_table = Table.new table, **qualifiers
+
         sql = <<-SQL
-                    SELECT count(*) ROW_COUNT
-                        #{date_column.nil? ? nil : ", min(#{date_column}) DATE_START"}
-                        #{date_column.nil? ? nil : ", max(#{date_column}) DATE_END"}
-                    FROM "#{table_name}"
+        SELECT count(*) ROW_COUNT
+        #{date_column.nil? ? nil : ", min(#{date_column}) DATE_START"}
+        #{date_column.nil? ? nil : ", max(#{date_column}) DATE_END"}
+        FROM #{db_table.fully_qualified_table_name}
         SQL
 
-        result = connection.exec(sql)
+        result = execute(sql)
         TableStats.new(
-          row_count: result.first['row_count'],
-          date_start: result.first['date_start'],
-          date_end: result.first['date_end']
+          row_count: result.first[0],
+          date_start: result.first[1],
+          date_end: result.first[2]
         )
       end
 
       # (see Adapter#metadata)
       def metadata(table, **qualifiers)
-        db_table = Table.new table, schema: qualifiers[:schema]
+        db_table = Table.new table, **qualifiers
+        sql = 'SELECT column_name, data_type, character_maximum_length, numeric_precision,numeric_scale FROM duckdb_columns'
 
-        schema_where = ''
-        if db_table.schema.present?
-          schema_where = "AND table_schema = '#{db_table.schema}'"
-        elsif schema?
-          schema_where = "AND table_schema in (#{qualified_schema_name})"
-        end
+        where = ["table_name = '#{db_table.physical_name}'"]
+        where << "database_name = '#{db_table.catalog}'" if db_table.catalog
 
-        sql = <<-SQL
-                    SELECT column_name, data_type, character_maximum_length, numeric_precision,numeric_scale
-                    FROM information_schema.columns
-                    WHERE table_name = '#{db_table.physical_name}'
-                    #{schema_where}
-        SQL
+        where << if db_table.schema
+                   "schema_name = '#{db_table.schema}'"
+                 else
+                   "schema_name = '#{config[:schema]}'"
+                 end
 
-        cols = execute(sql, format: 'object')
+        cols = execute("#{sql} WHERE #{where.join(' AND ')}")
         cols.each do |col|
           db_table << Column.new(
-            name: col['column_name'],
-            data_type: col['data_type'],
-            precision: col['numeric_precision'],
-            scale: col['numeric_scale'],
-            max_char_length: col['character_maximum_length']
+            name: col[0],
+            data_type: col[1],
+            precision: col[3],
+            scale: col[4],
+            max_char_length: col[2]
           )
         end
 
@@ -164,7 +156,7 @@ module DWH
       # (see Adapter#execute)
       def execute(sql, format: :array, retries: 0)
         begin
-          result = with_debug(sql) { with_retry(retries) { connection.exec(sql) } }
+          result = with_debug(sql) { with_retry(retries) { connection.query(sql) } }
         rescue StandardError => e
           raise ExecutionError, e.message
         end
@@ -172,9 +164,9 @@ module DWH
         format = format.downcase if format.is_a?(String)
         case format.to_sym
         when :array
-          result.values
-        when :object
           result.to_a
+        when :object
+          result_to_hash(result)
         when :csv
           result_to_csv(result)
         when :native
@@ -188,11 +180,10 @@ module DWH
       def execute_stream(sql, io, stats: nil, retries: 0)
         with_debug(sql) do
           with_retry(retries) do
-            connection.exec(sql) do |result|
-              result.each_row do |row|
-                stats << row unless stats.nil?
-                io.write(CSV.generate_line(row))
-              end
+            result = connection.query(sql)
+            result.each do |row|
+              stats << row unless stats.nil?
+              io.write(CSV.generate_line(row))
             end
           end
         end
@@ -206,29 +197,11 @@ module DWH
       # (see Adapter#stream)
       def stream(sql, &block)
         with_debug(sql) do
-          connection.exec(sql) do |result|
-            result.each_row do |row|
-              block.call(row)
-            end
+          result = connection.query(sql)
+          result.each do |row|
+            block.call(row)
           end
         end
-      end
-
-      # Need to override default add method
-      # since postgres doesn't support quarter as an
-      # interval.
-      # @param unit [String] Should be one of day, month, quarter etc
-      # @param val [String, Integer] The number of days to add
-      # @param exp [String] The sql expresssion to modify
-      def date_add(unit, val, exp)
-        if unit.downcase.strip == 'quarter'
-          unit = 'months'
-          val = val.to_i * 3
-        end
-        gsk(:date_add)
-          .gsub('@UNIT', unit)
-          .gsub('@VAL', val.to_s)
-          .gsub('@EXP', exp)
       end
 
       def valid_config?
@@ -240,22 +213,19 @@ module DWH
 
       private
 
-      def set_default_ssl_mode_if_needed
-        return unless config[:ssl] && !extra_connection_params[:sslmode]
+      def result_to_hash(result)
+        columns = result.columns.map(&:name)
 
-        extra_connection_params[:sslmode] = 'require'
-      end
-
-      def qualified_schema_name(qualifiers = {})
-        qs = qualifiers[:schema] || config[:schema]
-        @qualified_schema_name ||= qs.split(',').map { |s| "'#{s}'" }.join(',')
+        result.each.map do |row|
+          columns.zip(row).to_h
+        end
       end
 
       def result_to_csv(result)
         CSV.generate do |csv|
-          csv << result.fields
+          csv << result.columns.map(&:name)
           result.each do |row|
-            csv << row.values # default is hash
+            csv << row
           end
         end
       end

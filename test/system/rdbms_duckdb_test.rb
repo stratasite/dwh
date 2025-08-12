@@ -1,23 +1,24 @@
 require 'test_helper'
 
-class RdbmsSqlServerTest < Minitest::Test
+class RdbmsDuckDbTest < Minitest::Test
   def adapter
-    @adapter ||= DWH.create(:sqlserver,
-                            { host: 'localhost', username: 'sa', password: 'TestPassword123!', database: 'test_db' })
-  end
-
-  def test_not_using_base
-    refute adapter.class.using_base_settings?, 'should not be using base since we have mysql.yml'
-    assert_equal '[hello]', adapter.quote('hello')
+    @adapter ||= DWH.create(:duckdb, { file: File.join(__dir__, '..', 'support', 'duckdb', 'test_db.duckdb') })
   end
 
   def test_basic_connection
-    assert_equal 2, adapter.tables.size
     assert adapter.connect?
-    failing = DWH.create(:sqlserver, { username: 'me', host: 'doesnotexist', database: 'doesntexist' })
+    failing = DWH.create(:duckdb, { file: '/tmp/readonly.duckdb', duck_config: { access_mode: 'READ_ONLY' } })
     assert_raises DWH::ConnectionError do
       failing.connect!
     end
+  end
+
+  def test_get_tables
+    res = adapter.tables
+    assert_equal 2, res.size
+
+    assert adapter.table?('users')
+    refute adapter.table?('notinthedb')
   end
 
   def test_get_table_stats
@@ -25,13 +26,11 @@ class RdbmsSqlServerTest < Minitest::Test
     assert_equal 4, stats.row_count
     assert stats.date_start.is_a?(Date)
     assert stats.date_end.is_a?(Date)
-    assert adapter.stats('users').row_count
   end
 
   def test_can_get_metadata
     md = adapter.metadata('posts')
     assert_equal 7, md.columns.size
-
     col = md.find_column('created_at')
     assert col, 'column should be found'
     assert_equal 'date_time', col.normalized_data_type
@@ -40,14 +39,14 @@ class RdbmsSqlServerTest < Minitest::Test
   end
 
   def test_get_tables_for_another_schema
-    tbls = adapter.tables(catalog: 'msdb')
-    assert_equal 223, tbls.size
-    assert(tbls.any? { it == 'sysdatatypemappings' })
+    tbls = adapter.tables(schema: 'alt')
+    assert_equal 1, tbls.size
+    assert(tbls.any? { it == 'users' })
   end
 
   def test_get_md_other_schema_table
-    md = adapter.metadata('msdb.dbo.sysdatatypemappings')
-    assert_equal 22, md.columns.size
+    md = adapter.metadata('alt.users')
+    assert_equal 6, md.columns.size
   end
 
   def test_execute_basic
@@ -76,7 +75,7 @@ class RdbmsSqlServerTest < Minitest::Test
       when :csv
         assert_match(/John Doe,/, res)
       else
-        assert_equal TinyTds::Result, res.class
+        assert_equal DuckDB::Result, res.class
       end
     end
   end

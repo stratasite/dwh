@@ -75,17 +75,14 @@ module DWH
         schema = qualifiers[:schema] || config[:database]
         query = "
                   SELECT
-                    t.table_name,
-                    t.table_type,
-                    t.engine,
-                    t.table_rows
+                    t.table_name
                   FROM information_schema.tables t
                   WHERE t.table_schema = '#{schema}'
                   ORDER BY t.table_name
         "
 
         res = connection.query(query, as: :array)
-        res.to_a
+        res.to_a.flatten
       end
 
       # (see Adapter#stats)

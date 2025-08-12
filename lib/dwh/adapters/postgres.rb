@@ -71,13 +71,13 @@ module DWH
       def tables(**qualifiers)
         sql = if schema? || qualifiers[:schema]
                 <<-SQL
-                        SELECT table_schema || '.' || table_name#{' '}
+                        SELECT table_name#{' '}
                         FROM information_schema.tables
                         WHERE table_schema in (#{qualified_schema_name(qualifiers)})
                 SQL
               else
                 <<-SQL
-                        SELECT table_name#{' '}
+                        SELECT table_name
                         FROM information_schema.tables
                 SQL
               end
