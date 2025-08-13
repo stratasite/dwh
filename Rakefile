@@ -17,7 +17,7 @@ YARD::Rake::YardocTask.new(:doc) do |t|
   ]
 
   # Add any markdown files you want as guides
-  guide_files = Dir.glob('docs/**/*.md')
+  guide_files = Dir.glob('docs/guides/**/*.md')
   t.options += ['--files', guide_files.join(',')] unless guide_files.empty?
 end
 

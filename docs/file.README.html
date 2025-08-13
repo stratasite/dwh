@@ -133,25 +133,27 @@ require ‘dwh’</p>
 
 <dl>
   <dt>connection</dt>
-  <dd>creates a reusuable connection based on config hash passed in</dd>
+  <dd>Creates a reusuable connection based on config hash passed in</dd>
   <dt>tables(schema: nil, catalog: nil)</dt>
-  <dd>returns a list of tables from the default connection or from the specified schema and catalog</dd>
-  <dt>metadata(table_name, schema: nil, catalog: nil)</dt>
-  <dd>provides metadata about a table</dd>
-  <dt>stats(table_name, date_column: nil)</dt>
-  <dd>provides table row count and date range</dd>
-  <dt>execute(sql, format: :array, retries: 0)</dt>
-  <dd>runs a query and returns in given format</dd>
-  <dt>execute_stream(sql, io, stats: nil)</dt>
-  <dd>runs a query and streams it as csv into the given io</dd>
+  <dd> returns a list of tables from the default connection or from the specified schema and catalog </dd>
+  <dt> metadata(table_name, schema: nil, catalog: nil) </dt>
+  <dd> provides metadata about a table </dd>
+  <dt>stats(table_name, date_column: nil) </dt>
+  <dd> provides table row count and date range </dd>
+  <dt> execute(sql, format: :array, retries: 0) </dt>
+  <dd> runs a query and returns in given format </dd>
+  <dt> execute_stream(sql, io, stats: nil) </dt>
+  <dd> runs a query and streams it as csv into the given io </dd>
 </dl>
 
 <h2 id="tutorials-and-guides">Tutorials and Guides</h2>
 
-<p><a href="/docs/guides/GettingStarted.md">Getting Started</a>
-<a href="/docs/guides/Adapters.md">Adapter Configuration</a>
-<a href="/docs/guides/CreatingAdapters.md">Creating an Adapter</a>
-<a href="http://rubydoc.info/gems/dwh/docs">API</a></p>
+<ul>
+  <li><a href="/docs/guides/GettingStarted.md">Getting Started</a></li>
+  <li><a href="/docs/guides/Adapters.md">Adapter Configuration</a></li>
+  <li><a href="/docs/guides/CreatingAdapters.md">Creating an Adapter</a></li>
+  <li><a href="https://rubydoc.info/github/stratasite/dwh.git">API</a></li>
+</ul>
 
 <h2 id="testing">Testing</h2>
 
@@ -195,7 +197,7 @@ bundle exec rake test:system:druid
 </div></div>
 
       <div id="footer">
-  Generated on Wed Aug 13 13:36:27 2025 by
+  Generated on Wed Aug 13 14:17:23 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

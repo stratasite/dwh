@@ -64,30 +64,27 @@ results = druid.execute("SELECT * FROM web_sales", format: :csv)
 
 Standardized API across adapters:
 
-connection
-: creates a reusuable connection based on config hash passed in
-
-tables(schema: nil, catalog: nil)
-: returns a list of tables from the default connection or from the specified schema and catalog
-
-metadata(table_name, schema: nil, catalog: nil)
-: provides metadata about a table
-
-stats(table_name, date_column: nil)
-: provides table row count and date range
-
-execute(sql, format: :array, retries: 0)
-: runs a query and returns in given format
-
-execute_stream(sql, io, stats: nil)
-: runs a query and streams it as csv into the given io
+<dl>
+  <dt>connection</dt>
+  <dd>Creates a reusuable connection based on config hash passed in</dd>
+  <dt>tables(schema: nil, catalog: nil)</dt>
+  <dd> returns a list of tables from the default connection or from the specified schema and catalog </dd>
+  <dt> metadata(table_name, schema: nil, catalog: nil) </dt>
+  <dd> provides metadata about a table </dd>
+  <dt>stats(table_name, date_column: nil) </dt>
+  <dd> provides table row count and date range </dd>
+  <dt> execute(sql, format: :array, retries: 0) </dt>
+  <dd> runs a query and returns in given format </dd>
+  <dt> execute_stream(sql, io, stats: nil) </dt>
+  <dd> runs a query and streams it as csv into the given io </dd>
+</dl>
 
 ## Tutorials and Guides
 
-[Getting Started](/docs/guides/GettingStarted.md)
-[Adapter Configuration](/docs/guides/Adapters.md)
-[Creating an Adapter](/docs/guides/CreatingAdapters.md)
-[API](http://rubydoc.info/gems/dwh/docs)
+- [Getting Started](/docs/guides/GettingStarted.md)
+- [Adapter Configuration](/docs/guides/Adapters.md)
+- [Creating an Adapter](/docs/guides/CreatingAdapters.md)
+- [API](https://rubydoc.info/github/stratasite/dwh.git)
 
 ## Testing
 
