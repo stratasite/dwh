@@ -57,7 +57,6 @@ druid = DWH.create(:druid, {
 
 # basic query execution
 results = druid.execute("SELECT * FROM web_sales", format: :csv)
-
 ```
 
 ## Core API

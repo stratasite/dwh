@@ -13,12 +13,9 @@ YARD::Rake::YardocTask.new(:doc) do |t|
     '--markup', 'markdown',
     '--markup-provider', 'kramdown',
     '--charset', 'utf-8',
-    '--verbose'
+    '--verbose', '--debug',
+    '--files', 'docs/guides/*.md'
   ]
-
-  # Add any markdown files you want as guides
-  guide_files = Dir.glob('docs/guides/**/*.md')
-  t.options += ['--files', guide_files.join(',')] unless guide_files.empty?
 end
 
 namespace :test do
