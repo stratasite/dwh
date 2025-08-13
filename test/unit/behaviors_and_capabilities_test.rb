@@ -1,9 +1,16 @@
 require 'test_helper'
 
 class BehaviorsAndCapabilitiesTest < Minitest::Test
+  class MockedTrino < DWH::Adapters::Trino
+    def valid_config?
+      true
+    end
+  end
+
   def setup
+    DWH.register(:mockedtrino, MockedTrino)
     @druid = DWH.create(:druid, host: 'localhost', port: 8080)
-    @trino = DWH.create(:trino, host: 'localhost', catalog: 'dwh', username: 'me')
+    @trino = DWH.create(:mockedtrino, host: 'localhost', catalog: 'dwh', username: 'me')
   end
 
   def test_join_behavior
