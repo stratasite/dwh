@@ -6,9 +6,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem 'debug'
   gem 'irb'
-  gem 'rake', '~> 13.0'
 
   # for documentation
   gem 'kramdown'
@@ -26,4 +24,9 @@ end
 
 group :test do
   gem 'minitest', '~> 5.16'
+end
+
+group :development, :test do
+  gem 'debug'
+  gem 'rake', '~> 13.0'
 end
