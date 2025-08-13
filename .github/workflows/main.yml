@@ -18,10 +18,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+          cache-version: 1
+          bundler: 'latest'
+
+      - name: Install test dependencies
+        run: bundle install --without development
+
       - name: Run the default task
-        run: bundle exec rake
+        run: bundle exec rake test:unit
