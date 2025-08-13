@@ -184,11 +184,10 @@ module DWH
       # to the given block.
       #
       # @param sql [String] actual sql
-      # @param retries [Integer] number of retries in case of failure. Default is 0
       # @yield [chunk] Yields a streamed chunk as it streams in. The chunk type
       #   might vary depending on the target db and settings
       # @raise [ConnectionError, ExecutionError]
-      def stream(sql, retries: 0, &block)
+      def stream(sql, &block)
         raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
       end
 
@@ -196,9 +195,10 @@ module DWH
       # date_start, and date_end.
       #
       # @param table [String] table name
-      # @param catalog [String] optional catalog or equivalent name space.
+      # @param date_column [String] optional date column to use to find range
+      # @option qualifiers [String] :catalog optional catalog or equivalent name space.
       #   will be ignored if the adapter doesn't support
-      # @param schema [String] optional schema to scope to.
+      # @option qualifiers [String] :schema optional schema to scope to.
       #   will be ignored if the adapter doesn't support
       # @return [DWH::Table]
       # @raise [ConnectionError, ExecutionError]
@@ -215,9 +215,9 @@ module DWH
       # target db.  It will use the default catalog and schema
       # config only specified here.
       #
-      # @param catalog [String] optional catalog or equivalent name space.
+      # @option qualifiers [String] :catalog optional catalog or equivalent name space.
       #   will be ignored if the adapter doesn't support
-      # @param schema [String] optional schema to scope to.
+      # @option qualifiers [String] :schema optional schema to scope to.
       #   will be ignored if the adapter doesn't support
       # @return [Array<String>]
       def tables(**qualifiers)
@@ -226,9 +226,9 @@ module DWH
 
       # Check if table exists in remote db.
       #
-      # @param catalog [String] optional catalog or equivalent name space.
+      # @option qualifiers [String] :catalog optional catalog or equivalent name space.
       #   will be ignored if the adapter doesn't support
-      # @param schema [String] optional schema to scope to.
+      # @option qualifiers [String] :schema optional schema to scope to.
       #   will be ignored if the adapter doesn't support
       # @return [Boolean]
       def table?(table, **qualifiers)
@@ -244,10 +244,12 @@ module DWH
       #   metadata("big_table",schema: "public")
       #
       # @param table [String] - table name
-      # @param catalog [String] - optional catalog or equivalent name space
-      # @param schema [String] - optional schema to scope to.
+      # @option qualifiers [String] :catalog optional catalog or equivalent name space.
+      #   will be ignored if the adapter doesn't support
+      # @option qualifiers [String] :schema optional schema to scope to.
+      #   will be ignored if the adapter doesn't support
       # @return [DWH::Table]
-      def metadata(table, catalog: nil, schema: nil)
+      def metadata(table, **qualifiers)
         raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
       end
 

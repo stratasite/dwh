@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: Advanced Usage
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Usage";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: Advanced Usage</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="advanced-usage-guide">Advanced Usage Guide</h1>
+
+<p>This guide covers advanced features and usage patterns for DWH, including function translation, streaming, connection pooling, and performance optimization.</p>
+
+<h2 id="sql-function-translation">SQL Function Translation</h2>
+
+<p>DWH provides automatic translation of common SQL functions to database-specific syntax. This allows you to write database-agnostic code while leveraging native optimizations.</p>
+
+<h3 id="date-functions">Date Functions</h3>
+
+<h4 id="date-truncation">Date Truncation</h4>
+
+<p>```ruby
+# Truncate dates to different periods
+adapter.truncate_date(‘week’, ‘created_at’)
+# PostgreSQL: DATE_TRUNC(‘week’, created_at)
+# SQL Server: DATETRUNC(week, created_at)
+# MySQL: DATE_FORMAT(created_at, ‘%Y-%m-%d’) - complex logic</p>
+
+<p>adapter.truncate_date(‘month’, ‘order_date’)
+adapter.truncate_date(‘year’, ‘signup_date’)
+```</p>
+
+<h4 id="date-literals">Date Literals</h4>
+
+<p>```ruby
+# Create database-specific date literals
+adapter.date_literal(‘2025-01-01’)
+# PostgreSQL: ‘2025-01-01’::DATE
+# SQL Server: ‘2025-01-01’
+# MySQL: ‘2025-01-01’</p>
+
+<p>adapter.date_time_literal(‘2025-01-01 10:30:00’)
+# PostgreSQL: ‘2025-01-01 10:30:00’::TIMESTAMP
+# SQL Server: ‘2025-01-01 10:30:00’
+```</p>
+
+<h4 id="date-arithmetic">Date Arithmetic</h4>
+
+<p>```ruby
+# Add/subtract time periods
+adapter.date_add(‘created_at’, 30, ‘day’)
+# PostgreSQL: (created_at + ‘30 day’::interval)
+# SQL Server: DATEADD(day, 30, created_at)
+# MySQL: TIMESTAMPADD(day, 30, created_at)</p>
+
+<p>adapter.date_diff(‘end_date’, ‘start_date’, ‘day’)
+# Calculate difference between dates in specified units
+```</p>
+
+<h4 id="date-extraction">Date Extraction</h4>
+
+<p>```ruby
+# Extract date parts
+adapter.extract_year(‘created_at’)
+# PostgreSQL: extract(year from created_at)
+# SQL Server: DATEPART(year, created_at)</p>
+
+<p>adapter.extract_month(‘created_at’)
+adapter.extract_day_of_week(‘created_at’)
+adapter.extract_quarter(‘created_at’)
+```</p>
+
+<h3 id="string-functions">String Functions</h3>
+
+<p>```ruby
+# String manipulation
+adapter.trim(‘column_name’)        # Remove whitespace
+adapter.upper_case(‘column_name’)  # Convert to uppercase
+adapter.lower_case(‘column_name’)  # Convert to lowercase</p>
+
+<h1 id="quoting-and-literals">Quoting and literals</h1>
+<p>adapter.quote(‘column_name’)       # Database-specific column quoting
+adapter.string_literal(‘value’)    # Database-specific string literals
+```</p>
+
+<h3 id="null-handling">Null Handling</h3>
+
+<p>```ruby
+# Null value handling
+adapter.if_null(‘column1’, “‘default’”)
+# PostgreSQL: COALESCE(column1, ‘default’)
+# SQL Server: ISNULL(column1, ‘default’)</p>
+
+<p>adapter.null_if(‘column1’, “‘empty’”)
+# Returns NULL if column1 equals ‘empty’</p>
+
+<p>adapter.null_if_zero(‘numeric_column’)
+# Returns NULL if numeric_column equals 0
+```</p>
+
+<h3 id="array-functions">Array Functions</h3>
+
+<p>Available for databases that support array operations (PostgreSQL, Druid):</p>
+
+<p>```ruby
+# Check if array contains any values from a list
+adapter.array_in_list(‘tags’, “‘tech’, ‘science’”)
+# PostgreSQL: tags &amp;&amp; ARRAY[‘tech’, ‘science’]
+# Druid: MV_OVERLAP(tags, ARRAY[‘tech’, ‘science’])</p>
+
+<h1 id="check-if-array-excludes-all-values-from-a-list">Check if array excludes all values from a list</h1>
+<p>adapter.array_exclude_list(‘categories’, “‘spam’, ‘test’”)</p>
+
+<h1 id="unnestexplode-array-for-joins">Unnest/explode array for joins</h1>
+<p>adapter.array_unnest_join(‘tags’, ‘tag_alias’)
+# PostgreSQL: CROSS JOIN UNNEST(tags) AS tag_alias
+# Druid: CROSS JOIN UNNEST(MV_TO_ARRAY(tags)) tag_alias
+```</p>
+
+<h3 id="type-casting">Type Casting</h3>
+
+<p><code>ruby
+# Database-specific type casting
+adapter.cast('column_name', 'INTEGER')
+# PostgreSQL: column_name::INTEGER
+# SQL Server: CAST(column_name AS INTEGER)
+# MySQL: CAST(column_name AS SIGNED)
+</code></p>
+
+<h2 id="streaming-and-large-result-sets">Streaming and Large Result Sets</h2>
+
+<h3 id="basic-streaming">Basic Streaming</h3>
+
+<p>```ruby
+# Stream results directly to a file
+File.open(‘large_export.csv’, ‘w’) do |file|
+  adapter.execute_stream(“SELECT * FROM large_table”, file)
+end</p>
+
+<h1 id="stream-with-custom-processing">Stream with custom processing</h1>
+<p>adapter.stream(“SELECT * FROM large_table”) do |chunk|
+  # Process each chunk as it arrives
+  process_data_chunk(chunk)
+end
+```</p>
+
+<h3 id="streaming-with-statistics">Streaming with Statistics</h3>
+
+<p>```ruby
+# Create streaming stats collector
+stats = DWH::StreamingStats.new(10_000)  # Keep 10k rows in memory for preview</p>
+
+<h1 id="stream-with-stats-tracking">Stream with stats tracking</h1>
+<p>File.open(‘export.csv’, ‘w’) do |file|
+  exec_thread = adapter.execute_stream(“SELECT * FROM large_table”, file, stats: stats)</p>
+
+<p># Monitor progress in another thread
+  Thread.new do
+    loop do
+      puts “Processed: #statsstats.total_rows rows”
+      puts “Preview size: #statsstats.datastats.data.size rows”
+      puts “Max row size: #statsstats.max_row_size bytes”
+      sleep(5)
+      break unless exec_thread.alive? 
+    end
+  end
+end</p>
+
+<h1 id="access-collected-statistics">Access collected statistics</h1>
+<p>puts “Final count: #statsstats.total_rows”
+puts “Sample data: #statsstats.datastats.data.first(5)”
+```</p>
+
+<h3 id="memory-management">Memory Management</h3>
+
+<p>```ruby
+# Configure streaming stats memory usage
+stats = DWH::StreamingStats.new(50_000)  # Keep more data for larger previews</p>
+
+<h1 id="reset-stats-for-reuse">Reset stats for reuse</h1>
+<p>stats.reset</p>
+
+<h1 id="manual-memory-management">Manual memory management</h1>
+<p>stats.add_row([‘col1’, ‘col2’, ‘col3’])
+current_data = stats.data  # Thread-safe access
+```</p>
+
+<h2 id="connection-pooling">Connection Pooling</h2>
+
+<h3 id="creating-connection-pools">Creating Connection Pools</h3>
+
+<p>```ruby
+# Create a named connection pool
+pool = DWH.pool(‘analytics_pool’, :postgres, {
+  host: ‘localhost’,
+  database: ‘analytics’,
+  username: ‘analyst’,
+  password: ‘password’
+}, size: 10, timeout: 5)</p>
+
+<h1 id="multiple-pools-for-different-databases">Multiple pools for different databases</h1>
+<p>etl_pool = DWH.pool(‘etl_pool’, :postgres, etl_config, size: 5)
+reporting_pool = DWH.pool(‘reporting_pool’, :mysql, reporting_config, size: 15)
+```</p>
+
+<h3 id="using-connection-pools">Using Connection Pools</h3>
+
+<p>```ruby
+# Basic pool usage
+pool.with do |connection|
+  results = connection.execute(“SELECT COUNT(*) FROM users”)
+  metadata = connection.metadata(‘orders’)
+end</p>
+
+<h1 id="nested-pool-operations">Nested pool operations</h1>
+<p>pool.with do |conn1|
+  users = conn1.execute(“SELECT id FROM users LIMIT 100”)</p>
+
+<p>pool.with do |conn2|  # Gets different connection from pool
+    orders = conn2.execute(“SELECT * FROM orders WHERE user_id IN (?)”, 
+                          users.map(&amp;:first))
+  end
+end
+```</p>
+
+<h3 id="pool-management">Pool Management</h3>
+
+<p>```ruby
+# Check pool status
+puts “Pool size: #poolpool.size”
+puts “Available connections: #poolpool.available”
+puts “Active connections: #poolpool.in_use”</p>
+
+<h1 id="graceful-shutdown">Graceful shutdown</h1>
+<p>DWH.shutdown(‘analytics_pool’)</p>
+
+<h1 id="shutdown-all-pools">Shutdown all pools</h1>
+<p>DWH.shutdown_all
+```</p>
+
+<h2 id="database-capabilities-detection">Database Capabilities Detection</h2>
+
+<h3 id="checking-capabilities">Checking Capabilities</h3>
+
+<p><code>ruby
+# Check what features are supported
+if adapter.supports_window_functions?
+  query = "SELECT name, ROW_NUMBER() OVER (ORDER BY created_at) FROM users"
+  results = adapter.execute(query)
+end
+</code></p>
+
+<h3 id="available-capability-checks">Available Capability Checks</h3>
+
+<ul>
+  <li><code>supports_table_join?</code> - Basic JOIN support</li>
+  <li><code>supports_full_join?</code> - FULL OUTER JOIN support</li>
+  <li><code>supports_cross_join?</code> - CROSS JOIN support</li>
+  <li><code>supports_sub_queries?</code> - Subquery support</li>
+  <li><code>supports_common_table_expressions?</code> - CTE support</li>
+  <li><code>supports_temp_tables?</code> - Temporary table support</li>
+  <li><code>supports_window_functions?</code> - Window function support</li>
+  <li><code>supports_array_functions?</code> - Array operation support</li>
+</ul>
+
+<h2 id="performance-optimization">Performance Optimization</h2>
+
+<h3 id="query-timeouts">Query Timeouts</h3>
+
+<p>```ruby
+# Set query timeouts per adapter
+postgres = DWH.create(:postgres, {
+  host: ‘localhost’,
+  database: ‘mydb’,
+  username: ‘user’,
+  query_timeout: 1800  # 30 minutes
+})</p>
+
+<h1 id="for-long-running-analytical-queries">For long-running analytical queries</h1>
+<p>druid = DWH.create(:druid, {
+  host: ‘localhost’,
+  port: 8080,
+  protocol: ‘http’,
+  query_timeout: 3600  # 1 hour
+})
+```</p>
+
+<h3 id="result-format-optimization">Result Format Optimization</h3>
+
+<p><code>ruby
+# Choose appropriate result format for your use case
+arrays = adapter.execute(sql, format: :array)    # Fastest, least memory
+objects = adapter.execute(sql, format: :object)  # Hash access, more memory
+csv = adapter.execute(sql, format: :csv)         # String format
+native = adapter.execute(sql, format: :native)   # Database's native format
+</code></p>
+
+<h3 id="streaming-for-large-results">Streaming for Large Results</h3>
+
+<p>```ruby
+# Use streaming for large result sets
+def export_large_table(adapter, table_name, output_file)
+  query = “SELECT * FROM #table_name”</p>
+
+<p>File.open(output_file, ‘w’) do |file|
+    adapter.execute_stream(query, file)
+  end
+end</p>
+
+<h1 id="chunk-processing-for-memory-efficiency">Chunk processing for memory efficiency</h1>
+<p>def process_large_dataset(adapter, query)
+  adapter.stream(query) do |chunk|
+    # Process each chunk immediately
+    # Avoids loading entire result set into memory
+    chunk.each { |row| process_row(row) }
+  end
+end
+```</p>
+
+<h2 id="error-handling-and-debugging">Error Handling and Debugging</h2>
+
+<h3 id="comprehensive-error-handling">Comprehensive Error Handling</h3>
+
+<p><code>ruby
+begin
+  results = adapter.execute("SELECT * FROM table")
+rescue DWH::ExecutionError =&gt; e
+  # Query execution failed
+  puts "Query failed: #{e.message}"
+  puts "SQL: #{e.sql}" if e.respond_to?(:sql)
+rescue DWH::ConnectionError =&gt; e
+  # Connection issues
+  puts "Connection failed: #{e.message}"
+  # Implement retry logic
+rescue DWH::ConfigError =&gt; e
+  # Configuration problems
+  puts "Configuration error: #{e.message}"
+rescue DWH::UnsupportedCapability =&gt; e
+  # Attempted unsupported operation
+  puts "Feature not supported: #{e.message}"
+end
+</code></p>
+
+<h2 id="custom-settings-and-overrides">Custom Settings and Overrides</h2>
+
+<h3 id="runtime-settings-modification">Runtime Settings Modification</h3>
+
+<p>```ruby
+# Create adapter with custom settings
+adapter = DWH.create(:postgres, {
+  host: ‘localhost’,
+  database: ‘mydb’,
+  username: ‘user’,
+  settings: {
+    quote: ‘<code>@exp</code>’,  # Use backticks instead of double quotes
+    supports_window_functions: false,  # Force disable window functions
+    temp_table_type: ‘cte’  # Prefer CTEs over subqueries
+  }
+})</p>
+
+<h1 id="modify-settings-at-runtime">Modify settings at runtime</h1>
+<p>adapter.alter_settings({
+  supports_full_join: false,  # Disable FULL JOINs
+  final_pass_measure_join_type: ‘inner’  # Use INNER JOINs
+})</p>
+
+<h1 id="reset-to-original-settings">Reset to original settings</h1>
+<p>adapter.reset_settings
+```</p>
+
+<h3 id="custom-function-mappings">Custom Function Mappings</h3>
+
+<p><code>ruby
+# Override specific function translations
+adapter = DWH.create(:postgres, {
+  host: 'localhost',
+  database: 'mydb',
+  username: 'user',
+  settings: {
+    truncate_date: "DATE_TRUNC('@unit', @exp)",  # Custom date truncation
+    cast: "@exp::@type",  # PostgreSQL-style casting
+    null_if: "CASE WHEN @exp = @target THEN NULL ELSE @exp END"  # Custom NULLIF
+  }
+})
+</code></p>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Aug 13 13:36:27 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>

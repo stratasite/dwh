@@ -32,8 +32,11 @@ module DWH
       def connection
         return @connection if @connection
 
+        _ssl = config[:ssl] ? { verify: false } : config[:ssl]
+
         properties = {
           server: "#{config[:host]}:#{config[:port]}",
+          ssl: _ssl,
           schema: config[:schema],
           catalog: config[:catalog],
           user: config[:username],

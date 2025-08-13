@@ -2,6 +2,24 @@
 
 require 'bundler/gem_tasks'
 require 'minitest/test_task'
+require 'yard'
+
+YARD::Rake::YardocTask.new(:doc) do |t|
+  t.files = ['lib/**/*.rb']
+
+  # Output directory
+  t.options = [
+    '--output-dir', 'docs',
+    '--markup', 'markdown',
+    '--markup-provider', 'kramdown',
+    '--charset', 'utf-8',
+    '--verbose'
+  ]
+
+  # Add any markdown files you want as guides
+  guide_files = Dir.glob('docs/**/*.md')
+  t.options += ['--files', guide_files.join(',')] unless guide_files.empty?
+end
 
 namespace :test do
   Minitest::TestTask.create :unit do |t|

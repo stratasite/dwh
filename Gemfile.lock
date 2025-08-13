@@ -60,6 +60,8 @@ GEM
     json (2.12.2)
     jwt (2.10.2)
       base64
+    kramdown (2.5.1)
+      rexml (>= 3.3.9)
     logger (1.7.0)
     minitest (5.25.5)
     msgpack (1.8.0)
@@ -79,6 +81,7 @@ GEM
       psych (>= 4.0.0)
     reline (0.6.1)
       io-console (~> 0.5)
+    rexml (3.4.1)
     securerandom (0.4.1)
     stringio (3.1.7)
     tiny_tds (3.2.1)
@@ -93,6 +96,7 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     uri (1.0.3)
+    yard (0.9.37)
     zlib (3.2.1)
 
 PLATFORMS
@@ -103,12 +107,14 @@ DEPENDENCIES
   duckdb
   dwh!
   irb
+  kramdown
   minitest (~> 5.16)
   mysql2
   pg
   rake (~> 13.0)
   tiny_tds
   trino-client
+  yard
 
 BUNDLED WITH
    2.6.9

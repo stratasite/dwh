@@ -11,6 +11,7 @@ module DWH
     attr_reader :in_memory_limit
 
     def initialize(limit = 20_000)
+      @status = :init
       @in_memory_limit = limit
       @mutex = Mutex.new
       reset

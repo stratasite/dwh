@@ -1,8 +1,9 @@
 # DWH - Data Warehouse Adapter Library
 
-A light weight library to connect, introspect, and query popular databases over a unified interface.  This gem is intended to be used for analtyical workloads primarily.  The library also provides database specific translations for common functions like `date_trunc`, `date_add` etc.  The function tranlation is not comprehensive. DWH provides good coverage for data handling, and some array handling as well.
+A light weight library to connect, introspect, and query popular databases over a unified interface.  This gem is intended for analtyical workloads.  The library also provides database specific translations for common functions like `date_trunc`, `date_add` etc.  The function tranlation is not comprehensive. But, it does provides good coverage for date handling, and some array handling as well.
 
-*This is not an ORM* nor will it cast types to ruby unless the underlying client does it out of the box.  The goal here is to create an Architecture where new databases can be onboarded quickly.
+> [!NOTE]
+> **This is not an ORM** nor will it cast types to ruby unless the underlying client does it out of the box.  The goal here is to create an Architecture where new databases can be onboarded quickly.
 
 ## Why do we need another database abstraction layer?
 
@@ -13,12 +14,6 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 ## Features
 
 - **Unified Interface**: Connect to multiple database types using the same API
-  - **tables**: list all tables (use schema: and catalog: to filter)
-  - **metadata**: return table schema for a specific table
-  - **stats**: provide basic stats about the table (row count, date range or records)
-  - **execute**: runs a query and returns data in the given format (:array, :object (hash), :csv, :native)
-  - **execute_stream**: runs a query and streams the result as csv to the provided io object
-  - **stream**: runs a query and yields streaming chunks to the given block
 - **SQL Function Translation**: Automatically translates common SQL functions to database-specific syntax
 - **Connection Pooling**: Built-in connection pool management for high-performance applications
 - **Rich Metadata**: Extract table schemas, column information, and statistics
@@ -40,40 +35,18 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 - **Databricks** - Big data compute engine
 - **MotherDuck** - Hosted DuckDB service
 
-## Installation
+## Quick Start
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'dwh'
-```
-
-And then execute:
-
-```bash
-bundle install
-```
-
-Or install it yourself as:
+Install it yourself as:
 
 ```bash
 gem install dwh
 ```
 
-## Quick Start
-
-### Basic Connection
+### Connect and Execute a Basic Query
 
 ```ruby
 require 'dwh'
-
-# Connect to PostgreSQL
-postgres = DWH.create(:postgres, {
-  host: 'localhost',
-  database: 'mydb',
-  username: 'user',
-  password: 'password'
-})
 
 # Connect to Druid
 druid = DWH.create(:druid, {
@@ -81,349 +54,61 @@ druid = DWH.create(:druid, {
   port: 8080,
   protocol: 'http'
 })
+
+# basic query execution
+results = druid.execute("SELECT * FROM web_sales", format: :csv)
+
 ```
 
-### Executing Queries
+## Core API
 
-```ruby
-# Execute a simple query
-results = postgres.execute("SELECT * FROM users LIMIT 10")
+Standardized API across adapters:
 
-# Execute with different return formats
-results_as_objects = postgres.execute("SELECT * FROM users", format: :object)
-results_as_csv = postgres.execute("SELECT * FROM users", format: :csv)
+connection
+: creates a reusuable connection based on config hash passed in
 
-# Stream large result sets
-postgres.execute_stream("SELECT * FROM large_table", File.open('output.csv', 'w'))
+tables(schema: nil, catalog: nil)
+: returns a list of tables from the default connection or from the specified schema and catalog
 
-# stream data while tracting stats and previewing data in a separate thread
-stats = DWH::StreamingStats.new(10000) # num of rows to keep in memory for previewing
-postgres.execute_stream("SELECT * FROM large_table", File.open('output.csv', 'w'), stats: stats)
+metadata(table_name, schema: nil, catalog: nil)
+: provides metadata about a table
 
-# Stream with block processing
-postgres.stream("SELECT * FROM large_table") do |chunk|
-  process_chunk(chunk)
-end
-```
+stats(table_name, date_column: nil)
+: provides table row count and date range
 
-### Database Introspection
+execute(sql, format: :array, retries: 0)
+: runs a query and returns in given format
 
-```ruby
-# List all tables
-tables = postgres.tables
+execute_stream(sql, io, stats: nil)
+: runs a query and streams it as csv into the given io
 
-# List tables in different schema 
-tables = postgres.tables schema: 'pg_catalog'
+## Tutorials and Guides
 
-# Get table metadata
-table = postgres.metadata('users')
-puts table.physical_name    # => "users"
-puts table.schema          # => "public"
-puts table.columns.first.name  # => "id"
-puts table.columns.first.normalized_data_type # => "integer"
-
-# Get table statistics
-stats = postgres.stats('users', date_column: 'created_at')
-puts stats.row_count       # => 1000
-puts stats.date_start      # => 2023-01-01
-puts stats.date_end        # => 2024-01-01
-```
-
-## Advanced Usage
-
-### Connection Pooling
-
-```ruby
-# Create a connection pool
-pool = DWH.pool('my_postgres_pool', :postgres, {
-  host: 'localhost',
-  database: 'mydb',
-  username: 'user',
-  password: 'password'
-}, size: 10, timeout: 5)
-
-# Use the pool
-pool.with do |connection|
-  results = connection.execute("SELECT COUNT(*) FROM users")
-end
-
-# Shutdown the pool when done
-DWH.shutdown('my_postgres_pool')
-```
-
-### Database Functions
-
-DWH provides a function translation layer that converts common SQL functions to database-specific syntax:
-
-```ruby
-# Date truncation
-postgres.truncate_date('week', 'created_at')  # => DATE_TRUNC('week', created_at)
-sqlserver.truncate_date('week', 'created_at') # => DATETRUNC(week, created_at)
-
-# Date literals
-postgres.date_literal('2025-01-01')   # => '2025-01-01'::DATE
-sqlserver.date_literal('2025-01-01')  # => '2025-01-01'
-
-# Null handling
-adapter.coalesce('column1', 'column2', "'default'")  # => COALESCE(column1, column2, 'default')
-adapter.null_if('column1', "'empty'")                # => NULLIF(column1, 'empty')
-
-# String functions
-adapter.trim('column_name')        # => TRIM(column_name)
-adapter.upper_case('column_name')  # => UPPER(column_name)
-adapter.lower_case('column_name')  # => LOWER(column_name)
-```
-
-### Settings and Capabilities
-
-Check database capabilities before using features:
-
-```ruby
-if adapter.supports_window_functions?
-  query = "SELECT name, ROW_NUMBER() OVER (ORDER BY created_at) FROM users"
-  results = adapter.execute(query)
-end
-
-if adapter.supports_array_functions?
-  # Use array-specific functions
-end
-```
-
-### Error Handling
-
-```ruby
-begin
-  results = adapter.execute("SELECT * FROM non_existent_table")
-rescue DWH::ExecutionError => e
-  puts "Query failed: #{e.message}"
-rescue DWH::ConnectionError => e
-  puts "Connection failed: #{e.message}"
-rescue DWH::ConfigError => e
-  puts "Configuration error: #{e.message}"
-end
-```
-
-## Configuration
-
-### Database-Specific Configuration
-
-Each adapter supports specific configuration options:
-
-#### PostgreSQL
-
-```ruby
-DWH.create(:postgres, {
-  host: 'localhost',
-  port: 5432,
-  database: 'mydb',
-  schema: 'public',
-  username: 'user',
-  password: 'password',
-  ssl: true,
-  query_timeout: 3600,
-  client_name: 'My App',
-  extra_connection_params: {
-    sslmode: 'require',
-    sslcert: '/path/to/cert.pem'
-  }
-})
-```
-
-#### Snowflake
-
-```ruby
-DWH.create(:snowflake, {
-  account_id: 'my_account',
-  warehouse: 'my_warehouse',
-  database: 'my_database',
-  schema: 'PUBLIC',
-  username: 'user',
-  password: 'password',
-  role: 'my_role',
-  query_timeout: 600
-})
-```
-
-#### Druid
-
-```ruby
-DWH.create(:druid, {
-  protocol: 'https',
-  host: 'druid.example.com',
-  port: 443,
-  query_timeout: 600,
-  basic_auth: 'base64_encoded_credentials',
-  extra_connection_params: {
-    context: {
-      user: 'analyst',
-      team: 'data'
-    }
-  }
-})
-```
-
-### Custom Settings
-
-You can override adapter behavior by providing custom settings:
-
-```ruby
-adapter = DWH.create(:postgres, {
-  host: 'localhost',
-  database: 'mydb',
-  username: 'user',
-  settings: {
-    quote: '`@EXP`',  # Use backticks instead of double quotes
-    supports_window_functions: false  # Disable window function support
-  }
-})
-```
-
-## Architecture
-
-### Core Components
-
-- **`DWH::Factory`** - Manages adapter registration and instantiation
-- **`DWH::Adapters::Adapter`** - Base class for all database adapters
-- **`DWH::Table`** - Represents database table metadata
-- **`DWH::Column`** - Represents table column information
-- **`DWH::TableStats`** - Contains table statistics and metrics
-- **`DWH::Functions`** - SQL function translation layer
-- **`DWH::Capabilities`** - Database feature detection
-
-### Extending DWH
-
-Register a custom adapter:
-
-```ruby
-class MyCustomAdapter < DWH::Adapters::Adapter
-  config :host, String, required: true
-  config :port, Integer, default: 1234
-  
-  def connection
-    # Implement connection logic
-  end
-  
-  def execute(sql, format: :array, retries: 0)
-    # Implement query execution
-  end
-  
-  # Implement other required methods...
-end
-
-# Register the adapter
-DWH.register(:mycustom, MyCustomAdapter)
-
-# Use the adapter
-adapter = DWH.create(:mycustom, { host: 'localhost' })
-```
-
-#### Custom Settings Files
-
-DWH uses YAML settings files to control database behavior, SQL function mapping, and capabilities. Each adapter can have its own settings file that overrides the base settings.
-
-**Settings File Structure:**
-
-By default, DWH looks for settings files in `lib/dwh/settings/` with the pattern `{adapter_name}.yml`. You can specify a custom location:
-
-```ruby
-class MyCustomAdapter < DWH::Adapters::Adapter
-  # Custom settings file location
-  settings_file_path "/path/to/my_custom_settings.yml"
-  
-  # ... rest of adapter implementation
-end
-```
-
-**Creating Custom Settings:**
-
-Start by copying `lib/dwh/settings/base.yml` and modify it for your database:
-
-```yaml
-# my_custom_settings.yml
-
-# Override SQL function patterns
-truncate_date: "DATETRUNC('@unit', @exp)"
-date_literal: "DATE('@val')"
-cast: "CONVERT(@type, @exp)"
-
-# Override capabilities
-supports_window_functions: false
-supports_array_functions: true
-
-# Custom function mappings
-quote: "`@exp`"
-string_literal: "'@exp'"
-
-# Date extraction patterns
-extract_year: 'DATEPART(year, @exp)'
-extract_month: 'DATEPART(month, @exp)'
-extract_day_of_week: 'DATEPART(weekday, @exp)'
-
-# Array operations (if supported)
-array_in_list: "@exp IN (@list)"
-array_exclude_list: "@exp NOT IN (@list)"
-
-# Join behavior
-cross_join: "CROSS JOIN @relation"
-supports_full_join: false
-
-# Query generation behavior
-temp_table_type: "subquery"  # options: cte, subquery, temp
-final_pass_measure_join_type: "inner"
-```
-
-**Settings Placeholders:**
-
-Settings use placeholder patterns that get replaced during function calls:
-
-- `@exp` - The expression/column name
-- `@val` - The value being used
-- `@unit` - Time unit (day, week, month, etc.)
-- `@type` - Data type for casting
-- `@list` - Comma-separated list
-- `@relation` - Table/relation name
-
-**Example Usage:**
-
-```ruby
-# With custom settings, these function calls will use your database's syntax
-adapter.truncate_date('week', 'created_at')  # => DATETRUNC('week', created_at)
-adapter.date_literal('2025-01-01')           # => DATE('2025-01-01')
-adapter.cast('column_name', 'INTEGER')       # => CONVERT(INTEGER, column_name)
-```
-
-**Runtime Settings Override:**
-
-You can also override settings at runtime:
-
-```ruby
-adapter = DWH.create(:mycustom, { 
-  host: 'localhost',
-  settings: {
-    quote: '[@exp]',  # Use square brackets for quoting
-    supports_temp_tables: false
-  }
-})
-
-# Or alter settings after creation
-adapter.alter_settings({ temp_table_type: 'cte' })
-
-# Reset to original settings
-adapter.reset_settings
-```
+[Getting Started](/docs/guides/GettingStarted.md)
+[Adapter Configuration](/docs/guides/Adapters.md)
+[Creating an Adapter](/docs/guides/CreatingAdapters.md)
+[API](http://rubydoc.info/gems/dwh/docs)
 
 ## Testing
 
-Run the test suite:
+Certain databases have to be tested via docker. Those tests will try to launch docker compose services in `test/support/compose*.yml`
+
+Run Unit Tests:
 
 ```bash
-bundle exec rake test
+bundle exec rake test:unit
 ```
 
-Run specific adapter tests:
+Run tests on RDBMS dbs:
 
 ```bash
-bundle exec ruby test/system/rdbms_postgres_test.rb
+bundle exec rake test:system:rdbms 
+```
+
+Run tests on  druid:
+
+```bash
+bundle exec rake test:system:druid 
 ```
 
 ## Development
@@ -443,4 +128,3 @@ This project is available as open source under the terms of the MIT License.
 ## Version
 
 Current version: 0.1.0
-

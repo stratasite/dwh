@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: DWH::Behaviors
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "DWH::Behaviors";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (B)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../DWH.html" title="DWH (module)">DWH</a></span></span>
+     &raquo; 
+    <span class="title">Behaviors</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: DWH::Behaviors
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+  <dl>
+    <dt>Included in:</dt>
+    <dd><span class='object_link'><a href="Adapters/Adapter.html" title="DWH::Adapters::Adapter (class)">Adapters::Adapter</a></span></dd>
+  </dl>
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/dwh/behaviors.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>The Behaviors module will help us write SQL queries that are
+optimized for the target database.  These are setup primarily for
+the purposes of Strata.  However, any sql writer can use this to
+write better sql.</p>
+
+<p>For exmaple temp_table_type will tell us what the preferred temporary
+table strategy should be.  intermediate_measure_filter? will let us know
+if an aggregation should be filtered in a CTE, final pass, or both.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#apply_advanced_filtering_on_array_projections%3F-instance_method" title="#apply_advanced_filtering_on_array_projections? (instance method)">#<strong>apply_advanced_filtering_on_array_projections?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>When an array dimension is projected and it is filtered in the where clause, some db’s like Druid needs a having clause to ensure the projected set matches the filtered set.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#cross_universe_measure_filtering_strategy-instance_method" title="#cross_universe_measure_filtering_strategy (instance method)">#<strong>cross_universe_measure_filtering_strategy</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Whether to apply a measure filter to intermediate stages and final pass when appropriate.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#extend_ending_date_to_last_hour_of_day%3F-instance_method" title="#extend_ending_date_to_last_hour_of_day? (instance method)">#<strong>extend_ending_date_to_last_hour_of_day?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>In druid when you do specific time range you need to apply the last hour of the day to the date value to get all inclusive data for that date.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#final_measure_filter%3F-instance_method" title="#final_measure_filter? (instance method)">#<strong>final_measure_filter?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#final_pass_measure_join_type-instance_method" title="#final_pass_measure_join_type (instance method)">#<strong>final_pass_measure_join_type</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>When measures from multiple fact universes are combined they need to be merged in a Merge stage SQL statement.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#greedy_apply_date_filters-instance_method" title="#greedy_apply_date_filters (instance method)">#<strong>greedy_apply_date_filters</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>When a filter on a Date time field can be applied to multiple tables in the join tree should we apply to all of them or just the first one.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#intermediate_measure_filter%3F-instance_method" title="#intermediate_measure_filter? (instance method)">#<strong>intermediate_measure_filter?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#temp_table_prefix-instance_method" title="#temp_table_prefix (instance method)">#<strong>temp_table_prefix</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#temp_table_type-instance_method" title="#temp_table_type (instance method)">#<strong>temp_table_type</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Defines how intermediate queries should be handled.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="apply_advanced_filtering_on_array_projections?-instance_method">
+  
+    #<strong>apply_advanced_filtering_on_array_projections?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>When an array dimension is projected and it is filtered
+in the where clause, some db’s like Druid needs a
+having clause to ensure the projected set matches
+the filtered set.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+32
+33
+34</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 32</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_advanced_filtering_on_array_projections?'>apply_advanced_filtering_on_array_projections?</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:apply_advanced_filtering_on_array_projections</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="cross_universe_measure_filtering_strategy-instance_method">
+  
+    #<strong>cross_universe_measure_filtering_strategy</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Whether to apply a measure filter to intermediate stages and
+final pass when appropriate.  This is the case of multi universe
+query with measure filter. Default behavior is to apply the filter
+in the intermediate stage and final pass.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+55
+56
+57</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 55</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_cross_universe_measure_filtering_strategy'>cross_universe_measure_filtering_strategy</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:cross_universe_measure_filtering_strategy</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="extend_ending_date_to_last_hour_of_day?-instance_method">
+  
+    #<strong>extend_ending_date_to_last_hour_of_day?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>In druid when you do specific time range you need
+to apply the last hour of the day to the date value
+to get all inclusive data for that date.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+14
+15
+16</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 14</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_extend_ending_date_to_last_hour_of_day?'>extend_ending_date_to_last_hour_of_day?</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:extend_ending_date_to_last_hour_of_day</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="final_measure_filter?-instance_method">
+  
+    #<strong>final_measure_filter?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+63
+64
+65</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 63</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_final_measure_filter?'>final_measure_filter?</span>
+  <span class='qwords_beg'>%w[</span><span class='tstring_content'>both</span><span class='words_sep'> </span><span class='tstring_content'>final</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:cross_universe_measure_filtering_strategy</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="final_pass_measure_join_type-instance_method">
+  
+    #<strong>final_pass_measure_join_type</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>When measures from multiple fact universes are combined
+they need to be merged in a Merge stage SQL statement.
+The components is typically combined by Full Outer Join
+but could be modified as needed.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+40
+41
+42</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 40</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_final_pass_measure_join_type'>final_pass_measure_join_type</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:final_pass_measure_join_type</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="greedy_apply_date_filters-instance_method">
+  
+    #<strong>greedy_apply_date_filters</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>When a filter on a Date time field can be applied to multiple
+tables in the join tree should we apply to all of them or
+just the first one.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+47
+48
+49</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 47</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_greedy_apply_date_filters'>greedy_apply_date_filters</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:greedy_apply_date_filters</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="intermediate_measure_filter?-instance_method">
+  
+    #<strong>intermediate_measure_filter?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+59
+60
+61</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 59</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_intermediate_measure_filter?'>intermediate_measure_filter?</span>
+  <span class='qwords_beg'>%w[</span><span class='tstring_content'>both</span><span class='words_sep'> </span><span class='tstring_content'>intermediate</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:cross_universe_measure_filtering_strategy</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="temp_table_prefix-instance_method">
+  
+    #<strong>temp_table_prefix</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+24
+25
+26</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 24</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_temp_table_prefix'>temp_table_prefix</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:temp_table_prefix</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="temp_table_type-instance_method">
+  
+    #<strong>temp_table_type</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Defines how intermediate queries should be handled.
+Could be one off cte, subquery, temp (future view, permanent)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+20
+21
+22</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/behaviors.rb', line 20</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_temp_table_type'>temp_table_type</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='symbol'>:temp_table_type</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Wed Aug 13 13:36:27 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>

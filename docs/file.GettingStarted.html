@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: Getting Started
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "GettingStarted";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: Getting Started</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="getting-started-with-dwh">Getting Started with DWH</h1>
+
+<p>DWH is a lightweight library that provides a unified interface to connect, introspect, and query popular databases. This guide will help you get up and running quickly.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>Add this line to your application’s Gemfile:</p>
+
+<p><code>ruby
+gem 'dwh'
+</code></p>
+
+<p>And then execute:</p>
+
+<p><code>bash
+bundle install
+</code></p>
+
+<p>Or install it yourself as:</p>
+
+<p><code>bash
+gem install dwh
+</code></p>
+
+<h2 id="basic-usage">Basic Usage</h2>
+
+<h3 id="creating-your-first-connection">Creating Your First Connection</h3>
+
+<p>```ruby
+require ‘dwh’</p>
+
+<h1 id="connect-to-postgresql">Connect to PostgreSQL</h1>
+<p>postgres = DWH.create(:postgres, {
+  host: ‘localhost’,
+  database: ‘mydb’,
+  username: ‘user’,
+  password: ‘password’
+})</p>
+
+<h1 id="connect-to-duckdb-in-memory">Connect to DuckDB (in-memory)</h1>
+<p>duckdb = DWH.create(:duckdb, {
+  database: ‘:memory:’
+})
+```</p>
+
+<h3 id="your-first-query">Your First Query</h3>
+
+<p>```ruby
+# Execute a simple query
+results = postgres.execute(“SELECT * FROM users LIMIT 10”)</p>
+
+<h1 id="results-are-returned-as-arrays-by-default">Results are returned as arrays by default</h1>
+<p>results.each do |row|
+  puts row.inspect
+end
+```</p>
+
+<h3 id="exploring-your-database">Exploring Your Database</h3>
+
+<p>```ruby
+# List all tables
+tables = postgres.tables
+puts “Available tables: #tables.map(&amp;:physical_name)”</p>
+
+<h1 id="get-detailed-information-about-a-table">Get detailed information about a table</h1>
+<p>table_info = postgres.metadata(‘users’)
+puts “Table: #table_infotable_info.physical_name”
+puts “Schema: #table_infotable_info.schema”
+puts “Columns:”
+table_info.columns.each do |column|
+  puts “  #columncolumn.name (#columncolumn.normalized_data_type)”
+end</p>
+
+<h1 id="get-table-statistics">Get table statistics</h1>
+<p>stats = postgres.stats(‘users’, date_column: ‘created_at’)
+puts “Row count: #statsstats.row_count”
+puts “Date range: #statsstats.date_start to #statsstats.date_end”
+```</p>
+
+<h3 id="different-output-formats">Different Output Formats</h3>
+
+<p>```ruby
+# Get results as arrays (default)
+array_results = postgres.execute(“SELECT id, name FROM users LIMIT 5”)</p>
+
+<h1 id="get-results-as-hashesobjects">Get results as hashes/objects</h1>
+<p>hash_results = postgres.execute(“SELECT id, name FROM users LIMIT 5”, format: :object)</p>
+
+<h1 id="get-results-as-csv-string">Get results as CSV string</h1>
+<p>csv_results = postgres.execute(“SELECT id, name FROM users LIMIT 5”, format: :csv)</p>
+
+<h1 id="stream-large-results-to-a-file">Stream large results to a file</h1>
+<p>postgres.execute_stream(“SELECT * FROM large_table”, File.open(‘output.csv’, ‘w’))
+```</p>
+
+<h3 id="streaming-large-datasets">Streaming Large Datasets</h3>
+
+<p>```ruby
+# stream data while tracting stats and previewing data in a separate thread
+stats = DWH::StreamingStats.new(10000) # num of rows to keep in memory for previewing
+exec_thread  = Thread.new {
+  postgres.execute_stream(“SELECT * FROM large_table”, File.open(‘output.csv’, ‘w’), stats: stats)
+}</p>
+
+<p>mon_thread = Thread.new{
+  loop do
+    break if exec_thread.alive?</p>
+
+<pre class="code ruby"><code class="ruby">puts stats.data.last   end }
+</code></pre>
+
+<p>[exec_thread, mon_thread].each(&amp;:join)</p>
+
+<h1 id="stream-with-block-processing">Stream with block processing</h1>
+<p>postgres.stream(“SELECT * FROM large_table”) do |chunk|
+  process_chunk(chunk)
+end</p>
+
+<p>```</p>
+
+<h2 id="advanced-usage">Advanced Usage</h2>
+
+<h3 id="connection-pooling">Connection Pooling</h3>
+
+<p>```ruby
+# Create a connection pool
+pool = DWH.pool(‘my_postgres_pool’, :postgres, {
+  host: ‘localhost’,
+  database: ‘mydb’,
+  username: ‘user’,
+  password: ‘password’
+}, size: 10, timeout: 5)</p>
+
+<h1 id="use-the-pool">Use the pool</h1>
+<p>pool.with do |connection|
+  results = connection.execute(“SELECT COUNT(*) FROM users”)
+end</p>
+
+<h1 id="shutdown-the-pool-when-done">Shutdown the pool when done</h1>
+<p>DWH.shutdown(‘my_postgres_pool’)
+```</p>
+
+<h3 id="database-functions">Database Functions</h3>
+
+<p>DWH provides a function translation layer that converts common SQL functions to database-specific syntax:</p>
+
+<p>```ruby
+# Date truncation
+postgres.truncate_date(‘week’, ‘created_at’)  # =&gt; DATE_TRUNC(‘week’, created_at)
+sqlserver.truncate_date(‘week’, ‘created_at’) # =&gt; DATETRUNC(week, created_at)</p>
+
+<h1 id="date-literals">Date literals</h1>
+<p>postgres.date_literal(‘2025-01-01’)   # =&gt; ‘2025-01-01’::DATE
+sqlserver.date_literal(‘2025-01-01’)  # =&gt; ‘2025-01-01’</p>
+
+<h1 id="null-handling">Null handling</h1>
+<p>adapter.coalesce(‘column1’, ‘column2’, “‘default’”)  # =&gt; COALESCE(column1, column2, ‘default’)
+adapter.null_if(‘column1’, “‘empty’”)                # =&gt; NULLIF(column1, ‘empty’)</p>
+
+<h1 id="string-functions">String functions</h1>
+<p>adapter.trim(‘column_name’)        # =&gt; TRIM(column_name)
+adapter.upper_case(‘column_name’)  # =&gt; UPPER(column_name)
+adapter.lower_case(‘column_name’)  # =&gt; LOWER(column_name)
+```</p>
+
+<h2 id="core-api">Core API</h2>
+
+<p>Standardized API across adapters:</p>
+
+<dl>
+  <dt>connection</dt>
+  <dd>creates a reusuable connection based on config hash passed in</dd>
+  <dt>tables(schema: nil, catalog: nil)</dt>
+  <dd>returns a list of tables from the default connection or from the specified schema and catalog</dd>
+  <dt>metadata(table_name, schema: nil, catalog: nil)</dt>
+  <dd>provides metadata about a table</dd>
+  <dt>stats(table_name, date_column: nil)</dt>
+  <dd>provides table row count and date range</dd>
+  <dt>execute(sql, format: :array, retries: 0)</dt>
+  <dd>runs a query and returns in given format</dd>
+  <dt>execute_stream(sql, io, stats: nil)</dt>
+  <dd>runs a query and streams it as csv into the given io</dd>
+</dl>
+
+<h2 id="error-handling">Error Handling</h2>
+
+<p><code>ruby
+begin
+  results = adapter.execute("SELECT * FROM non_existent_table")
+rescue DWH::ExecutionError =&gt; e
+  puts "Query failed: #{e.message}"
+rescue DWH::ConnectionError =&gt; e
+  puts "Connection failed: #{e.message}"
+rescue DWH::ConfigError =&gt; e
+  puts "Configuration error: #{e.message}"
+end
+</code></p>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Aug 13 13:36:27 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>
