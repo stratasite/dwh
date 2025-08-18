@@ -331,6 +331,47 @@ druid = DWH.create(:druid, {
 })
 ```
 
+## AWS Athena Adapter
+
+The Athean adapter requires the `aws-athena-sdk` gem and works with both Trino and Presto.
+
+### Basic Configuration
+
+```ruby
+athena = DWH.create(:athena, {
+    region: 'us-east-1',
+    database: 'default',
+    s3_output_location: 's3://my-athena-results-bucket/queries/',
+    access_key_id: 'AKIAIOSFODNN7EXAMPLE',
+    secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    catalog: 'hive',       # optional will default to awsdatacatalog
+    database: 'default',   # Optional. Db or schema
+    workgroup: 'my-dept-strata' # optional workgroup
+})
+```
+
+### SSL Configuration
+
+```ruby
+athena = DWH.create(:athena, {
+    region: 'us-east-1',
+    database: 'default',
+    s3_output_location: 's3://my-athena-results-bucket/queries/',
+    access_key_id: 'AKIAIOSFODNN7EXAMPLE',
+    secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    catalog: 'hive',       # optional will default to awsdatacatalog
+    database: 'default',   # Optional. Db or schema
+    workgroup: 'my-dept-strata', # optional workgroup
+    extra_connection_params: {
+      ssl_ca_directory: 'path/to/certs/'
+    }
+})
+```
+
+### Advanced Configuration with Headers
+
+See full list of config options here: [athena-api](https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/Athena/Client.html#initialize-instance_method)
+
 ## Configuration Validation
 
 DWH validates configuration parameters at creation time:

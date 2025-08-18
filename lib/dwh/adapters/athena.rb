@@ -36,18 +36,18 @@ module DWH
       config :s3_output_location, String, required: true, message: 'S3 location for query results (e.g., s3://bucket/path/)'
       config :access_key_id, String, required: false, default: nil, message: 'AWS access key ID (optional if using IAM role)'
       config :secret_access_key, String, required: false, default: nil, message: 'AWS secret access key (optional if using IAM role)'
-      config :workgroup, String, required: false, default: 'primary', message: 'Athena workgroup name'
+      config :workgroup, String, required: false, message: 'Athena workgroup name'
       config :query_timeout, Integer, required: false, default: 300, message: 'query execution timeout in seconds'
       config :poll_interval, Integer, required: false, default: 2, message: 'polling interval in seconds for query status'
-      config :client_name, String, required: false, default: 'DWH Ruby Gem', message: 'The name of the connecting app'
 
       # (see Adapter#connection)
       def connection
         return @connection if @connection
 
         aws_config = {
-          region: config[:region]
-        }
+          region: config[:region],
+          workgroup: config[:workgroup]
+        }.compact
 
         # Add credentials if provided, otherwise rely on IAM role or environment
         if config[:access_key_id] && config[:secret_access_key]

@@ -81,9 +81,9 @@ Standardized API across adapters:
 
 ## Tutorials and Guides
 
-- [Getting Started](/docs/guides/GettingStarted.md)
-- [Adapter Configuration](/docs/guides/Adapters.md)
-- [Creating an Adapter](/docs/guides/CreatingAdapters.md)
+- [Getting Started](/docs/guides/getting-started.md)
+- [Adapter Configuration](/docs/guides/adapters.md)
+- [Creating an Adapter](/docs/guides/creating-adapters.md)
 - [API](https://rubydoc.info/github/stratasite/dwh.git)
 
 ## Testing
