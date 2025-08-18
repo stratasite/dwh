@@ -13,6 +13,10 @@ class BehaviorsAndCapabilitiesTest < Minitest::Test
     @trino = DWH.create(:mockedtrino, host: 'localhost', catalog: 'dwh', username: 'me')
   end
 
+  def teardown
+    DWH.unregister(:mockedtrino)
+  end
+
   def test_join_behavior
     assert @druid.supports_table_join?
     assert_equal 'subquery', @druid.temp_table_type
