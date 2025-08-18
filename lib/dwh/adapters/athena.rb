@@ -1,6 +1,4 @@
 require 'csv'
-require 'aws-sdk-athena'
-require 'aws-sdk-s3'
 
 module DWH
   module Adapters
@@ -204,7 +202,6 @@ module DWH
       def valid_config?
         super
         require 'aws-sdk-athena'
-        require 'aws-sdk-s3'
       rescue LoadError
         raise ConfigError, "Required 'aws-sdk-athena' and 'aws-sdk-s3' gems missing. Please add them to your Gemfile."
       end
