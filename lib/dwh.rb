@@ -17,6 +17,7 @@ require_relative 'dwh/adapters/snowflake'
 require_relative 'dwh/adapters/my_sql'
 require_relative 'dwh/adapters/sql_server'
 require_relative 'dwh/adapters/duck_db'
+require_relative 'dwh/adapters/athena'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -63,6 +64,7 @@ module DWH
   register(:mysql, Adapters::MySql)
   register(:sqlserver, Adapters::SqlServer)
   register(:duckdb, Adapters::DuckDb)
+  register(:athena, Adapters::Athena)
 
   # start_reaper
 end

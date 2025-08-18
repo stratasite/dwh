@@ -32,11 +32,11 @@ module DWH
       def connection
         return @connection if @connection
 
-        _ssl = config[:ssl] ? { verify: false } : config[:ssl]
+        ssl_setup = config[:ssl] ? { verify: false } : config[:ssl]
 
         properties = {
           server: "#{config[:host]}:#{config[:port]}",
-          ssl: _ssl,
+          ssl: ssl_setup,
           schema: config[:schema],
           catalog: config[:catalog],
           user: config[:username],
@@ -168,6 +168,7 @@ module DWH
         with_debug(sql) do
           with_retry(retries) do
             connection.query(sql) do |result|
+              io.write(CSV.generate_line(result.columns.map(&:name)))
               result.each_row do |row|
                 stats << row if stats
                 io << CSV.generate_line(row)

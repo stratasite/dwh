@@ -5,7 +5,7 @@ class RdbmsFunctions < Minitest::Test
     @adapters ||= [
       DWH.create(:trino, { host: 'localhost', username: 'ajo', catalog: 'tpch', schema: 'sf1' }),
       DWH.create(:mysql, { host: '127.0.0.1', username: 'test_user', password: 'test_password', database: 'test_db' }),
-      DWH.create(:postgres, { host: 'localhost', username: 'test_user', password: 'test_password', database: 'test_db' }),
+      DWH.create(:postgres, { host: 'localhost', port: 9432, username: 'test_user', password: 'test_password', database: 'test_db' }),
       DWH.create(:sqlserver, { host: 'localhost', username: 'sa', password: 'TestPassword123!', database: 'test_db' }),
       DWH.create(:duckdb, { file: File.join(__dir__, '..', 'support', 'duckdb', 'test_db.duckdb'), duck_config: { access_mode: 'READ_ONLY' } })
     ]
@@ -43,9 +43,19 @@ class RdbmsFunctions < Minitest::Test
       sql = "select #{adapter.extract_day_name(adapter.date_literal('2025-08-06'))}"
       res = adapter.execute(sql)
       assert_equal "#{adapter.adapter_name}: WEDNESDAY", "#{adapter.adapter_name}: #{res[0][0]}"
+
+      sql = "select #{adapter.extract_day_name(adapter.date_literal('2025-08-06'), abbreviate: true)}"
+      res = adapter.execute(sql)
+      assert_equal "#{adapter.adapter_name}: WED", "#{adapter.adapter_name}: #{res[0][0]}"
+
       sql = "select #{adapter.extract_month_name(adapter.date_literal('2025-08-06'))}"
       res = adapter.execute(sql)
       assert_equal "#{adapter.adapter_name}: AUGUST", "#{adapter.adapter_name}: #{res[0][0].strip}"
+
+      sql = "select #{adapter.extract_month_name(adapter.date_literal('2025-08-06'), abbreviate: true)}"
+      res = adapter.execute(sql)
+      assert_equal "#{adapter.adapter_name}: AUG", "#{adapter.adapter_name}: #{res[0][0].strip}"
+
       sql = "select #{adapter.extract_year_month(adapter.date_literal('2025-08-06'))}"
       res = adapter.execute(sql)
       assert_equal "#{adapter.adapter_name}: 202508", "#{adapter.adapter_name}: #{res[0][0]}"

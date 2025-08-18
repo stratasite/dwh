@@ -1028,7 +1028,8 @@ to the provided IO object.</p>
 201
 202
 203
-204</pre>
+204
+205</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/dwh/adapters/druid.rb', line 178</span>
@@ -1040,7 +1041,8 @@ to the provided IO object.</p>
         <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
         <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span> <span class='op'>=</span> <span class='lbrace'>{</span>
           <span class='label'>query:</span> <span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span>
-          <span class='label'>resultFormat:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>csv</span><span class='tstring_end'>&#39;</span></span>
+          <span class='label'>resultFormat:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>csv</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='label'>header:</span> <span class='kw'>true</span>
           <span class='comment'># added timezone here due to druid bug
 </span>          <span class='comment'># where date sub query joins failed without it.
 </span>          <span class='comment'># context: { sqlTimeZone: &#39;Etc/UTC&#39;}
@@ -1394,7 +1396,6 @@ might vary depending on the target db and settings</p>
       <pre class="lines">
 
 
-207
 208
 209
 210
@@ -1408,10 +1409,11 @@ might vary depending on the target db and settings</p>
 218
 219
 220
-221</pre>
+221
+222</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/druid.rb', line 207</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/druid.rb', line 208</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stream'>stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_on_data_calls'>on_data_calls</span> <span class='op'>=</span> <span class='int'>0</span>
@@ -1614,7 +1616,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Aug 13 15:24:46 2025 by
+  Generated on Mon Aug 18 12:26:12 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

@@ -67,11 +67,11 @@ module DWH
         unit = unit.strip.downcase
         res = if unit == 'week' && adjust_week_start_day?
                 gsk("#{settings[:week_start_day].downcase}_week_start_day")
-                  .gsub('@EXP', exp)
+                  .gsub(/@exp/i, exp)
               else
                 gsk(:truncate_date)
-                  .gsub('@UNIT', unit)
-                  .gsub('@EXP', exp)
+                  .gsub(/@unit/i, unit)
+                  .gsub(/@exp/i, exp)
 
               end
 
@@ -90,9 +90,9 @@ module DWH
       # @param exp [String] the target expression being operated on
       def date_add(unit, val, exp)
         gsk(:date_add)
-          .gsub('@UNIT', unit)
-          .gsub('@VAL', val.to_s)
-          .gsub('@EXP', exp)
+          .gsub(/@unit/i, unit)
+          .gsub(/@val/i, val.to_s)
+          .gsub(/@exp/i, exp)
       end
 
       # Differnect between two dates in terms of the given unit.
@@ -101,16 +101,16 @@ module DWH
       # @param end_exp [String] ending date expression
       def date_diff(unit, start_exp, end_exp)
         gsk(:date_diff)
-          .gsub('@UNIT', unit)
-          .gsub('@START_EXP', start_exp)
-          .gsub('@END_EXP', end_exp)
+          .gsub(/@unit/i, unit)
+          .gsub(/@start_exp/i, start_exp)
+          .gsub(/@end_exp/i, end_exp)
       end
 
       # Applies the given format to the target date expression
       def date_format_sql(exp, format)
         gsk(:date_format_sql)
-          .gsub('@EXP', exp)
-          .gsub('@FORMAT', format)
+          .gsub(/@exp/i, exp)
+          .gsub(/@format/i, format)
       end
 
       DATE_CLASSES = [Date, DateTime, Time].freeze
@@ -121,13 +121,13 @@ module DWH
       # @param val [String, Date, DateTime, Time]
       def date_literal(val)
         val = DATE_CLASSES.include?(val.class) ? val.strftime(date_format) : val
-        gsk(:date_literal).gsub('@VAL', val)
+        gsk(:date_literal).gsub(/@val/i, val)
       end
 
       # @param val [String, Date, DateTime, Time]
       def date_time_literal(val)
         val = DATE_CLASSES.include?(val.class) ? val.strftime(date_time_format) : val
-        gsk(:date_time_literal).gsub('@VAL', val)
+        gsk(:date_time_literal).gsub(/@val/i, val)
       end
 
       # The current default week start day. This is how
@@ -150,7 +150,7 @@ module DWH
       # Apply translation to desired week start day
       def adjust_week_start_day(exp)
         gsk("#{settings[:week_start_day].downcase}_week_start_day")
-          .gsub('@EXP', exp)
+          .gsub(/@exp/i, exp)
       end
 
       # Does the week start on sunday?

@@ -157,6 +157,7 @@ module DWH
         with_debug(sql) do
           with_retry(retries) do
             result = connection.query(sql, stream: true, as: :array, cache_rows: false)
+            io.write(CSV.generate_line(result.fields))
             result.each do |row|
               io.write(CSV.generate_line(row))
               stats << row if stats
@@ -196,7 +197,7 @@ module DWH
           "DATE(DATE_FORMAT(#{exp}, '%Y-%m-01'))"
         when 'week'
           gsk("#{settings[:week_start_day].downcase}_week_start_day")
-            .gsub('@EXP', exp)
+            .gsub(/@exp/i, exp)
         when 'day', 'date'
           "DATE(#{exp})"
         when 'hour'

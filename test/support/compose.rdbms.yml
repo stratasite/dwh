@@ -1,3 +1,4 @@
+name: dwh-rdbms-test
 services:
   postgres:
     image: postgres:15
@@ -6,7 +7,7 @@ services:
       POSTGRES_USER: test_user
       POSTGRES_PASSWORD: test_password
     ports:
-      - "5432:5432"
+      - "9432:5432"
     volumes:
       - ./postgres:/docker-entrypoint-initdb.d
     healthcheck:

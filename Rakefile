@@ -24,54 +24,16 @@ namespace :test do
   end
 
   namespace :system do
-    task :setup, [:db_type, :setup_file] do |_, args|
-      db_type = args[:db_type]
-      file = "test/support/compose.#{db_type}.yml"
-      system("docker compose -f #{file} up -d") or raise "Failed to start #{db_type} containers"
-
-      puts 'waiting 10 secs for docker....'
-      sleep(10)
-      loop do
-        res = system("docker compose -f #{file} ps --services --filter status=running")
-
-        if res
-          puts "Checking for setup file #{args[:setup_file]}"
-          if args[:setup_file]
-            require_relative args[:setup_file]
-            sleep(10)
-            DWH::TestSetup.run
-          end
-          break
-        end
-
-        sleep(1)
-      end
+    Minitest::TestTask.create :rdbms do |t|
+      t.test_globs = ['test/system/rdbms_*_test.rb']
     end
 
-    task :teardown, [:db_type] do |_, args|
-      db_type = args[:db_type]
-      system("docker compose -f test/support/compose.#{db_type}.yml down") or raise "Failed to stop #{db_type} containers"
+    Minitest::TestTask.create :druid do |t|
+      t.test_globs = ['test/system/druid_test.rb']
     end
 
-    task :run, [:db_type, :setup_file] do |_, args|
-      db_type = args[:db_type]
-      Rake::Task['test:system:setup'].invoke(db_type, args[:setup_file])
-      Dir.glob('test/system/rdbms_*.rb') do |f|
-        system("ruby -Ilib:test #{f}")
-      end
-    ensure
-      puts "Completed #{db_type} system tests"
-      Rake::Task['test:system:teardown'].invoke(db_type)
-    end
-
-    desc 'Run RDBMS tests. This will start docker compose as needed'
-    task :rdbms do
-      Rake::Task['test:system:run'].invoke('rdbms')
-    end
-
-    desc 'Run Druid tests. This will start docker compose as needed'
-    task :druid do
-      Rake::Task['test:system:run'].invoke('druid', 'test/support/druid/test_setup.rb')
+    Minitest::TestTask.create :cloud do |t|
+      t.test_globs = ['test/system/cloud_test.rb']
     end
   end
 end

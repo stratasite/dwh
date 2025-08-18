@@ -29,20 +29,20 @@ module DWH
     # @param exp [String] sql expression
     # @param type [String] valid type for target db
     def cast(exp, type)
-      gsk(:cast).gsub('@EXP', exp)
-                .gsub('@TYPE', type)
+      gsk(:cast).gsub(/@exp/i, exp)
+                .gsub(/@type/i, type)
     end
 
     def trim(exp)
-      gsk(:trim).gsub('@EXP', exp)
+      gsk(:trim).gsub(/@exp/i, exp)
     end
 
     def lower_case(exp)
-      gsk(:lower_case).gsub('@EXP', exp)
+      gsk(:lower_case).gsub(/@exp/i, exp)
     end
 
     def upper_case(exp)
-      gsk(:upper_case).gsub('@EXP', exp)
+      gsk(:upper_case).gsub(/@exp/i, exp)
     end
 
     # Applies adapter specific quotes around the given
@@ -51,7 +51,7 @@ module DWH
     #
     # @param exp [String] - column, alias, table name
     def quote(exp)
-      gsk(:quote).sub('@EXP', exp)
+      gsk(:quote).sub(/@exp/i, exp)
     end
 
     # Applies adapter specific string literal translation around the given
@@ -59,7 +59,7 @@ module DWH
     #
     # @param exp [String] some string value
     def string_lit(exp)
-      gsk(:string_literal).sub('@EXP', exp.gsub("'", "''"))
+      gsk(:string_literal).sub(/@exp/i, exp.gsub("'", "''"))
     end
 
     # Applies adapter specific cross join expression
@@ -72,7 +72,7 @@ module DWH
     #
     # @param relation [String] - table name or table exp
     def cross_join(relation)
-      gsk(:cross_join).sub('@RELATION', relation)
+      gsk(:cross_join).sub(/@relation/i, relation)
     end
 
     # Shortcut to get settings value
@@ -80,7 +80,7 @@ module DWH
     # @param key [Symbol,String]
     # @return [String] upcased value
     def gsk(key)
-      settings[key.to_sym].upcase
+      settings[key.to_sym]
     end
   end
 end

@@ -21,7 +21,7 @@ extract_day_of_week: "EXTRACT('DAYOFWEEK' FROM @exp)"
 extract_week_of_year: "EXTRACT('WEEK' FROM @exp)"
 extract_hour: 'HOUR(@exp)'
 extract_minute: 'MINUTE(@exp)'
-extract_year_month: "(STRFTIME(@exp, '%Y') || STRFTIME(@exp, LOWER('%M')))::INTEGER"
+extract_year_month: "(STRFTIME(@exp, '%Y') || STRFTIME(@exp, '%m'))::INTEGER"
 default_week_start_day: "monday"
 week_start_day: "monday"
 sunday_week_start_day: "(DATE_TRUNC('week', @exp + 1) - 1)"

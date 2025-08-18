@@ -41,11 +41,11 @@ class RdbmsDuckDbTest < Minitest::Test
   def test_get_tables_for_another_schema
     tbls = adapter.tables(schema: 'alt')
     assert_equal 1, tbls.size
-    assert(tbls.any? { it == 'users' })
+    assert(tbls.any? { it == 'users2' })
   end
 
   def test_get_md_other_schema_table
-    md = adapter.metadata('alt.users')
+    md = adapter.metadata('alt.users2')
     assert_equal 6, md.columns.size
   end
 
@@ -84,8 +84,9 @@ class RdbmsDuckDbTest < Minitest::Test
     io = StringIO.new
     stats = DWH::StreamingStats.new
     res = adapter.execute_stream 'select * from users', io, stats: stats
-    assert_equal 3, res.each_line.count
+    assert_equal 4, res.each_line.count
     assert_equal 3, stats.total_rows
+    assert_match(/created_at/, res.string)
   end
 
   def test_stream_with_block

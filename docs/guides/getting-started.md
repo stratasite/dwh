@@ -144,6 +144,27 @@ end
 DWH.shutdown('my_postgres_pool')
 ```
 
+### Using Extra Connection Params
+
+DWH uses an existing Ruby gem where possible to connect to each target database.  When that is not possible and the db supports a REST endpoint, we will use Faraday.
+
+Using `extra_connection_params` key you can pass in a Hash of options that the target connector supports but DWH doesn't make first class.  The main config options in DWH are based on required and common needs.
+
+#### Sending Postgres 'connect_timeout' property supported by the PG gem
+
+```ruby
+pg = DWH.create(:postgres, {
+  host: 'localhost',
+  database: 'mydb',
+  username: 'user',
+  password: 'password',
+  extra_connection_params: {
+    connect_timeout: 5
+  }
+})
+
+```
+
 ### Database Functions
 
 DWH provides a function translation layer that converts common SQL functions to database-specific syntax:

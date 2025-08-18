@@ -4,43 +4,43 @@ module DWH
     # from a date or timestamp.
     module ExtractDatePart
       def extract_year(exp)
-        gsk(:extract_year).gsub('@EXP', exp)
+        gsk(:extract_year).gsub(/@exp/i, exp)
       end
 
       def extract_month(exp)
-        gsk(:extract_month).gsub('@EXP', exp)
+        gsk(:extract_month).gsub(/@exp/i, exp)
       end
 
       def extract_quarter(exp)
-        gsk(:extract_quarter).gsub('@EXP', exp)
+        gsk(:extract_quarter).gsub(/@exp/i, exp)
       end
 
       def extract_day_of_year(exp)
-        gsk(:extract_day_of_year).gsub('@EXP', exp)
+        gsk(:extract_day_of_year).gsub(/@exp/i, exp)
       end
 
       def extract_day_of_month(exp)
-        gsk(:extract_day_of_month).gsub('@EXP', exp)
+        gsk(:extract_day_of_month).gsub(/@exp/i, exp)
       end
 
       def extract_day_of_week(exp)
-        gsk(:extract_day_of_week).gsub('@EXP', exp)
+        gsk(:extract_day_of_week).gsub(/@exp/i, exp)
       end
 
       def extract_week_of_year(exp)
-        gsk(:extract_week_of_year).gsub('@EXP', exp)
+        gsk(:extract_week_of_year).gsub(/@exp/i, exp)
       end
 
       def extract_hour(exp)
-        gsk(:extract_hour).gsub('@EXP', exp)
+        gsk(:extract_hour).gsub(/@exp/i, exp)
       end
 
       def extract_minute(exp)
-        gsk(:extract_minute).gsub('@EXP', exp)
+        gsk(:extract_minute).gsub(/@exp/i, exp)
       end
 
       def extract_year_month(exp)
-        gsk(:extract_year_month).gsub('@EXP', exp)
+        gsk(:extract_year_month).gsub(/@exp/i, exp)
       end
 
       def extract_day_name(exp, abbreviate: false)

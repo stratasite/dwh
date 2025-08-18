@@ -192,6 +192,7 @@ module DWH
         with_debug(sql) do
           with_retry(retries) do
             result = connection.execute(sql)
+            io.write(CSV.generate_line(result.fields))
             result.each(as: :array, empty_sets: true, cache_rows: false, timezone: :utc) do |row|
               stats << row unless stats.nil?
               io.write(CSV.generate_line(row))

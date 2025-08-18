@@ -4,6 +4,7 @@ class PostgresTest < Minitest::Test
   def adapter
     @adapter ||= DWH.create(:postgres, {
                               host: 'localhost',
+                              port: 9432,
                               username: 'test_user',
                               password: 'test_password',
                               database: 'test_db'
@@ -16,7 +17,7 @@ class PostgresTest < Minitest::Test
 
   def test_basic_with_nil_schema
     adapter = DWH.create(:postgres, {
-                           host: 'localhost',
+                           host: 'localhost', port: 9432,
                            username: 'test_user',
                            schema: nil,
                            password: 'test_password',
@@ -89,8 +90,9 @@ class PostgresTest < Minitest::Test
     io = StringIO.new
     stats = DWH::StreamingStats.new
     res = adapter.execute_stream 'select * from users', io, stats: stats
-    assert_equal 3, res.each_line.count
+    assert_equal 4, res.each_line.count
     assert_equal 3, stats.total_rows
+    assert_match(/created_at/, res.string, 'should include headers')
   end
 
   def test_stream_with_block
@@ -103,7 +105,7 @@ class PostgresTest < Minitest::Test
 
   def test_ssl_connection
     ssl = DWH.create(:postgres, {
-                       host: 'localhost',
+                       host: 'localhost', port: 9432,
                        username: 'test_user',
                        password: 'test_password',
                        database: 'test_db',

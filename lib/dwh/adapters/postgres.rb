@@ -174,6 +174,7 @@ module DWH
         with_debug(sql) do
           with_retry(retries) do
             connection.exec(sql) do |result|
+              io.write(CSV.generate_line(result.fields))
               result.each_row do |row|
                 stats << row unless stats.nil?
                 io.write(CSV.generate_line(row))
@@ -211,9 +212,9 @@ module DWH
           val = val.to_i * 3
         end
         gsk(:date_add)
-          .gsub('@UNIT', unit)
-          .gsub('@VAL', val.to_s)
-          .gsub('@EXP', exp)
+          .gsub(/@unit/i, unit)
+          .gsub(/@val/i, val.to_s)
+          .gsub(/@exp/i, exp)
       end
 
       def valid_config?

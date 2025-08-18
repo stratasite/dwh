@@ -181,6 +181,7 @@ module DWH
         with_debug(sql) do
           with_retry(retries) do
             result = connection.query(sql)
+            io.write(CSV.generate_line(result.columns.map(&:name)))
             result.each do |row|
               stats << row unless stats.nil?
               io.write(CSV.generate_line(row))

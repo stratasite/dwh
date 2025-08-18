@@ -73,8 +73,9 @@ class DruidTest < Minitest::Test
     io = StringIO.new
     stats = DWH::StreamingStats.new
     res = adapter.execute_stream 'select * from users', io, stats: stats
-    assert_equal 3, res.each_line.count
+    assert_equal 4, res.each_line.count
     assert_equal 3, stats.total_rows
+    assert_match(/email/, res.string, 'should include header')
   end
 
   def test_stream_with_block

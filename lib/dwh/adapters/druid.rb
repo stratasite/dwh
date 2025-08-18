@@ -182,7 +182,8 @@ module DWH
               req.headers['Content-Type'] = 'application/json'
               req.body = {
                 query: sql,
-                resultFormat: 'csv'
+                resultFormat: 'csv',
+                header: true
                 # added timezone here due to druid bug
                 # where date sub query joins failed without it.
                 # context: { sqlTimeZone: 'Etc/UTC'}
@@ -253,7 +254,10 @@ module DWH
         return if stats.nil? || stats&.limit_reached?
 
         rows = CSV.parse(parseable_row, skip_blanks: true)
-        rows.each { |row| stats << row }
+        rows.each_with_index do |row, index|
+          # skip header rows in stats collector
+          stats << row unless index.zero? && stats.total_rows.zero?
+        end
         parseable_row.clear
       rescue CSV::MalformedCSVError
         logger.debug("Unparseable:\n #{chunk}")

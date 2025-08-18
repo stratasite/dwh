@@ -11,7 +11,7 @@ module DWH
       def array_in_list(exp, list)
         raise UnsupportedCapability unless supports_array_functions?
 
-        gsk(:array_in_list).gsub('@EXP', exp).gsub('@LIST', list)
+        gsk(:array_in_list).gsub(/@exp/i, exp).gsub(/@list/i, list)
       end
 
       # Generates sql test to see if any values from the passed
@@ -23,7 +23,7 @@ module DWH
       def array_exclude_list(exp, list)
         raise UnsupportedCapability unless supports_array_functions?
 
-        gsk(:array_exclude_list).gsub('@EXP', exp).gsub('@LIST', list)
+        gsk(:array_exclude_list).gsub(/@exp/i, exp).gsub(/@list/i, list)
       end
 
       # Explode an array. This should be used in a join expression.
@@ -34,8 +34,8 @@ module DWH
         raise UnsupportedCapability unless supports_array_functions?
 
         gsk(:array_unnest_join)
-          .gsub('@EXP', exp)
-          .gsub('@ALIAS', table_alias)
+          .gsub(/@exp/i, exp)
+          .gsub(/@alias/i, table_alias)
       end
     end
   end

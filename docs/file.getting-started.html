@@ -199,6 +199,27 @@ end</p>
 <p>DWH.shutdown(‘my_postgres_pool’)
 ```</p>
 
+<h3 id="using-extra-connection-params">Using Extra Connection Params</h3>
+
+<p>DWH uses an existing Ruby gem where possible to connect to each target database.  When that is not possible and the db supports a REST endpoint, we will use Faraday.</p>
+
+<p>Using <code>extra_connection_params</code> key you can pass in a Hash of options that the target connector supports but DWH doesn’t make first class.  The main config options in DWH are based on required and common needs.</p>
+
+<h4 id="sending-postgres-connecttimeout-property-supported-by-the-pg-gem">Sending Postgres ‘connect_timeout’ property supported by the PG gem</h4>
+
+<p>```ruby
+pg = DWH.create(:postgres, {
+  host: ‘localhost’,
+  database: ‘mydb’,
+  username: ‘user’,
+  password: ‘password’,
+  extra_connection_params: {
+    connect_timeout: 5
+  }
+})</p>
+
+<p>```</p>
+
 <h3 id="database-functions">Database Functions</h3>
 
 <p>DWH provides a function translation layer that converts common SQL functions to database-specific syntax:</p>
@@ -257,7 +278,7 @@ end
 </div></div>
 
       <div id="footer">
-  Generated on Wed Aug 13 15:24:46 2025 by
+  Generated on Mon Aug 18 12:26:12 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

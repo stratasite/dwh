@@ -86,10 +86,10 @@ class RdbmsTrinoTest < Minitest::Test
     io = StringIO.new
     stats = DWH::StreamingStats.new
     res = adapter.execute_stream 'select * from nation', io, stats: stats
-    assert_equal 25, res.each_line.count
+    assert_equal 26, res.each_line.count
     assert_equal 25, stats.total_rows
-    io.rewind
-    assert_match(/ARGENTINA/, io.read)
+    assert_match(/ARGENTINA/, io.string)
+    assert_match(/nationkey/, io.string)
   end
 
   def test_stream_with_block

@@ -15,6 +15,10 @@ group :development do
   gem 'pg'
   gem 'tiny_tds'
   gem 'trino-client'
+
+  # aws Athena
+  gem 'aws-sdk-athena'
+  gem 'aws-sdk-s3'
 end
 
 group :test do

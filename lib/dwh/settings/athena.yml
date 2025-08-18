@@ -28,7 +28,7 @@ extract_day_of_week: 'DAY_OF_WEEK(@exp)'
 extract_week_of_year: 'WEEK(@exp)'
 extract_hour: 'HOUR(@exp)'
 extract_minute: 'MINUTE(@exp)'
-extract_year_month: "CAST(DATE_FORMAT(@exp, '%Y%m') AS INTEGER)"
+extract_year_month: "CAST(FORMAT('%04d%02d', year(@exp), month(@exp)) AS INTEGER)"
 default_week_start_day: "monday"
 week_start_day: "monday"
 sunday_week_start_day: "DATE_ADD('day', -1,DATE_TRUNC('week', DATE_ADD('day',1, @exp)))"

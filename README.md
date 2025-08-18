@@ -26,6 +26,7 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 - **Trino** (formerly Presto) - Distributed SQL query engine
 - **Apache Druid** - Real-time analytics database
 - **DuckDB** - In-process analytical database
+- **AWS Athena** - AWS big data warehouse
 
 ## Integrations Coming Soon
 

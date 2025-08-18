@@ -26,7 +26,7 @@ volumes:
   router_var: {}
   druid_shared: {}
 
-
+name: dwh-druid-test
 services:
   postgres:
     container_name: postgres
