@@ -148,6 +148,7 @@ module DWH
       # Close the connection if it was created.
       def close
         @connection&.close
+        @connection = nil
       end
 
       # Execute sql on the target database.

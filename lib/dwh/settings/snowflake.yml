@@ -4,10 +4,10 @@ date_format: "%Y-%m-%d"
 date_time_format: "%Y-%m-%d %H:%M:%S"
 date_time_tz_format: "%Y-%m-%d %H:%M:%S %Z"
 date_type: "string" # alternative is int, integer, dateint
-day_name_format: "Day"
-abbreviated_day_name_format: "Dy"
-month_name_format: "Month"
-abbreviated_month_name_format: "Mon"
+day_name_format: "DY"
+abbreviated_day_name_format: "DY"
+month_name_format: "MMMM"
+abbreviated_month_name_format: "MON"
 
 # Date functions patterns
 current_date: "current_date()"
@@ -28,7 +28,7 @@ extract_day_of_week: 'DAYOFWEEK(@exp)'
 extract_week_of_year: 'week(@exp)'
 extract_hour: 'hour(@exp)'
 extract_minute: 'minute(@exp)'
-extract_year_month: 'cast((year(@exp) || month(@exp)) as integer)'
+extract_year_month: 'cast((TO_VARCHAR(@exp, ''YYYY'') || TO_VARCHAR(@exp, ''MM'')) as integer)'
 default_week_start_day: "monday"
 week_start_day: "monday"
 sunday_week_start_day: "dateadd(day, -1,date_trunc('week', dateadd(day,1, @exp)))"

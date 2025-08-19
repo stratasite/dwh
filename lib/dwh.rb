@@ -2,6 +2,7 @@ require 'faraday'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/object/blank'
+require 'active_support/duration'
 
 require_relative 'dwh/version'
 require_relative 'dwh/logger'
