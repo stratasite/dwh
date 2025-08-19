@@ -5,8 +5,7 @@ class CloudSnowflakeTest < Minitest::Test
     @adapter ||=
       DWH.create(:snowflake,
                  { database: 'TEST_DB', auth_mode: 'pat',
-                   account_identifier: 'PPLLNCG-ERC73816',
-                   personal_access_token: 'eyJraWQiOiIzMTUwMjY1MzQ0MDUiLCJhbGciOiJFUzI1NiJ9.eyJwIjoiMTIzMDU3MjI5MjozMTUwMjY1MDYyNDUiLCJpc3MiOiJTRjoxMDU2IiwiZXhwIjoxNzU2OTIzNjE3fQ.Egx-1ilDRz9P20usdfzU8yb5K88ZY0_qk-bE_O5Xq1iOt3QvdSzlwBy-s_Prs_5-CbWjgDYgHZvCU0afq8tGmQ' })
+                   account_identifier: 'PPLLNCG-ERC73816' })
   end
 
   def test_basic_connection
