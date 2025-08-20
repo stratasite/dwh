@@ -32,9 +32,8 @@ module DWH
     #   })
     class Snowflake < Adapter
       # Authentication configuration
-      config :auth_mode, String,
-             required: true, allowed: %w[pat kp],
-             message: 'Authentication mode: "pat" (Personal Access Token) or "kp" (Key Pair)'
+      config :auth_mode, String, required: true, allowed: %w[pat kp],
+                                 message: 'Authentication mode: "pat" (Personal Access Token) or "kp" (Key Pair)'
 
       config :account_identifier, String,
              required: true, message: 'Snowflake account identifier (e.g., myorg-myaccount or myorg-myaccount.region)'
@@ -55,12 +54,10 @@ module DWH
 
       # Connection configuration
       config :client_name, String,
-             required: false,
-             default: 'Ruby DWH Gem', message: 'Client name sent to Snowflake'
+             required: false, default: 'Ruby DWH Gem', message: 'Client name sent to Snowflake'
 
       config :query_timeout, Integer,
-             required: false,
-             default: 3600, message: 'Query execution timeout in seconds'
+             required: false, default: 3600, message: 'Query execution timeout in seconds'
 
       # Database configuration
       config :role, String,
