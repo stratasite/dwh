@@ -2,6 +2,7 @@ require 'jwt'
 require 'csv'
 require 'base64'
 require 'digest'
+require_relative 'open_authorizable'
 
 module DWH
   module Adapters
@@ -10,6 +11,7 @@ module DWH
     # Supports two authentication modes:
     # - Personal Access Token (pat)
     # - Key Pair Authentication (kp)
+    # - OAuth 2.0 (oauth)
     #
     # @example Basic connection with Personal Access Token
     #   DWH.create(:snowflake, {
@@ -31,8 +33,13 @@ module DWH
     #     database: 'ANALYTICS'
     #   })
     class Snowflake < Adapter
+      # OAuth setup
+      oauth_with authorize: ->(adapter) { "https://#{adapter.account_identifier}.snowflakecomputing.com/oauth/authorize" },
+                 tokenize: ->(adapter) { "https://#{adapter.account_identifier}.snowflakecomputing.com/oauth/token-request" },
+                 default_scope: 'refresh_token'
+
       # Authentication configuration
-      config :auth_mode, String, required: true, allowed: %w[pat kp],
+      config :auth_mode, String, required: true, allowed: %w[pat kp oauth],
                                  message: 'Authentication mode: "pat" (Personal Access Token) or "kp" (Key Pair)'
 
       config :account_identifier, String,
@@ -246,6 +253,8 @@ module DWH
           return if config[:private_key]
 
           raise ConfigError, "private_key is required when auth_mode is 'kp'"
+        when 'oauth'
+          validate_oauth_config
         else
           raise ConfigError, "Invalid auth_mode: #{config[:auth_mode]}"
         end
