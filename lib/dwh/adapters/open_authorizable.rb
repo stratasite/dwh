@@ -12,45 +12,50 @@ module DWH
     #
     # @example Endpoint that needs to use instance to generate
     #   oauth_with authorize: ->(adapter) { "url#{config[:val]}"}, tokenize: "http://blue.com"
+    #
+    # @example Get authorization_url
+    #   adapter.authorization_url
+    #   Then capture the code and gen tokens
+    #
+    # @example Generate acess tokens
+    #   adapter.generate_oauth_tokens(code_from_authorization)
+    #   # this will also apply the tokens
+    #
+    # @example Reuse cached tokens
+    #   adapter.apply_oauth_tokens(access_token: 'myaccesstoken', refresh_token: 'rtoken', expires_at: Time.now)
     module OpenAuthorizable
-      class OAuthError < StandardError; end
-      class TokenExpiredError < AuthError; end
-      class AuthenticationError < OAuthError; end
+      # rubcop:disable Style/DocumentationModule
+      module ClassMethods
+        def oauth_with(authorize:, tokenize:, default_scope: 'refresh_token')
+          @oauth_settings = { authorize: authorize, tokenize: tokenize, default_scope: default_scope }
+        end
+
+        def oauth_settings
+          raise OAuthError, 'Please configure oauth settings by calling oauth_with class method.' unless @oauth_settings
+
+          @oauth_settings
+        end
+      end
 
       def self.included(base)
         base.extend(ClassMethods)
-        config :oauth_client_id, String, required: false, message: 'OAuth client_id'
-        config :oauth_client_secret, String, required: false, message: 'OAuth client_secret'
-        config :oauth_redirect_uri, String, required: false, message: 'OAuth redirect_uri'
-        config :oauth_scope, String, required: false, message: 'OAuth redirect_url'
-      end
-
-      # rubcop:disable Style/DocumentationModule
-      module ClassMethods
-        def self.oauth_with(authorize:, tokenize:, default_scope: 'refresh_token')
-          @oauth_endpoints = { authorize: authorize, tokenize: tokenize, default_scope: default_scope }
-        end
-
-        def self.oauth_endpoints
-          raise OAuthError, 'Please configuratoin endpoints by calling oauth class method.' unless @oauth_endpoints
-
-          @oauth_endpoints
-        end
+        base.config :oauth_client_id, String, required: false, message: 'OAuth client_id'
+        base.config :oauth_client_secret, String, required: false, message: 'OAuth client_secret'
+        base.config :oauth_redirect_uri, String, required: false, message: 'OAuth redirect_uri'
+        base.config :oauth_scope, String, required: false, message: 'OAuth redirect_url'
       end
 
       # Generate authorization URL for user to visit
-      def authorization_url
-        state = SecureRandom.hex(16)
-
+      def authorization_url(state: SecureRandom.hex(16), scope: nil)
         params = {
           'response_type' => 'code',
           'client_id' => oauth_client_id,
           'redirect_uri' => oauth_redirect_uri,
           'state' => state,
-          'scope' => config[:oauth_scope] || oauth_default_scope
+          'scope' => scope || oauth_scope || oauth_settings[:default_scope]
         }.compact
 
-        uri = URI(oauth_authorization_endpoint)
+        uri = URI(oauth_settings[:authorize])
         uri.query = URI.encode_www_form(params)
         uri.to_s
       end
@@ -58,11 +63,13 @@ module DWH
       # You can reuse existing tokens that were saved outside
       # of this app by passing it here.  This could be tokens
       # cached from a previous call to @see #generate_oauth_tokens
+      #
       # param access_token [String] the access token
       # @param refresh_token [String] optional refresh token
-      def apply_oauth_tokens(access_token:, refesh_token: nil)
+      def apply_oauth_tokens(access_token:, refresh_token: nil, expires_at: nil)
         @oauth_access_token = access_token
-        @oauth_refresh_token = refesh_token
+        @oauth_refresh_token = refresh_token
+        @token_expires_at = expires_at
       end
 
       # Takes the given authorization code and generates new
@@ -73,15 +80,15 @@ module DWH
         params = {
           grant_type: 'authorization_code',
           code: authorization_code,
-          redirect_uri: config[:oauth_redirect_uri]
+          redirect_uri: oauth_redirect_uri
         }
 
-        response = oauth_http_client.post(oauth_tokenization_endpoint) do |req|
+        response = oauth_http_client.post(oauth_tokenization_url) do |req|
           req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
           req.headers['Authorization'] = basic_auth_header
           req.body = URI.encode_www_form(params)
         end
-        handle_token_response(response)
+        oauth_token_response(response)
       end
 
       # Refresh access token using refresh token
@@ -93,13 +100,33 @@ module DWH
           refresh_token: @oauth_refresh_token
         }
 
-        response = oauth_http_client.post(oauth_tokenization_endpoint) do |req|
+        response = oauth_http_client.post(oauth_tokenization_url) do |req|
           req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
           req.headers['Authorization'] = basic_auth_header
           req.body = URI.encode_www_form(params)
         end
 
-        handle_token_response(response)
+        oauth_token_response(response)
+      end
+
+      # This will return the current access_token or
+      # if it expired and refresh_token token is available
+      # it will generate a new token.
+      #
+      # @return [String] access token
+      # @raise [AuthenticationError]
+      def oauth_access_token
+        if token_expired? && @oauth_refresh_token
+          refresh_access_token
+
+          # return token unless exception was raised
+          @oauth_access_token
+        elsif @oauth_access_token
+          @oauth_access_token
+        else
+          raise AuthenticationError,
+                'Access token was never set. Either run the auth flow or set the tokens via apply_oauth_tokens method.'
+        end
       end
 
       # Check if we have a valid access token
@@ -112,24 +139,28 @@ module DWH
         {
           access_token: @oauth_access_token,
           refresh_token: @oauth_refresh_token,
-          expires_at: @oauth_token_expires_at,
-          expired: oauth_token_expired?,
+          expires_at: @token_expires_at,
+          expired: token_expired?,
           authenticated: oauth_authenticated?
         }
       end
 
       def validate_oauth_config
-        raise ConfigError, 'Missing config: client_id. Required for OAuth.' unless config[:client_id]
-        raise ConfigError, 'Missing config: client_secret. Required for OAuth.' unless config[:client_secret]
-        raise ConfigError, 'Missing config: redirect_url. Required for OAuth.' unless config[:redirect_url]
+        raise ConfigError, 'Missing config: oauth_client_id. Required for OAuth.' unless config[:oauth_client_id]
+        raise ConfigError, 'Missing config: oauth_client_secret. Required for OAuth.' unless config[:oauth_client_secret]
+        raise ConfigError, 'Missing config: oauth_redirect_url. Required for OAuth.' unless config[:oauth_redirect_uri]
 
-        oauth_endpoints
+        oauth_settings
       end
 
-      def oauth_endpoints
-        @oauth_endpoints ||= self.class.oauth_endpoints.transform_values do
+      def oauth_settings
+        @oauth_settings ||= self.class.oauth_settings.transform_values do
           it.is_a?(Proc) ? it.call(self) : it
         end
+      end
+
+      def oauth_tokenization_url
+        oauth_settings[:tokenize]
       end
 
       protected
@@ -149,13 +180,13 @@ module DWH
       end
 
       # Override this method to handle provider-specific token response formats
-      def handle_token_response(response)
+      def oauth_token_response(response)
         case response.status
         when 200..299
           data = JSON.parse(response.body)
 
           apply_oauth_tokens(access_token: data['access_token'],
-                             refresh_token: data['refresh_token'])
+                             refresh_token: data['refresh_token'] || @oauth_refresh_token)
 
           # Calculate expiration time
           expires_in = data['expires_in'] || 3600
@@ -164,14 +195,20 @@ module DWH
           { success: true, data: data }
         else
           error_data = parse_error_response(response)
-          raise AuthenticationError, "Token request failed: #{error_data['error']} - #{error_data['error_description']}"
+          if error_data['error'] == 'invalid_grant' && @oauth_refresh_token
+            raise TokenExpiredError, "Potentially expired refresh token. #{error_data['message']}"
+          end
+
+          raise AuthenticationError, "Token request failed: #{error_data['error']} - #{error_data['message']}"
         end
       end
+
+      private
 
       def parse_error_response(response)
         JSON.parse(response.body)
       rescue JSON::ParserError
-        { 'error' => 'unknown', 'error_description' => response.body }
+        { 'error' => 'unknown', 'message' => response.body }
       end
     end
   end

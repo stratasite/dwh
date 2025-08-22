@@ -14,7 +14,7 @@ class TestDwh < Minitest::Test
 
   def test_base_adapters_registered
     count = Dir.glob('lib/dwh/adapters/*.rb').count
-    assert_equal count, DWH.adapters.size
+    assert_equal count - 1, DWH.adapters.size
 
     assert DWH.adapter?(:snowflake)
   end

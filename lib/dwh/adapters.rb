@@ -319,6 +319,13 @@ module DWH
         config[:extra_query_params] || {}
       end
 
+      # For adapters that uses access tokens via
+      # jwt or oauth this will return wether a tokens is
+      # expired
+      def token_expired?
+        @token_expires_at.nil? || Time.now >= @token_expires_at
+      end
+
       protected
 
       # Checks if the required configurations and type is passed

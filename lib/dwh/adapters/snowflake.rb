@@ -32,7 +32,31 @@ module DWH
     #     warehouse: 'COMPUTE_WH',
     #     database: 'ANALYTICS'
     #   })
+    #
+    # @example Connecting with OAuth
+    #   DWH.create(:snowflake, {
+    #     auth_mode: 'oauth',
+    #     account_identifier: 'myorg-myaccount.us-east-1',
+    #     oauth_client_id: '<YOUR_CLIENT_ID>',
+    #     oauth_client_secret: '<YOUR_CLIENT_SECRET>',
+    #     oauth_redirect_url: 'https://localhost:3030/some/path',
+    #     database: 'ANALYTICS'
+    #   })
+    #
+    #   # This sill only work if you setup an OAuth security integration
+    #   # and grant it to the correct users.
+    #
+    #   # Use this url to get auth code
+    #   adapter.authorization_url
+    #
+    #   # Pass the code to generate oauth tokens
+    #   adapter.generate_oauth_tokens(authorization_code)
+    #
+    #   # Apply previously created tokens for new connections
+    #   adapter.apply_oauth_tokens(access_token: token, refresh_token: token, expires_at: Time.now)
     class Snowflake < Adapter
+      include OpenAuthorizable
+
       # OAuth setup
       oauth_with authorize: ->(adapter) { "https://#{adapter.account_identifier}.snowflakecomputing.com/oauth/authorize" },
                  tokenize: ->(adapter) { "https://#{adapter.account_identifier}.snowflakecomputing.com/oauth/token-request" },
@@ -82,7 +106,8 @@ module DWH
       # Constants
       AUTH_TOKEN_TYPES = {
         pat: 'PROGRAMMATIC_ACCESS_TOKEN',
-        kp: 'KEYPAIR_JWT'
+        kp: 'KEYPAIR_JWT',
+        oauth: 'OAUTH'
       }.freeze
 
       API_ENDPOINTS = {
@@ -100,7 +125,7 @@ module DWH
 
       DEFAULT_POLL_INTERVAL = 0.25
       MAX_POLL_INTERVAL = 30
-      TOKEN_VALIDITY_HOURS = 1.0
+      TOKEN_VALIDITY_SECONDS = 3600
 
       def initialize(config)
         super
@@ -112,7 +137,7 @@ module DWH
         return @connection if @connection && !token_expired?
 
         reset_connection if token_expired?
-        @token_expires_at = Time.now + TOKEN_VALIDITY_HOURS / 24.0
+        @token_expires_at ||= Time.now + TOKEN_VALIDITY_SECONDS
 
         @connection = Faraday.new(
           url: "https://#{config[:account_identifier]}.snowflakecomputing.com",
@@ -175,15 +200,21 @@ module DWH
       end
 
       # (see Adapter#tables)
-      # @param database [String] optional database filter
+      # For metadata queries table_catalog and database are
+      # the same in the Snowflake information_schema.
+      #
+      # However, we need to prefix the information_schema table with
+      # the db name to correctly constrain to the target db.
+      #
       # @return [Array<String>] list of table names
-      def tables(catalog: nil, schema: nil, database: nil)
-        db = database || config[:database]
+      def tables(**qualifiers)
+        catalog, schema = qualifiers.values_at(:catalog, :schema)
+
+        db = catalog || config[:database]
         sql = "SELECT table_name FROM #{db}.information_schema.tables"
         conditions = []
 
         conditions << "table_schema = '#{schema.upcase}'" if schema
-        conditions << "table_catalog = '#{catalog.upcase}'" if catalog
 
         sql += " WHERE #{conditions.join(' AND ')}" if conditions.any?
 
@@ -192,11 +223,10 @@ module DWH
       end
 
       # (see Adapter#tables)
-      # @param database [String] optional database
-      # @return [DWH::Table] table metadata object
-      def metadata(table, catalog: nil, schema: nil, database: nil)
+      def metadata(table, **qualifiers)
+        catalog, schema = qualifiers.values_at(:catalog, :schema)
         db_table = Table.new(table, schema: schema, catalog: catalog)
-        db = database || config[:database]
+        db = db_table.catalog || config[:database]
         sql = <<~SQL
           SELECT column_name, data_type, numeric_precision, numeric_scale, character_maximum_length
           FROM #{db}.information_schema.columns
@@ -204,7 +234,6 @@ module DWH
 
         conditions = ["table_name = '#{db_table.physical_name.upcase}'"]
         conditions << "table_schema = '#{db_table.schema.upcase}'" if db_table.schema
-        conditions << "table_catalog = '#{db_table.catalog.upcase}'" if db_table.catalog
 
         columns = execute("#{sql} WHERE #{conditions.join(' AND ')}")
 
@@ -222,7 +251,7 @@ module DWH
       end
 
       # (see Adapter#stats)
-      def stats(table, date_column: nil, catalog: nil, schema: nil, database: nil)
+      def stats(table, date_column: nil)
         date_fields = if date_column
                         ", MIN(#{date_column}) AS date_start, MAX(#{date_column}) AS date_end"
                       else
@@ -243,38 +272,44 @@ module DWH
 
       # Validation and Setup Methods
       def validate_auth_config
-        case config[:auth_mode]
-        when 'pat'
+        case auth_mode.downcase.to_sym
+        when :pat
           return if config[:personal_access_token]
 
           raise ConfigError, "personal_access_token is required when auth_mode is 'pat'"
-        when 'kp'
+        when :kp
           raise ConfigError, "username is required when auth_mode is 'kp'" unless config[:username]
           return if config[:private_key]
 
           raise ConfigError, "private_key is required when auth_mode is 'kp'"
-        when 'oauth'
+        when :oauth
           validate_oauth_config
         else
           raise ConfigError, "Invalid auth_mode: #{config[:auth_mode]}"
         end
       end
 
-      def token_expired?
-        @token_expires_at.nil? || Time.now >= @token_expires_at
-      end
-
       def reset_connection
-        @token_expires_at = nil
+        @token_expires_at = nil unless oauth_mode? # here we keep the set expiration time
         @jwt_token = nil
         close
       end
 
       # Authentication
       def auth_token
-        personal_access_token_mode? ? config[:personal_access_token] : jwt_token
+        case auth_mode.downcase.to_sym
+        when :pat
+          config[:personal_access_token]
+        when :kp
+          jwt_token
+        when :oauth
+          oauth_access_token
+        else
+          raise ConfigError, "Invalid auth_mode: #{config[:auth_mode]}"
+        end
       end
 
+      # Translate auth mode to Snowflake auth token type
       def auth_token_type
         AUTH_TOKEN_TYPES[config[:auth_mode].to_sym]
       end
@@ -285,6 +320,10 @@ module DWH
 
       def key_pair_mode?
         config[:auth_mode] == 'kp'
+      end
+
+      def oauth_mode?
+        config[:auth_mode] == 'oauth'
       end
 
       def jwt_token

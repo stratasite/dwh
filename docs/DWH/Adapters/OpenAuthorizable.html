@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: DWH::Adapters::OpenAuthorizable
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "DWH::Adapters::OpenAuthorizable";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (O)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Adapters.html" title="DWH::Adapters (module)">Adapters</a></span></span>
+     &raquo; 
+    <span class="title">OpenAuthorizable</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: DWH::Adapters::OpenAuthorizable
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+  <dl>
+    <dt>Included in:</dt>
+    <dd><span class='object_link'><a href="Snowflake.html" title="DWH::Adapters::Snowflake (class)">Snowflake</a></span></dd>
+  </dl>
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/dwh/adapters/open_authorizable.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>OpenAuthorizable aka OAuth module will add functionality
+to get and refresh access tokens for databases that supported
+OAuth.</p>
+
+<p>To use this module include it in your adapter and call the oauth_with
+class method.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Endpoint that needs to use instance to generate</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_oauth_with'>oauth_with</span> <span class='label'>authorize:</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter'>adapter</span><span class='rparen'>)</span> <span class='tlambeg'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>url</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:val</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='label'>tokenize:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://blue.com</span><span class='tstring_end'>&quot;</span></span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Get authorization_url</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_authorization_url'>authorization_url</span>
+<span class='const'>Then</span> <span class='id identifier rubyid_capture'>capture</span> <span class='id identifier rubyid_the'>the</span> <span class='id identifier rubyid_code'>code</span> <span class='kw'>and</span> <span class='id identifier rubyid_gen'>gen</span> <span class='id identifier rubyid_tokens'>tokens</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Generate acess tokens</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_generate_oauth_tokens'>generate_oauth_tokens</span><span class='lparen'>(</span><span class='id identifier rubyid_code_from_authorization'>code_from_authorization</span><span class='rparen'>)</span>
+<span class='comment'># this will also apply the tokens</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Reuse cached tokens</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_apply_oauth_tokens'>apply_oauth_tokens</span><span class='lparen'>(</span><span class='label'>access_token:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myaccesstoken</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>refresh_token:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>rtoken</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>expires_at:</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="OpenAuthorizable/ClassMethods.html" title="DWH::Adapters::OpenAuthorizable::ClassMethods (module)">ClassMethods</a></span>
+    
+  
+    
+  
+</p>
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#included-class_method" title="included (class method)">.<strong>included</strong>(base)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#apply_oauth_tokens-instance_method" title="#apply_oauth_tokens (instance method)">#<strong>apply_oauth_tokens</strong>(access_token:, refresh_token: nil, expires_at: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>You can reuse existing tokens that were saved outside of this app by passing it here.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorization_url-instance_method" title="#authorization_url (instance method)">#<strong>authorization_url</strong>(state: SecureRandom.hex(16), scope: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Generate authorization URL for user to visit.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#generate_oauth_tokens-instance_method" title="#generate_oauth_tokens (instance method)">#<strong>generate_oauth_tokens</strong>(authorization_code)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Takes the given authorization code and generates new access and refresh tokens.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#oauth_access_token-instance_method" title="#oauth_access_token (instance method)">#<strong>oauth_access_token</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>This will return the current access_token or if it expired and refresh_token token is available it will generate a new token.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#oauth_authenticated%3F-instance_method" title="#oauth_authenticated? (instance method)">#<strong>oauth_authenticated?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if we have a valid access token.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#oauth_settings-instance_method" title="#oauth_settings (instance method)">#<strong>oauth_settings</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#oauth_token_info-instance_method" title="#oauth_token_info (instance method)">#<strong>oauth_token_info</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get current state of tokens.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#oauth_tokenization_url-instance_method" title="#oauth_tokenization_url (instance method)">#<strong>oauth_tokenization_url</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#refresh_access_token-instance_method" title="#refresh_access_token (instance method)">#<strong>refresh_access_token</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Refresh access token using refresh token.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#validate_oauth_config-instance_method" title="#validate_oauth_config (instance method)">#<strong>validate_oauth_config</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="included-class_method">
+  
+    .<strong>included</strong>(base)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+40
+41
+42
+43
+44
+45
+46</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 40</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_included'>included</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_base'>base</span><span class='period'>.</span><span class='id identifier rubyid_extend'>extend</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="OpenAuthorizable/ClassMethods.html" title="DWH::Adapters::OpenAuthorizable::ClassMethods (module)">ClassMethods</a></span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_base'>base</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span> <span class='symbol'>:oauth_client_id</span><span class='comma'>,</span> <span class='const'>String</span><span class='comma'>,</span> <span class='label'>required:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>message:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OAuth client_id</span><span class='tstring_end'>&#39;</span></span>
+  <span class='id identifier rubyid_base'>base</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span> <span class='symbol'>:oauth_client_secret</span><span class='comma'>,</span> <span class='const'>String</span><span class='comma'>,</span> <span class='label'>required:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>message:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OAuth client_secret</span><span class='tstring_end'>&#39;</span></span>
+  <span class='id identifier rubyid_base'>base</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span> <span class='symbol'>:oauth_redirect_uri</span><span class='comma'>,</span> <span class='const'>String</span><span class='comma'>,</span> <span class='label'>required:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>message:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OAuth redirect_uri</span><span class='tstring_end'>&#39;</span></span>
+  <span class='id identifier rubyid_base'>base</span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span> <span class='symbol'>:oauth_scope</span><span class='comma'>,</span> <span class='const'>String</span><span class='comma'>,</span> <span class='label'>required:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>message:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OAuth redirect_url</span><span class='tstring_end'>&#39;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="apply_oauth_tokens-instance_method">
+  
+    #<strong>apply_oauth_tokens</strong>(access_token:, refresh_token: nil, expires_at: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>You can reuse existing tokens that were saved outside
+of this app by passing it here.  This could be tokens
+cached from a previous call to @see #generate_oauth_tokens</p>
+
+<p>param access_token [String] the access token</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>refresh_token</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>optional refresh token</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+69
+70
+71
+72
+73</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 69</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_oauth_tokens'>apply_oauth_tokens</span><span class='lparen'>(</span><span class='label'>access_token:</span><span class='comma'>,</span> <span class='label'>refresh_token:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>expires_at:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='ivar'>@oauth_access_token</span> <span class='op'>=</span> <span class='id identifier rubyid_access_token'>access_token</span>
+  <span class='ivar'>@oauth_refresh_token</span> <span class='op'>=</span> <span class='id identifier rubyid_refresh_token'>refresh_token</span>
+  <span class='ivar'>@token_expires_at</span> <span class='op'>=</span> <span class='id identifier rubyid_expires_at'>expires_at</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorization_url-instance_method">
+  
+    #<strong>authorization_url</strong>(state: SecureRandom.hex(16), scope: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Generate authorization URL for user to visit</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 49</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorization_url'>authorization_url</span><span class='lparen'>(</span><span class='label'>state:</span> <span class='const'>SecureRandom</span><span class='period'>.</span><span class='id identifier rubyid_hex'>hex</span><span class='lparen'>(</span><span class='int'>16</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>scope:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>response_type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>code</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>client_id</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_oauth_client_id'>oauth_client_id</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>redirect_uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_oauth_redirect_uri'>oauth_redirect_uri</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>state</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_state'>state</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>scope</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_scope'>scope</span> <span class='op'>||</span> <span class='id identifier rubyid_oauth_scope'>oauth_scope</span> <span class='op'>||</span> <span class='id identifier rubyid_oauth_settings'>oauth_settings</span><span class='lbracket'>[</span><span class='symbol'>:default_scope</span><span class='rbracket'>]</span>
+  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
+
+  <span class='id identifier rubyid_uri'>uri</span> <span class='op'>=</span> <span class='const'>URI</span><span class='lparen'>(</span><span class='id identifier rubyid_oauth_settings'>oauth_settings</span><span class='lbracket'>[</span><span class='symbol'>:authorize</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_uri'>uri</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_encode_www_form'>encode_www_form</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_uri'>uri</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="generate_oauth_tokens-instance_method">
+  
+    #<strong>generate_oauth_tokens</strong>(authorization_code)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Takes the given authorization code and generates new
+access and refresh tokens. It will also apply them.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>authorization_code</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>this code should come from
+the redirect that is captured from the #authorization_url</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 79</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_generate_oauth_tokens'>generate_oauth_tokens</span><span class='lparen'>(</span><span class='id identifier rubyid_authorization_code'>authorization_code</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>grant_type:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>authorization_code</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>code:</span> <span class='id identifier rubyid_authorization_code'>authorization_code</span><span class='comma'>,</span>
+    <span class='label'>redirect_uri:</span> <span class='id identifier rubyid_oauth_redirect_uri'>oauth_redirect_uri</span>
+  <span class='rbrace'>}</span>
+
+  <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_oauth_http_client'>oauth_http_client</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span><span class='lparen'>(</span><span class='id identifier rubyid_oauth_tokenization_url'>oauth_tokenization_url</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_req'>req</span><span class='op'>|</span>
+    <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/x-www-form-urlencoded</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Authorization</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_basic_auth_header'>basic_auth_header</span>
+    <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span> <span class='op'>=</span> <span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_encode_www_form'>encode_www_form</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_oauth_token_response'>oauth_token_response</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="oauth_access_token-instance_method">
+  
+    #<strong>oauth_access_token</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>This will return the current access_token or
+if it expired and refresh_token token is available
+it will generate a new token.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>access token</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../AuthenticationError.html" title="DWH::AuthenticationError (class)">AuthenticationError</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 118</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_oauth_access_token'>oauth_access_token</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_token_expired?'>token_expired?</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@oauth_refresh_token</span>
+    <span class='id identifier rubyid_refresh_access_token'>refresh_access_token</span>
+
+    <span class='comment'># return token unless exception was raised
+</span>    <span class='ivar'>@oauth_access_token</span>
+  <span class='kw'>elsif</span> <span class='ivar'>@oauth_access_token</span>
+    <span class='ivar'>@oauth_access_token</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../AuthenticationError.html" title="DWH::AuthenticationError (class)">AuthenticationError</a></span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Access token was never set. Either run the auth flow or set the tokens via apply_oauth_tokens method.</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="oauth_authenticated?-instance_method">
+  
+    #<strong>oauth_authenticated?</strong>  &#x21d2; <tt><span class='object_link'><a href="Boolean.html" title="DWH::Adapters::Boolean (class)">Boolean</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if we have a valid access token</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Boolean.html" title="DWH::Adapters::Boolean (class)">Boolean</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+133
+134
+135</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 133</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_oauth_authenticated?'>oauth_authenticated?</span>
+  <span class='ivar'>@oauth_access_token</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_token_expired?'>token_expired?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="oauth_settings-instance_method">
+  
+    #<strong>oauth_settings</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+156
+157
+158
+159
+160</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 156</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_oauth_settings'>oauth_settings</span>
+  <span class='ivar'>@oauth_settings</span> <span class='op'>||=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_oauth_settings'>oauth_settings</span><span class='period'>.</span><span class='id identifier rubyid_transform_values'>transform_values</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Proc</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_it'>it</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="oauth_token_info-instance_method">
+  
+    #<strong>oauth_token_info</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get current state of tokens</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 138</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_oauth_token_info'>oauth_token_info</span>
+  <span class='lbrace'>{</span>
+    <span class='label'>access_token:</span> <span class='ivar'>@oauth_access_token</span><span class='comma'>,</span>
+    <span class='label'>refresh_token:</span> <span class='ivar'>@oauth_refresh_token</span><span class='comma'>,</span>
+    <span class='label'>expires_at:</span> <span class='ivar'>@token_expires_at</span><span class='comma'>,</span>
+    <span class='label'>expired:</span> <span class='id identifier rubyid_token_expired?'>token_expired?</span><span class='comma'>,</span>
+    <span class='label'>authenticated:</span> <span class='id identifier rubyid_oauth_authenticated?'>oauth_authenticated?</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="oauth_tokenization_url-instance_method">
+  
+    #<strong>oauth_tokenization_url</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+162
+163
+164</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 162</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_oauth_tokenization_url'>oauth_tokenization_url</span>
+  <span class='id identifier rubyid_oauth_settings'>oauth_settings</span><span class='lbracket'>[</span><span class='symbol'>:tokenize</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="refresh_access_token-instance_method">
+  
+    #<strong>refresh_access_token</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Refresh access token using refresh token</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../AuthenticationError.html" title="DWH::AuthenticationError (class)">AuthenticationError</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 95</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_refresh_access_token'>refresh_access_token</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../AuthenticationError.html" title="DWH::AuthenticationError (class)">AuthenticationError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>No refresh token available</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='ivar'>@oauth_refresh_token</span>
+
+  <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>grant_type:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>refresh_token</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>refresh_token:</span> <span class='ivar'>@oauth_refresh_token</span>
+  <span class='rbrace'>}</span>
+
+  <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_oauth_http_client'>oauth_http_client</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span><span class='lparen'>(</span><span class='id identifier rubyid_oauth_tokenization_url'>oauth_tokenization_url</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_req'>req</span><span class='op'>|</span>
+    <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/x-www-form-urlencoded</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Authorization</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_basic_auth_header'>basic_auth_header</span>
+    <span class='id identifier rubyid_req'>req</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span> <span class='op'>=</span> <span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_encode_www_form'>encode_www_form</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_oauth_token_response'>oauth_token_response</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="validate_oauth_config-instance_method">
+  
+    #<strong>validate_oauth_config</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+148
+149
+150
+151
+152
+153
+154</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/open_authorizable.rb', line 148</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_validate_oauth_config'>validate_oauth_config</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Missing config: oauth_client_id. Required for OAuth.</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:oauth_client_id</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Missing config: oauth_client_secret. Required for OAuth.</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:oauth_client_secret</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Missing config: oauth_redirect_url. Required for OAuth.</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:oauth_redirect_uri</span><span class='rbracket'>]</span>
+
+  <span class='id identifier rubyid_oauth_settings'>oauth_settings</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Fri Aug 22 07:32:50 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>

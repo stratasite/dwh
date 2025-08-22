@@ -5,7 +5,8 @@ class CloudSnowflakeTest < Minitest::Test
     @adapter ||=
       DWH.create(:snowflake,
                  { database: 'TEST_DB', auth_mode: 'pat',
-                   account_identifier: 'PPLLNCG-ERC73816' })
+                   account_identifier: 'MYACCOUNT',
+                   personal_access_token: '' })
   end
 
   def test_basic_connection
@@ -192,8 +193,39 @@ class CloudSnowflakeTest < Minitest::Test
   end
 
   def test_key_pair_auth
+    adapter = DWH.create(:snowflake, {
+                           auth_mode: 'kp',
+                           account_identifier: 'MYACCOUNT',
+                           username: 'test_user',
+                           warehouse: 'COMPUTE_WH',
+                           private_key: File.join(__dir__, '..', '..', 'snow_rsa_key.p8'),
+                           database: 'TEST_DB'
+                         })
+    assert adapter.connect?
+    assert_equal 2, adapter.tables(schema: 'public').size
   end
 
-  def test_oauth_strategy
+  # def test_oauth_strategy
+  #   client_id = ''
+  #   client_secret = ''
+  #   tokens = {
+  #     access_token: '',
+  #     refresh_token: '',
+  #     expires_at: Time.now - 200
+  #   }
+  #   a = DWH.create(:snowflake,
+  #                  { auth_mode: 'oauth', account_identifier: 'MYACCOUNT-IDENTIFIER',
+  #                    database: 'TEST_DB', oauth_client_id: client_id, oauth_client_secret: client_secret,
+  #                    oauth_redirect_uri: 'https://localhost:3030' })
+  #
+  #   a.apply_oauth_tokens(**tokens)
+  #
+  #   res = a.execute('select 420')
+  #   assert_equal '420', res[0][0]
+  # end
+
+  def test_get_tables_from_other_db
+    tables = adapter.tables(schema: 'tpch_sf1', catalog: 'snowflake_sample_data')
+    assert(tables.any? { it == 'CUSTOMER' })
   end
 end

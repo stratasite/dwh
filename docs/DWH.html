@@ -84,7 +84,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/dwh.rb<span class="defines">,<br />
-  lib/dwh/table.rb,<br /> lib/dwh/column.rb,<br /> lib/dwh/logger.rb,<br /> lib/dwh/factory.rb,<br /> lib/dwh/version.rb,<br /> lib/dwh/adapters.rb,<br /> lib/dwh/settings.rb,<br /> lib/dwh/behaviors.rb,<br /> lib/dwh/functions.rb,<br /> lib/dwh/table_stats.rb,<br /> lib/dwh/capabilities.rb,<br /> lib/dwh/adapters/druid.rb,<br /> lib/dwh/adapters/trino.rb,<br /> lib/dwh/adapters/athena.rb,<br /> lib/dwh/adapters/my_sql.rb,<br /> lib/dwh/functions/dates.rb,<br /> lib/dwh/functions/nulls.rb,<br /> lib/dwh/streaming_stats.rb,<br /> lib/dwh/adapters/duck_db.rb,<br /> lib/dwh/functions/arrays.rb,<br /> lib/dwh/adapters/postgres.rb,<br /> lib/dwh/adapters/snowflake.rb,<br /> lib/dwh/adapters/sql_server.rb,<br /> lib/dwh/functions/extract_date_part.rb</span>
+  lib/dwh/table.rb,<br /> lib/dwh/column.rb,<br /> lib/dwh/errors.rb,<br /> lib/dwh/logger.rb,<br /> lib/dwh/factory.rb,<br /> lib/dwh/version.rb,<br /> lib/dwh/adapters.rb,<br /> lib/dwh/settings.rb,<br /> lib/dwh/behaviors.rb,<br /> lib/dwh/functions.rb,<br /> lib/dwh/table_stats.rb,<br /> lib/dwh/capabilities.rb,<br /> lib/dwh/adapters/druid.rb,<br /> lib/dwh/adapters/trino.rb,<br /> lib/dwh/adapters/athena.rb,<br /> lib/dwh/adapters/my_sql.rb,<br /> lib/dwh/functions/dates.rb,<br /> lib/dwh/functions/nulls.rb,<br /> lib/dwh/streaming_stats.rb,<br /> lib/dwh/adapters/duck_db.rb,<br /> lib/dwh/functions/arrays.rb,<br /> lib/dwh/adapters/postgres.rb,<br /> lib/dwh/adapters/snowflake.rb,<br /> lib/dwh/adapters/sql_server.rb,<br /> lib/dwh/adapters/open_authorizable.rb,<br /> lib/dwh/functions/extract_date_part.rb</span>
 </dd>
   </dl>
   
@@ -94,22 +94,34 @@
   <div class="discussion">
     <p>DWH encapsulates the full functionality of this gem.</p>
 
-<p>==== Examples</p>
-
-<p>Create an instance of an existing registered adapter:
-  DWH.create(“snowflake”, “wh”, account_id: “myid”)</p>
-
-<p>Check if an adapter exists:
-  DWH.adapter?(:redshift)</p>
-
-<p>Register your own adatper:
-  DWH.register(:my_adapter, MyLib::MyAdapter)</p>
-
 
   </div>
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Create an instance of an existing registered adapter:</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'>DWH</span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>snowflake</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='label'>warehouse:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>wh</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>account_id:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>myid</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Check if an adapter exists:</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'>DWH</span><span class='period'>.</span><span class='id identifier rubyid_adapter?'><span class='object_link'><a href="DWH/Factory.html#adapter%3F-instance_method" title="DWH::Factory#adapter? (method)">adapter?</a></span></span><span class='lparen'>(</span><span class='symbol'>:redshift</span><span class='rparen'>)</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Register your own adatper:</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'>DWH</span><span class='period'>.</span><span class='id identifier rubyid_register'><span class='object_link'><a href="DWH/Factory.html#register-instance_method" title="DWH::Factory#register (method)">register</a></span></span><span class='lparen'>(</span><span class='symbol'>:my_adapter</span><span class='comma'>,</span> <span class='const'>MyLib</span><span class='op'>::</span><span class='const'>MyAdapter</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+
 
 </div><h2>Defined Under Namespace</h2>
 <p class="children">
@@ -119,7 +131,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="DWH/Column.html" title="DWH::Column (class)">Column</a></span>, <span class='object_link'><a href="DWH/ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span>, <span class='object_link'><a href="DWH/ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span>, <span class='object_link'><a href="DWH/ExecutionError.html" title="DWH::ExecutionError (class)">ExecutionError</a></span>, <span class='object_link'><a href="DWH/StreamingStats.html" title="DWH::StreamingStats (class)">StreamingStats</a></span>, <span class='object_link'><a href="DWH/Table.html" title="DWH::Table (class)">Table</a></span>, <span class='object_link'><a href="DWH/TableStats.html" title="DWH::TableStats (class)">TableStats</a></span>, <span class='object_link'><a href="DWH/UnsupportedCapability.html" title="DWH::UnsupportedCapability (class)">UnsupportedCapability</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="DWH/AuthenticationError.html" title="DWH::AuthenticationError (class)">AuthenticationError</a></span>, <span class='object_link'><a href="DWH/Column.html" title="DWH::Column (class)">Column</a></span>, <span class='object_link'><a href="DWH/ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span>, <span class='object_link'><a href="DWH/ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span>, <span class='object_link'><a href="DWH/DWHError.html" title="DWH::DWHError (class)">DWHError</a></span>, <span class='object_link'><a href="DWH/ExecutionError.html" title="DWH::ExecutionError (class)">ExecutionError</a></span>, <span class='object_link'><a href="DWH/OAuthError.html" title="DWH::OAuthError (class)">OAuthError</a></span>, <span class='object_link'><a href="DWH/StreamingStats.html" title="DWH::StreamingStats (class)">StreamingStats</a></span>, <span class='object_link'><a href="DWH/Table.html" title="DWH::Table (class)">Table</a></span>, <span class='object_link'><a href="DWH/TableStats.html" title="DWH::TableStats (class)">TableStats</a></span>, <span class='object_link'><a href="DWH/TokenExpiredError.html" title="DWH::TokenExpiredError (class)">TokenExpiredError</a></span>, <span class='object_link'><a href="DWH/UnsupportedCapability.html" title="DWH::UnsupportedCapability (class)">UnsupportedCapability</a></span>
     
   
 </p>
@@ -198,7 +210,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Aug 18 12:26:12 2025 by
+  Generated on Fri Aug 22 07:32:50 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
