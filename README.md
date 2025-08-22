@@ -1,6 +1,5 @@
 
-[![Ruby](https://github.com/stratasite/dwh/workflows/Ruby/bad
-  ge.svg)](https://github.com/stratasite/dwh/actions)
+[![Ruby](https://github.com/stratasite/dwh/workflows/Ruby/badge.svg)](https://github.com/stratasite/dwh/actions)
 
 # DWH - Data Warehouse Adapter Library
 
@@ -25,13 +24,13 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 ## Supported Databases
 
 - **Snowflake** - High performance cloud warehouse
+- **Trino** (formerly Presto) - Distributed SQL query engine
 - **AWS Athena** - AWS big data warehouse
+- **Apache Druid** - Real-time analytics database
+- **DuckDB** - In-process analytical database
 - **PostgreSQL** - Full-featured RDBMS with advanced SQL support
 - **MySQL** - Popular open-source database
 - **SQL Server** - Microsoft's enterprise database
-- **Trino** (formerly Presto) - Distributed SQL query engine
-- **Apache Druid** - Real-time analytics database
-- **DuckDB** - In-process analytical database
 
 ## Integrations Coming Soon
 
