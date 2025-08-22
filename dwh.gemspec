@@ -9,7 +9,11 @@ Gem::Specification.new do |spec|
   spec.email = ['ajo@strata.site']
 
   spec.summary = 'Data warehouse adapters for interacting with popular data warehouses.'
-  spec.description = 'Provides a unified interface across data warehouses to connect, execute, and introspecta. Supports popular cloud warehouses too.'
+  spec.description = <<~TEXT
+    Provides a unified interface across data warehouses to connect, execute, and introspect. This is not an ORM but a fast
+    integrationg solution. It is quite easy to add new database adapters. Supports popular cloud warehouses too.
+  TEXT
+
   spec.homepage = 'https://www.strata.site'
   spec.required_ruby_version = '>= 3.4.4'
 
