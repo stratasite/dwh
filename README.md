@@ -1,3 +1,7 @@
+
+[![Ruby](https://github.com/stratasite/dwh/workflows/Ruby/bad
+  ge.svg)](https://github.com/stratasite/dwh/actions)
+
 # DWH - Data Warehouse Adapter Library
 
 A light weight library to connect, introspect, and query popular databases over a unified interface.  This gem is intended for analtyical workloads.  The library also provides database specific translations for common functions like `date_trunc`, `date_add` etc.  The function tranlation is not comprehensive. But, it does provides good coverage for date handling, and some array handling as well.

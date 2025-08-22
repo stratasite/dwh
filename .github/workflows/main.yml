@@ -27,5 +27,11 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+      - name: Generate documentation
+        run: bundle exec rake doc
+
       - name: Run the default task
         run: bundle exec rake test:unit
