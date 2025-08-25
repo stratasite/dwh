@@ -63,222 +63,214 @@
 
 <h2 id="installation">Installation</h2>
 
-<p>Add this line to your application’s Gemfile:</p>
+<p>Add this line to your application&#39;s Gemfile:</p>
 
-<p><code>ruby
-gem 'dwh'
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>dwh</span><span class='tstring_end'>&#39;</span></span>
+</code></pre>
 
 <p>And then execute:</p>
 
-<p><code>bash
-bundle install
-</code></p>
+<pre class="code bash"><code class="bash">bundle install
+</code></pre>
 
 <p>Or install it yourself as:</p>
 
-<p><code>bash
-gem install dwh
-</code></p>
+<pre class="code bash"><code class="bash">gem install dwh
+</code></pre>
 
 <h2 id="basic-usage">Basic Usage</h2>
 
 <h3 id="creating-your-first-connection">Creating Your First Connection</h3>
 
-<p>```ruby
-require ‘dwh’</p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>dwh</span><span class='tstring_end'>&#39;</span></span>
 
-<h1 id="connect-to-postgresql">Connect to PostgreSQL</h1>
-<p>postgres = DWH.create(:postgres, {
-  host: ‘localhost’,
-  database: ‘mydb’,
-  username: ‘user’,
-  password: ‘password’
-})</p>
+<span class='comment'># Connect to PostgreSQL
+</span><span class='id identifier rubyid_postgres'>postgres</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<h1 id="connect-to-duckdb-in-memory">Connect to DuckDB (in-memory)</h1>
-<p>duckdb = DWH.create(:duckdb, {
-  database: ‘:memory:’
-})
-```</p>
+<span class='comment'># Connect to DuckDB (in-memory)
+</span><span class='id identifier rubyid_duckdb'>duckdb</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:duckdb</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>:memory:</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="your-first-query">Your First Query</h3>
 
-<p>```ruby
-# Execute a simple query
-results = postgres.execute(“SELECT * FROM users LIMIT 10”)</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># Execute a simple query
+</span><span class='id identifier rubyid_results'>results</span> <span class='op'>=</span> <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM users LIMIT 10</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
-<h1 id="results-are-returned-as-arrays-by-default">Results are returned as arrays by default</h1>
-<p>results.each do |row|
-  puts row.inspect
-end
-```</p>
+<span class='comment'># Results are returned as arrays by default
+</span><span class='id identifier rubyid_results'>results</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_row'>row</span><span class='op'>|</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_row'>row</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span>
+<span class='kw'>end</span>
+</code></pre>
 
 <h3 id="exploring-your-database">Exploring Your Database</h3>
 
-<p>```ruby
-# List all tables
-tables = postgres.tables
-puts “Available tables: #tables.map(&amp;:physical_name)”</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># List all tables
+</span><span class='id identifier rubyid_tables'>tables</span> <span class='op'>=</span> <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_tables'>tables</span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Available tables: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_tables'>tables</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:physical_name</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
 
-<h1 id="get-detailed-information-about-a-table">Get detailed information about a table</h1>
-<p>table_info = postgres.metadata(‘users’)
-puts “Table: #table_infotable_info.physical_name”
-puts “Schema: #table_infotable_info.schema”
-puts “Columns:”
-table_info.columns.each do |column|
-  puts “  #columncolumn.name (#columncolumn.normalized_data_type)”
-end</p>
+<span class='comment'># Get detailed information about a table
+</span><span class='id identifier rubyid_table_info'>table_info</span> <span class='op'>=</span> <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>users</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Table: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_table_info'>table_info</span><span class='period'>.</span><span class='id identifier rubyid_physical_name'>physical_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Schema: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_table_info'>table_info</span><span class='period'>.</span><span class='id identifier rubyid_schema'>schema</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Columns:</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_table_info'>table_info</span><span class='period'>.</span><span class='id identifier rubyid_columns'>columns</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_column'>column</span><span class='op'>|</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_column'>column</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_column'>column</span><span class='period'>.</span><span class='id identifier rubyid_normalized_data_type'>normalized_data_type</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
 
-<h1 id="get-table-statistics">Get table statistics</h1>
-<p>stats = postgres.stats(‘users’, date_column: ‘created_at’)
-puts “Row count: #statsstats.row_count”
-puts “Date range: #statsstats.date_start to #statsstats.date_end”
-```</p>
+<span class='comment'># Get table statistics
+</span><span class='id identifier rubyid_stats'>stats</span> <span class='op'>=</span> <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>users</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>date_column:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Row count: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_stats'>stats</span><span class='period'>.</span><span class='id identifier rubyid_row_count'>row_count</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Date range: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_stats'>stats</span><span class='period'>.</span><span class='id identifier rubyid_date_start'>date_start</span><span class='embexpr_end'>}</span><span class='tstring_content'> to </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_stats'>stats</span><span class='period'>.</span><span class='id identifier rubyid_date_end'>date_end</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+</code></pre>
 
 <h3 id="different-output-formats">Different Output Formats</h3>
 
-<p>```ruby
-# Get results as arrays (default)
-array_results = postgres.execute(“SELECT id, name FROM users LIMIT 5”)</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># Get results as arrays (default)
+</span><span class='id identifier rubyid_array_results'>array_results</span> <span class='op'>=</span> <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id, name FROM users LIMIT 5</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
-<h1 id="get-results-as-hashesobjects">Get results as hashes/objects</h1>
-<p>hash_results = postgres.execute(“SELECT id, name FROM users LIMIT 5”, format: :object)</p>
+<span class='comment'># Get results as hashes/objects
+</span><span class='id identifier rubyid_hash_results'>hash_results</span> <span class='op'>=</span> <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id, name FROM users LIMIT 5</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:object</span><span class='rparen'>)</span>
 
-<h1 id="get-results-as-csv-string">Get results as CSV string</h1>
-<p>csv_results = postgres.execute(“SELECT id, name FROM users LIMIT 5”, format: :csv)</p>
+<span class='comment'># Get results as CSV string
+</span><span class='id identifier rubyid_csv_results'>csv_results</span> <span class='op'>=</span> <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id, name FROM users LIMIT 5</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:csv</span><span class='rparen'>)</span>
 
-<h1 id="stream-large-results-to-a-file">Stream large results to a file</h1>
-<p>postgres.execute_stream(“SELECT * FROM large_table”, File.open(‘output.csv’, ‘w’))
-```</p>
+<span class='comment'># Stream large results to a file
+</span><span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM large_table</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output.csv</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>w</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="streaming-large-datasets">Streaming Large Datasets</h3>
 
-<p>```ruby
-# stream data while tracting stats and previewing data in a separate thread
-stats = DWH::StreamingStats.new(10000) # num of rows to keep in memory for previewing
-exec_thread  = Thread.new {
-  postgres.execute_stream(“SELECT * FROM large_table”, File.open(‘output.csv’, ‘w’), stats: stats)
-}</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># stream data while tracting stats and previewing data in a separate thread
+</span><span class='id identifier rubyid_stats'>stats</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DWH/StreamingStats.html" title="DWH::StreamingStats (class)">StreamingStats</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="DWH/StreamingStats.html#initialize-instance_method" title="DWH::StreamingStats#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='int'>10000</span><span class='rparen'>)</span> <span class='comment'># num of rows to keep in memory for previewing
+</span><span class='id identifier rubyid_exec_thread'>exec_thread</span>  <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='lbrace'>{</span>
+  <span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM large_table</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output.csv</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>w</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>stats:</span> <span class='id identifier rubyid_stats'>stats</span><span class='rparen'>)</span>
+<span class='rbrace'>}</span>
 
-<p>mon_thread = Thread.new{
-  loop do
-    break if exec_thread.alive?</p>
+<span class='id identifier rubyid_mon_thread'>mon_thread</span> <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lbrace'>{</span>
+  <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
+    <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_exec_thread'>exec_thread</span><span class='period'>.</span><span class='id identifier rubyid_alive?'>alive?</span>
 
-<pre class="code ruby"><code class="ruby">puts stats.data.last   end }
+    <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_stats'>stats</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span>
+  <span class='kw'>end</span>
+<span class='rbrace'>}</span>
+
+<span class='lbracket'>[</span><span class='id identifier rubyid_exec_thread'>exec_thread</span><span class='comma'>,</span> <span class='id identifier rubyid_mon_thread'>mon_thread</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:join</span><span class='rparen'>)</span>
+
+<span class='comment'># Stream with block processing
+</span><span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_stream'>stream</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM large_table</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_chunk'>chunk</span><span class='op'>|</span>
+  <span class='id identifier rubyid_process_chunk'>process_chunk</span><span class='lparen'>(</span><span class='id identifier rubyid_chunk'>chunk</span><span class='rparen'>)</span>
+<span class='kw'>end</span>
+
 </code></pre>
-
-<p>[exec_thread, mon_thread].each(&amp;:join)</p>
-
-<h1 id="stream-with-block-processing">Stream with block processing</h1>
-<p>postgres.stream(“SELECT * FROM large_table”) do |chunk|
-  process_chunk(chunk)
-end</p>
-
-<p>```</p>
 
 <h2 id="advanced-usage">Advanced Usage</h2>
 
 <h3 id="connection-pooling">Connection Pooling</h3>
 
-<p>```ruby
-# Create a connection pool
-pool = DWH.pool(‘my_postgres_pool’, :postgres, {
-  host: ‘localhost’,
-  database: ‘mydb’,
-  username: ‘user’,
-  password: ‘password’
-}, size: 10, timeout: 5)</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># Create a connection pool
+</span><span class='id identifier rubyid_pool'>pool</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_pool'><span class='object_link'><a href="DWH/Factory.html#pool-instance_method" title="DWH::Factory#pool (method)">pool</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my_postgres_pool</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='comma'>,</span> <span class='label'>size:</span> <span class='int'>10</span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='int'>5</span><span class='rparen'>)</span>
 
-<h1 id="use-the-pool">Use the pool</h1>
-<p>pool.with do |connection|
-  results = connection.execute(“SELECT COUNT(*) FROM users”)
-end</p>
+<span class='comment'># Use the pool
+</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_with'>with</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_connection'>connection</span><span class='op'>|</span>
+  <span class='id identifier rubyid_results'>results</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT COUNT(*) FROM users</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span>
 
-<h1 id="shutdown-the-pool-when-done">Shutdown the pool when done</h1>
-<p>DWH.shutdown(‘my_postgres_pool’)
-```</p>
+<span class='comment'># Shutdown the pool when done
+</span><span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_shutdown'><span class='object_link'><a href="DWH/Factory.html#shutdown-instance_method" title="DWH::Factory#shutdown (method)">shutdown</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my_postgres_pool</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="using-extra-connection-params">Using Extra Connection Params</h3>
 
 <p>DWH uses an existing Ruby gem where possible to connect to each target database.  When that is not possible and the db supports a REST endpoint, we will use Faraday.</p>
 
-<p>Using <code>extra_connection_params</code> key you can pass in a Hash of options that the target connector supports but DWH doesn’t make first class.  The main config options in DWH are based on required and common needs.</p>
+<p>Using <code>extra_connection_params</code> key you can pass in a Hash of options that the target connector supports but DWH doesn&#39;t make first class.  The main config options in DWH are based on required and common needs.</p>
 
-<h4 id="sending-postgres-connecttimeout-property-supported-by-the-pg-gem">Sending Postgres ‘connect_timeout’ property supported by the PG gem</h4>
+<h4 id="sending-postgres-connect_timeout-property-supported-by-the-pg-gem">Sending Postgres &#39;connect_timeout&#39; property supported by the PG gem</h4>
 
-<p>```ruby
-pg = DWH.create(:postgres, {
-  host: ‘localhost’,
-  database: ‘mydb’,
-  username: ‘user’,
-  password: ‘password’,
-  extra_connection_params: {
-    connect_timeout: 5
-  }
-})</p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_pg'>pg</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>connect_timeout:</span> <span class='int'>5</span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<p>```</p>
+</code></pre>
 
 <h3 id="database-functions">Database Functions</h3>
 
 <p>DWH provides a function translation layer that converts common SQL functions to database-specific syntax:</p>
 
-<p>```ruby
-# Date truncation
-postgres.truncate_date(‘week’, ‘created_at’)  # =&gt; DATE_TRUNC(‘week’, created_at)
-sqlserver.truncate_date(‘week’, ‘created_at’) # =&gt; DATETRUNC(week, created_at)</p>
-
-<h1 id="date-literals">Date literals</h1>
-<p>postgres.date_literal(‘2025-01-01’)   # =&gt; ‘2025-01-01’::DATE
-sqlserver.date_literal(‘2025-01-01’)  # =&gt; ‘2025-01-01’</p>
-
-<h1 id="null-handling">Null handling</h1>
-<p>adapter.coalesce(‘column1’, ‘column2’, “‘default’”)  # =&gt; COALESCE(column1, column2, ‘default’)
-adapter.null_if(‘column1’, “‘empty’”)                # =&gt; NULLIF(column1, ‘empty’)</p>
-
-<h1 id="string-functions">String functions</h1>
-<p>adapter.trim(‘column_name’)        # =&gt; TRIM(column_name)
-adapter.upper_case(‘column_name’)  # =&gt; UPPER(column_name)
-adapter.lower_case(‘column_name’)  # =&gt; LOWER(column_name)
-```</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># Date truncation
+</span><span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_truncate_date'>truncate_date</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>week</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>  <span class='comment'># =&gt; DATE_TRUNC(&#39;week&#39;, created_at)
+</span><span class='id identifier rubyid_sqlserver'>sqlserver</span><span class='period'>.</span><span class='id identifier rubyid_truncate_date'>truncate_date</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>week</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='comment'># =&gt; DATETRUNC(week, created_at)
+</span>
+<span class='comment'># Date literals
+</span><span class='id identifier rubyid_postgres'>postgres</span><span class='period'>.</span><span class='id identifier rubyid_date_literal'>date_literal</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>2025-01-01</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>   <span class='comment'># =&gt; &#39;2025-01-01&#39;::DATE
+</span><span class='id identifier rubyid_sqlserver'>sqlserver</span><span class='period'>.</span><span class='id identifier rubyid_date_literal'>date_literal</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>2025-01-01</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>  <span class='comment'># =&gt; &#39;2025-01-01&#39;
+</span>
+<span class='comment'># Null handling
+</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_coalesce'>coalesce</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>column1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>column2</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&#39;default&#39;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>  <span class='comment'># =&gt; COALESCE(column1, column2, &#39;default&#39;)
+</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_null_if'>null_if</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>column1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&#39;empty&#39;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>                <span class='comment'># =&gt; NULLIF(column1, &#39;empty&#39;)
+</span>
+<span class='comment'># String functions
+</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_trim'>trim</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>column_name</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>        <span class='comment'># =&gt; TRIM(column_name)
+</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_upper_case'>upper_case</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>column_name</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>  <span class='comment'># =&gt; UPPER(column_name)
+</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_lower_case'>lower_case</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>column_name</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>  <span class='comment'># =&gt; LOWER(column_name)
+</span></code></pre>
 
 <h2 id="core-api">Core API</h2>
 
 <p>Standardized API across adapters:</p>
 
-<dl>
-  <dt>connection</dt>
-  <dd>creates a reusuable connection based on config hash passed in</dd>
-  <dt>tables(schema: nil, catalog: nil)</dt>
-  <dd>returns a list of tables from the default connection or from the specified schema and catalog</dd>
-  <dt>metadata(table_name, schema: nil, catalog: nil)</dt>
-  <dd>provides metadata about a table</dd>
-  <dt>stats(table_name, date_column: nil)</dt>
-  <dd>provides table row count and date range</dd>
-  <dt>execute(sql, format: :array, retries: 0)</dt>
-  <dd>runs a query and returns in given format</dd>
-  <dt>execute_stream(sql, io, stats: nil)</dt>
-  <dd>runs a query and streams it as csv into the given io</dd>
-</dl>
+<p>connection
+: creates a reusuable connection based on config hash passed in</p>
+
+<p>tables(schema: nil, catalog: nil)
+: returns a list of tables from the default connection or from the specified schema and catalog</p>
+
+<p>metadata(table_name, schema: nil, catalog: nil)
+: provides metadata about a table</p>
+
+<p>stats(table_name, date_column: nil)
+: provides table row count and date range</p>
+
+<p>execute(sql, format: :array, retries: 0)
+: runs a query and returns in given format</p>
+
+<p>execute_stream(sql, io, stats: nil)
+: runs a query and streams it as csv into the given io</p>
 
 <h2 id="error-handling">Error Handling</h2>
 
-<p><code>ruby
-begin
-  results = adapter.execute("SELECT * FROM non_existent_table")
-rescue DWH::ExecutionError =&gt; e
-  puts "Query failed: #{e.message}"
-rescue DWH::ConnectionError =&gt; e
-  puts "Connection failed: #{e.message}"
-rescue DWH::ConfigError =&gt; e
-  puts "Configuration error: #{e.message}"
-end
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='kw'>begin</span>
+  <span class='id identifier rubyid_results'>results</span> <span class='op'>=</span> <span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM non_existent_table</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DWH/ExecutionError.html" title="DWH::ExecutionError (class)">ExecutionError</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Query failed: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DWH/ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Connection failed: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DWH/ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Configuration error: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
+</code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Aug 25 14:18:51 2025 by
+  Generated on Mon Aug 25 15:02:42 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

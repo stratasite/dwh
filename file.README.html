@@ -57,15 +57,14 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'>
-<p><a href="https://github.com/stratasite/dwh/actions"><img src="https://github.com/stratasite/dwh/workflows/Ruby/badge.svg" alt="Ruby" /></a></p>
+      <div id="content"><div id='filecontents'><p><a href="https://github.com/stratasite/dwh/actions"><img src="https://github.com/stratasite/dwh/workflows/Ruby/badge.svg" alt="Ruby"></a></p>
 
-<h1 id="dwh---data-warehouse-adapter-library">DWH - Data Warehouse Adapter Library</h1>
+<h1 id="dwh-data-warehouse-adapter-library">DWH - Data Warehouse Adapter Library</h1>
 
 <p>A light weight library to connect, introspect, and query popular databases over a unified interface.  This gem is intended for analtyical workloads.  The library also provides database specific translations for common functions like <code>date_trunc</code>, <code>date_add</code> etc.  The function tranlation is not comprehensive. But, it does provides good coverage for date handling, and some array handling as well.</p>
 
 <blockquote>
-  <p>[!NOTE]
+<p>[!NOTE]
 <strong>This is not an ORM</strong> nor will it cast types to ruby unless the underlying client does it out of the box.  The goal here is to create an Architecture where new databases can be onboarded quickly.</p>
 </blockquote>
 
@@ -78,57 +77,55 @@
 <h2 id="features">Features</h2>
 
 <ul>
-  <li><strong>Unified Interface</strong>: Connect to multiple database types using the same API</li>
-  <li><strong>SQL Function Translation</strong>: Automatically translates common SQL functions to database-specific syntax</li>
-  <li><strong>Connection Pooling</strong>: Built-in connection pool management for high-performance applications</li>
-  <li><strong>Rich Metadata</strong>: Extract table schemas, column information, and statistics</li>
+<li><strong>Unified Interface</strong>: Connect to multiple database types using the same API</li>
+<li><strong>SQL Function Translation</strong>: Automatically translates common SQL functions to database-specific syntax</li>
+<li><strong>Connection Pooling</strong>: Built-in connection pool management for high-performance applications</li>
+<li><strong>Rich Metadata</strong>: Extract table schemas, column information, and statistics</li>
 </ul>
 
 <h2 id="supported-databases">Supported Databases</h2>
 
 <ul>
-  <li><strong>Snowflake</strong> - High performance cloud warehouse</li>
-  <li><strong>Trino</strong> (formerly Presto) - Distributed SQL query engine</li>
-  <li><strong>AWS Athena</strong> - AWS big data warehouse</li>
-  <li><strong>Apache Druid</strong> - Real-time analytics database</li>
-  <li><strong>DuckDB</strong> - In-process analytical database</li>
-  <li><strong>PostgreSQL</strong> - Full-featured RDBMS with advanced SQL support</li>
-  <li><strong>MySQL</strong> - Popular open-source database</li>
-  <li><strong>SQL Server</strong> - Microsoft’s enterprise database</li>
+<li><strong>Snowflake</strong> - High performance cloud warehouse</li>
+<li><strong>Trino</strong> (formerly Presto) - Distributed SQL query engine</li>
+<li><strong>AWS Athena</strong> - AWS big data warehouse</li>
+<li><strong>Apache Druid</strong> - Real-time analytics database</li>
+<li><strong>DuckDB</strong> - In-process analytical database</li>
+<li><strong>PostgreSQL</strong> - Full-featured RDBMS with advanced SQL support</li>
+<li><strong>MySQL</strong> - Popular open-source database</li>
+<li><strong>SQL Server</strong> - Microsoft&#39;s enterprise database</li>
 </ul>
 
 <h2 id="integrations-coming-soon">Integrations Coming Soon</h2>
 
 <ul>
-  <li><strong>Redshift</strong> - AWS data warehouse platform</li>
-  <li><strong>ClickHouse</strong> - High performance analytical db</li>
-  <li><strong>Databricks</strong> - Big data compute engine</li>
-  <li><strong>MotherDuck</strong> - Hosted DuckDB service</li>
+<li><strong>Redshift</strong> - AWS data warehouse platform</li>
+<li><strong>ClickHouse</strong> - High performance analytical db</li>
+<li><strong>Databricks</strong> - Big data compute engine</li>
+<li><strong>MotherDuck</strong> - Hosted DuckDB service</li>
 </ul>
 
 <h2 id="quick-start">Quick Start</h2>
 
 <p>Install it yourself as:</p>
 
-<p><code>bash
-gem install dwh
-</code></p>
+<pre class="code bash"><code class="bash">gem install dwh
+</code></pre>
 
 <h3 id="connect-and-execute-a-basic-query">Connect and Execute a Basic Query</h3>
 
-<p>```ruby
-require ‘dwh’</p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>dwh</span><span class='tstring_end'>&#39;</span></span>
 
-<h1 id="connect-to-druid">Connect to Druid</h1>
-<p>druid = DWH.create(:druid, {
-  host: ‘localhost’,
-  port: 8080,
-  protocol: ‘http’
-})</p>
+<span class='comment'># Connect to Druid
+</span><span class='id identifier rubyid_druid'>druid</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:druid</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>8080</span><span class='comma'>,</span>
+  <span class='label'>protocol:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<h1 id="basic-query-execution">basic query execution</h1>
-<p>results = druid.execute(“SELECT * FROM web_sales”, format: :csv)
-```</p>
+<span class='comment'># basic query execution
+</span><span class='id identifier rubyid_results'>results</span> <span class='op'>=</span> <span class='id identifier rubyid_druid'>druid</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM web_sales</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:csv</span><span class='rparen'>)</span>
+</code></pre>
 
 <h2 id="core-api">Core API</h2>
 
@@ -152,10 +149,11 @@ require ‘dwh’</p>
 <h2 id="tutorials-and-guides">Tutorials and Guides</h2>
 
 <ul>
-  <li><a href="/docs/guides/getting-started.md">Getting Started</a></li>
-  <li><a href="/docs/guides/adapters.md">Adapter Configuration</a></li>
-  <li><a href="/docs/guides/creating-adapters.md">Creating an Adapter</a></li>
-  <li><a href="https://rubydoc.info/github/stratasite/dwh.git">API</a></li>
+<li><a href="https://strata.site/dwh/file.getting-started.html">Getting Started</a></li>
+<li><a href="https://strata.site/dwh/file.adapters.html">Adapter Configuration</a></li>
+<li><a href="https://strata.site/dwh/file.creating-adapters.html">Creating an Adapter</a></li>
+<li><a href="https://strata.site/dwh/file.usage.html">Advanced Usage</a></li>
+<li><a href="https://strata.site/dwh/DWH.html">API</a></li>
 </ul>
 
 <h2 id="testing">Testing</h2>
@@ -164,21 +162,18 @@ require ‘dwh’</p>
 
 <p>Run Unit Tests:</p>
 
-<p><code>bash
-bundle exec rake test:unit
-</code></p>
+<pre class="code bash"><code class="bash">bundle exec rake test:unit
+</code></pre>
 
 <p>Run tests on RDBMS dbs:</p>
 
-<p><code>bash
-bundle exec rake test:system:rdbms 
-</code></p>
+<pre class="code bash"><code class="bash">bundle exec rake test:system:rdbms 
+</code></pre>
 
 <p>Run tests on  druid:</p>
 
-<p><code>bash
-bundle exec rake test:system:druid 
-</code></p>
+<pre class="code bash"><code class="bash">bundle exec rake test:system:druid 
+</code></pre>
 
 <h2 id="development">Development</h2>
 
@@ -200,7 +195,7 @@ bundle exec rake test:system:druid
 </div></div>
 
       <div id="footer">
-  Generated on Mon Aug 25 14:18:51 2025 by
+  Generated on Mon Aug 25 15:02:42 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

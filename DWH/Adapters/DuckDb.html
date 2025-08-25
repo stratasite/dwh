@@ -189,7 +189,7 @@ is passed in as options hash or argument list.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'><p>DuckDB is an in process database so we don’t want to open multiple instances of the same db in memory.</p>
+    <span class="summary_desc"><div class='inline'><p>DuckDB is an in process database so we don&#39;t want to open multiple instances of the same db in memory.</p>
 </div></span>
   
 </li>
@@ -212,8 +212,7 @@ is passed in as options hash or argument list.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -235,8 +234,7 @@ is passed in as options hash or argument list.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -497,8 +495,7 @@ is passed in as options hash or argument list.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -639,7 +636,7 @@ is passed in as options hash or argument list.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>DuckDB is an in process database so we don’t want to
+    <p>DuckDB is an in process database so we don&#39;t want to
 open multiple instances of the same db in memory. Rather,
 we open one instance but many connections. Use this
 method to close them all.</p>
@@ -915,13 +912,19 @@ connection object or self</p>
       
       
         &mdash;
-        <div class='inline'><p>return format type
-- array returns array of array
-- object returns array of Hashes
-- csv returns as csv
-- native returns the native result from any clients used
-  - For example: Postgres using pg client will return PG::Result
-  - Http clients will returns the HTTP response object</p>
+        <div class='inline'><p>return format type</p>
+
+<ul>
+<li>array returns array of array</li>
+<li>object returns array of Hashes</li>
+<li>csv returns as csv</li>
+<li>native returns the native result from any clients used
+
+<ul>
+<li>For example: Postgres using pg client will return PG::Result</li>
+<li>Http clients will returns the HTTP response object</li>
+</ul></li>
+</ul>
 </div>
       
     </li>
@@ -1207,9 +1210,9 @@ to the provided IO object.</p>
 Pass in optional catalog and schema info.</p>
 
 <p>Example:
-  metadata(“public.big_table”)
-  metadata(“big_table”)
-  metadata(“big_table”,schema: “public”)</p>
+  metadata(&quot;public.big_table&quot;)
+  metadata(&quot;big_table&quot;)
+  metadata(&quot;big_table&quot;,schema: &quot;public&quot;)</p>
 
 
   </div>
@@ -1229,7 +1232,7 @@ Pass in optional catalog and schema info.</p>
       
         &mdash;
         <div class='inline'><ul>
-  <li>table name</li>
+<li>table name</li>
 </ul>
 </div>
       
@@ -1268,7 +1271,7 @@ Pass in optional catalog and schema info.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1281,7 +1284,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1521,7 +1524,7 @@ date_start, and date_end.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1534,7 +1537,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1774,7 +1777,7 @@ config only specified here.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1787,7 +1790,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1951,7 +1954,6 @@ connection object or self</p>
   <div class="discussion">
     
 
-
   </div>
 </div>
 <div class="tags">
@@ -2002,7 +2004,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Aug 25 14:18:52 2025 by
+  Generated on Mon Aug 25 15:02:43 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

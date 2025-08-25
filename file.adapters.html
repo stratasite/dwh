@@ -67,64 +67,61 @@
 
 <h3 id="basic-configuration">Basic Configuration</h3>
 
-<p><code>ruby
-postgres = DWH.create(:postgres, {
-  host: 'localhost',
-  port: 5432,                    # Default: 5432
-  database: 'mydb',
-  schema: 'public',              # Default: 'public'
-  username: 'user',
-  password: 'password',
-  client_name: 'My Application'  # Default: 'DWH Ruby Gem'
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_postgres'>postgres</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>5432</span><span class='comma'>,</span>                    <span class='comment'># Default: 5432
+</span>  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>public</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>              <span class='comment'># Default: &#39;public&#39;
+</span>  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>My Application</span><span class='tstring_end'>&#39;</span></span>  <span class='comment'># Default: &#39;DWH Ruby Gem&#39;
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="ssl-configuration">SSL Configuration</h3>
 
-<p>```ruby
-# Basic SSL
-postgres = DWH.create(:postgres, {
-  host: ‘localhost’,
-  database: ‘mydb’,
-  username: ‘user’,
-  password: ‘password’,
-  ssl: true,
-  extra_connection_params: {
-    sslmode: ‘require’  # disable, prefer, require, verify-ca, verify-full
-  }
-})</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># Basic SSL
+</span><span class='id identifier rubyid_postgres'>postgres</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>ssl:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>sslmode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>require</span><span class='tstring_end'>&#39;</span></span>  <span class='comment'># disable, prefer, require, verify-ca, verify-full
+</span>  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<h1 id="certificate-based-ssl">Certificate-based SSL</h1>
-<p>postgres = DWH.create(:postgres, {
-  host: ‘localhost’,
-  database: ‘mydb’,
-  username: ‘user’,
-  ssl: true,
-  extra_connection_params: {
-    sslmode: ‘verify-full’,
-    sslrootcert: ‘/path/to/ca-cert.pem’,
-    sslcert: ‘/path/to/client-cert.pem’,
-    sslkey: ‘/path/to/client-key.pem’
-  }
-})
-```</p>
+<span class='comment'># Certificate-based SSL
+</span><span class='id identifier rubyid_postgres'>postgres</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>ssl:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>sslmode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>verify-full</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslrootcert:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/ca-cert.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslcert:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/client-cert.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslkey:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/client-key.pem</span><span class='tstring_end'>&#39;</span></span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="advanced-configuration">Advanced Configuration</h3>
 
-<p><code>ruby
-postgres = DWH.create(:postgres, {
-  host: 'localhost',
-  database: 'mydb',
-  username: 'user',
-  password: 'password',
-  query_timeout: 3600,  # seconds, default: 3600
-  extra_connection_params: {
-    application_name: 'Data Analysis Tool',
-    connect_timeout: 10,
-    options: '-c maintenance_work_mem=256MB'
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_postgres'>postgres</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>query_timeout:</span> <span class='int'>3600</span><span class='comma'>,</span>  <span class='comment'># seconds, default: 3600
+</span>  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>application_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Data Analysis Tool</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>connect_timeout:</span> <span class='int'>10</span><span class='comma'>,</span>
+    <span class='label'>options:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>-c maintenance_work_mem=256MB</span><span class='tstring_end'>&#39;</span></span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h2 id="snowflake">Snowflake</h2>
 
@@ -133,358 +130,337 @@ authentication methods: Personal Access Token, Key Pair, and OAuth.</p>
 
 <h3 id="basic-connection-with-personal-access-token">Basic connection with Personal Access Token</h3>
 
-<p>```ruby
-DWH.create(:snowflake, {
-    auth_mode: ‘pat’,
-    account_identifier: ‘myorg-myaccount’,
-    personal_access_token: ‘your-token-here’,
-    warehouse: ‘COMPUTE_WH’,
-    database: ‘ANALYTICS’,
-    schema: ‘PUBLIC’
-})</p>
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:snowflake</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+    <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pat</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>account_identifier:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myorg-myaccount</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>personal_access_token:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>your-token-here</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>warehouse:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>COMPUTE_WH</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ANALYTICS</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>PUBLIC</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<p>```</p>
+</code></pre>
 
 <h3 id="connection-with-key-pair-authentication">Connection with Key Pair Authentication</h3>
 
-<p>```ruby
- DWH.create(:snowflake, {
-    auth_mode: ‘kp’,
-    account_identifier: ‘myorg-myaccount.us-east-1’,
-    username: ‘john_doe’,
-    private_key: ‘/path/to/private_key.pem’,
-    warehouse: ‘COMPUTE_WH’,
-    database: ‘ANALYTICS’
-})</p>
+<pre class="code ruby"><code class="ruby"> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:snowflake</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+    <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>kp</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>account_identifier:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myorg-myaccount.us-east-1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>john_doe</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>private_key:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/private_key.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>warehouse:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>COMPUTE_WH</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ANALYTICS</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<p>```</p>
+</code></pre>
 
 <h3 id="connecting-with-oauth">Connecting with OAuth</h3>
 
 <p>This is the Snowflake OAuth mechanism. Not the External one.  You must first create an OAuth security integration and apply to the releveant roles.
 Follow this <a href="https://docs.snowflake.com/en/user-guide/oauth-custom">document</a> for more.</p>
 
-<p><code>ruby
-adapter = DWH.create(:snowflake, {
-  auth_mode: 'oauth',
-  account_identifier: 'myorg-myaccount.us-east-1',
-  oauth_client_id: '&lt;YOUR_CLIENT_ID&gt;',
-  oauth_client_secret: '&lt;YOUR_CLIENT_SECRET&gt;',
-  oauth_redirect_url: 'https://localhost:3030/some/path',
-  database: 'ANALYTICS',
-  client_name: 'myapp' # sent as user agent header value
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_adapter'>adapter</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:snowflake</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>oauth</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>account_identifier:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myorg-myaccount.us-east-1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>oauth_client_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>&lt;YOUR_CLIENT_ID&gt;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>oauth_client_secret:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>&lt;YOUR_CLIENT_SECRET&gt;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>oauth_redirect_url:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://localhost:3030/some/path</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ANALYTICS</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myapp</span><span class='tstring_end'>&#39;</span></span> <span class='comment'># sent as user agent header value
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <p>To successfully use OAuth you have to pass the adapter valid access and refresh tokens. Or, it can generate them from a valid authorization code.</p>
 
 <p>The typical flow is like so:</p>
 
 <ol>
-  <li>Generate an authorization code by visiting the url generated by <code>adapter.authorization_url.</code>  This will redirect to the configured <code>oauth_redirect_url.</code>  You must be able to retrieve the <code>code</code> from there.</li>
-  <li>Take the code from above and generate new access tokens: <code>adapter.generate_oauth_tokens(code)</code>. This will return Hash with access_token and refresh_token.  You can cache and reuse this until the refresh_token gets expired. This method will also apply the token to the current adapter instance.</li>
-  <li>You can apply an existing set of tokens like so:<code>adapter.apply_oauth_tokens(access_token: token, refresh_token: token, expires_at: Time.now)</code></li>
+<li>Generate an authorization code by visiting the url generated by <code>adapter.authorization_url.</code>  This will redirect to the configured <code>oauth_redirect_url.</code>  You must be able to retrieve the <code>code</code> from there.</li>
+<li>Take the code from above and generate new access tokens: <code>adapter.generate_oauth_tokens(code)</code>. This will return Hash with access_token and refresh_token.  You can cache and reuse this until the refresh_token gets expired. This method will also apply the token to the current adapter instance.</li>
+<li>You can apply an existing set of tokens like so:<code>adapter.apply_oauth_tokens(access_token: token, refresh_token: token, expires_at: Time.now)</code></li>
 </ol>
 
 <h2 id="mysql-adapter">MySQL Adapter</h2>
 
-<p>The MySQL adapter uses the <code>mysql2</code> gem. Note that MySQL’s concept of “database” maps to “schema” in DWH.</p>
+<p>The MySQL adapter uses the <code>mysql2</code> gem. Note that MySQL&#39;s concept of &quot;database&quot; maps to &quot;schema&quot; in DWH.</p>
 
-<h3 id="basic-configuration-1">Basic Configuration</h3>
+<h3 id="basic-configuration">Basic Configuration</h3>
 
-<p><code>ruby
-mysql = DWH.create(:mysql, {
-  host: '127.0.0.1',            # Use 127.0.0.1 for local Docker instances
-  port: 3306,                   # Default: 3306
-  database: 'mydb',
-  username: 'user',
-  password: 'password',
-  client_name: 'My Application' # Default: 'DWH Ruby Gem'
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_mysql'>mysql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:mysql</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>127.0.0.1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>            <span class='comment'># Use 127.0.0.1 for local Docker instances
+</span>  <span class='label'>port:</span> <span class='int'>3306</span><span class='comma'>,</span>                   <span class='comment'># Default: 3306
+</span>  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>My Application</span><span class='tstring_end'>&#39;</span></span> <span class='comment'># Default: &#39;DWH Ruby Gem&#39;
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
-<h3 id="ssl-configuration-1">SSL Configuration</h3>
+<h3 id="ssl-configuration">SSL Configuration</h3>
 
-<p><code>ruby
-# Basic SSL
-mysql = DWH.create(:mysql, {
-  host: '127.0.0.1',
-  database: 'mydb',
-  username: 'user',
-  password: 'password',
-  ssl: true,  # Defaults ssl_mode to 'required'
-  extra_connection_params: {
-    ssl_mode: 'verify_identity',  # disabled, preferred, required, verify_ca, verify_identity
-    sslca: '/path/to/ca-cert.pem',
-    sslcert: '/path/to/client-cert.pem',
-    sslkey: '/path/to/client-key.pem'
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># Basic SSL
+</span><span class='id identifier rubyid_mysql'>mysql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:mysql</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>127.0.0.1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>ssl:</span> <span class='kw'>true</span><span class='comma'>,</span>  <span class='comment'># Defaults ssl_mode to &#39;required&#39;
+</span>  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>ssl_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>verify_identity</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>  <span class='comment'># disabled, preferred, required, verify_ca, verify_identity
+</span>    <span class='label'>sslca:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/ca-cert.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslcert:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/client-cert.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslkey:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/client-key.pem</span><span class='tstring_end'>&#39;</span></span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
-<h3 id="advanced-configuration-1">Advanced Configuration</h3>
+<h3 id="advanced-configuration">Advanced Configuration</h3>
 
-<p><code>ruby
-mysql = DWH.create(:mysql, {
-  host: 'mysql.example.com',
-  database: 'analytics',
-  username: 'analyst',
-  password: 'password',
-  client_name: "My App", # defaults to 'DWH Ruby Gem'
-  query_timeout: 1800,  # seconds, default: 3600
-  extra_connection_params: {
-    encoding: 'utf8mb4',
-    read_timeout: 60,
-    write_timeout: 60,
-    connect_timeout: 10
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_mysql'>mysql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:mysql</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mysql.example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analytics</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analyst</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>My App</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='comment'># defaults to &#39;DWH Ruby Gem&#39;
+</span>  <span class='label'>query_timeout:</span> <span class='int'>1800</span><span class='comma'>,</span>  <span class='comment'># seconds, default: 3600
+</span>  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>encoding:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>utf8mb4</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>read_timeout:</span> <span class='int'>60</span><span class='comma'>,</span>
+    <span class='label'>write_timeout:</span> <span class='int'>60</span><span class='comma'>,</span>
+    <span class='label'>connect_timeout:</span> <span class='int'>10</span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h2 id="sql-server-adapter">SQL Server Adapter</h2>
 
 <p>The SQL Server adapter uses the <code>tiny_tds</code> gem and supports both on-premises and Azure SQL Server.</p>
 
-<h3 id="basic-configuration-2">Basic Configuration</h3>
+<h3 id="basic-configuration">Basic Configuration</h3>
 
-<p><code>ruby
-sqlserver = DWH.create(:sqlserver, {
-  host: 'localhost',
-  port: 1433,                   # Default: 1433
-  database: 'mydb',
-  username: 'sa',
-  password: 'password',
-  client_name: 'My Application' # Default: 'DWH Ruby Gem'
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_sqlserver'>sqlserver</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlserver</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>1433</span><span class='comma'>,</span>                   <span class='comment'># Default: 1433
+</span>  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sa</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>My Application</span><span class='tstring_end'>&#39;</span></span> <span class='comment'># Default: &#39;DWH Ruby Gem&#39;
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="azure-sql-server">Azure SQL Server</h3>
 
-<p><code>ruby
-azure_sql = DWH.create(:sqlserver, {
-  host: 'myserver.database.windows.net',
-  database: 'mydb',
-  username: 'myuser@myserver',
-  password: 'password',
-  azure: true,
-  client_name: 'My Application'
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_azure_sql'>azure_sql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlserver</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myserver.database.windows.net</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myuser@myserver</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>azure:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>My Application</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
-<h3 id="advanced-configuration-2">Advanced Configuration</h3>
+<h3 id="advanced-configuration">Advanced Configuration</h3>
 
-<p><code>ruby
-sqlserver = DWH.create(:sqlserver, {
-  host: 'sql.example.com',
-  database: 'analytics',
-  username: 'analyst',
-  password: 'password',
-  query_timeout: 1800,  # seconds, default: 3600
-  extra_connection_params: {
-    container: true,     # For SQL Server running in containers
-    use_utf16: false,    # Character encoding options
-    timeout: 60,         # Connection timeout
-    login_timeout: 60    # Login timeout
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_sqlserver'>sqlserver</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlserver</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sql.example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analytics</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analyst</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>query_timeout:</span> <span class='int'>1800</span><span class='comma'>,</span>  <span class='comment'># seconds, default: 3600
+</span>  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>container:</span> <span class='kw'>true</span><span class='comma'>,</span>     <span class='comment'># For SQL Server running in containers
+</span>    <span class='label'>use_utf16:</span> <span class='kw'>false</span><span class='comma'>,</span>    <span class='comment'># Character encoding options
+</span>    <span class='label'>timeout:</span> <span class='int'>60</span><span class='comma'>,</span>         <span class='comment'># Connection timeout
+</span>    <span class='label'>login_timeout:</span> <span class='int'>60</span>    <span class='comment'># Login timeout
+</span>  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="multi-database-operations">Multi-Database Operations</h3>
 
-<p>```ruby
-# List tables in another database
-tables = sqlserver.tables(catalog: ‘other_database’)</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># List tables in another database
+</span><span class='id identifier rubyid_tables'>tables</span> <span class='op'>=</span> <span class='id identifier rubyid_sqlserver'>sqlserver</span><span class='period'>.</span><span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>other_database</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
 
-<h1 id="get-metadata-for-table-in-another-database">Get metadata for table in another database</h1>
-<p>metadata = sqlserver.metadata(‘other_database.dbo.my_table’)
-# OR
-metadata = sqlserver.metadata(‘my_table’, catalog: ‘other_database’)
-```</p>
+<span class='comment'># Get metadata for table in another database
+</span><span class='id identifier rubyid_metadata'>metadata</span> <span class='op'>=</span> <span class='id identifier rubyid_sqlserver'>sqlserver</span><span class='period'>.</span><span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>other_database.dbo.my_table</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='comment'># OR
+</span><span class='id identifier rubyid_metadata'>metadata</span> <span class='op'>=</span> <span class='id identifier rubyid_sqlserver'>sqlserver</span><span class='period'>.</span><span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my_table</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>other_database</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+</code></pre>
 
 <h2 id="duckdb-adapter">DuckDB Adapter</h2>
 
 <p>The DuckDB adapter uses the <code>ruby-duckdb</code> gem for in-process analytical queries. This requires DuckDB header files and library to already be installed.</p>
 
-<h3 id="basic-configuration-3">Basic Configuration</h3>
+<h3 id="basic-configuration">Basic Configuration</h3>
 
-<p>```ruby
-# File-based database
-duckdb = DWH.create(:duckdb, {
-  file: ‘/path/to/my/database.duckdb’,
-  schema: ‘main’  # Default: ‘main’
-})</p>
+<pre class="code ruby"><code class="ruby"><span class='comment'># File-based database
+</span><span class='id identifier rubyid_duckdb'>duckdb</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:duckdb</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/my/database.duckdb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>main</span><span class='tstring_end'>&#39;</span></span>  <span class='comment'># Default: &#39;main&#39;
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
 
-<h1 id="in-memory-database">In-memory database</h1>
-<p>duckdb = DWH.create(:duckdb, {
-  file: ‘:memory:’
-})
-```</p>
+<span class='comment'># In-memory database
+</span><span class='id identifier rubyid_duckdb'>duckdb</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:duckdb</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>:memory:</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="read-only-mode">Read-Only Mode</h3>
 
-<p><code>ruby
-duckdb = DWH.create(:duckdb, {
-  file: '/path/to/readonly/database.duckdb',
-  duck_config: {
-    access_mode: 'READ_ONLY'
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_duckdb'>duckdb</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:duckdb</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/readonly/database.duckdb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>duck_config:</span> <span class='lbrace'>{</span>
+    <span class='label'>access_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>READ_ONLY</span><span class='tstring_end'>&#39;</span></span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
-<h3 id="advanced-configuration-3">Advanced Configuration</h3>
+<h3 id="advanced-configuration">Advanced Configuration</h3>
 
-<p><code>ruby
-duckdb = DWH.create(:duckdb, {
-  file: '/path/to/my/database.duckdb',
-  duck_config: {
-    access_mode: 'READ_WRITE',
-    max_memory: '2GB',
-    threads: 4,
-    temp_directory: '/tmp/duckdb'
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_duckdb'>duckdb</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:duckdb</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/my/database.duckdb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>duck_config:</span> <span class='lbrace'>{</span>
+    <span class='label'>access_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>READ_WRITE</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>max_memory:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>2GB</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>threads:</span> <span class='int'>4</span><span class='comma'>,</span>
+    <span class='label'>temp_directory:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tmp/duckdb</span><span class='tstring_end'>&#39;</span></span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h2 id="trino-adapter">Trino Adapter</h2>
 
 <p>The Trino adapter requires the <code>trino-client-ruby</code> gem and works with both Trino and Presto.</p>
 
-<h3 id="basic-configuration-4">Basic Configuration</h3>
+<h3 id="basic-configuration">Basic Configuration</h3>
 
-<p><code>ruby
-trino = DWH.create(:trino, {
-  host: 'localhost',
-  port: 8080,                   # Default: 8080
-  catalog: 'hive',              # Required
-  schema: 'default',            # Optional
-  username: 'analyst',
-  password: 'password',         # Optional
-  client_name: 'My Application' # Default: 'DWH Ruby Gem'
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_trino'>trino</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:trino</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>8080</span><span class='comma'>,</span>                   <span class='comment'># Default: 8080
+</span>  <span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>hive</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>              <span class='comment'># Required
+</span>  <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>default</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>            <span class='comment'># Optional
+</span>  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analyst</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>         <span class='comment'># Optional
+</span>  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>My Application</span><span class='tstring_end'>&#39;</span></span> <span class='comment'># Default: &#39;DWH Ruby Gem&#39;
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
-<h3 id="ssl-configuration-2">SSL Configuration</h3>
+<h3 id="ssl-configuration">SSL Configuration</h3>
 
-<p><code>ruby
-trino = DWH.create(:trino, {
-  host: 'trino.example.com',
-  port: 443,
-  ssl: true, # will set {ssl: {verify: false}}
-  catalog: 'hive',
-  username: 'analyst',
-  password: 'password',
-  client_name: "My App"
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_trino'>trino</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:trino</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>trino.example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>443</span><span class='comma'>,</span>
+  <span class='label'>ssl:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='comment'># will set {ssl: {verify: false}}
+</span>  <span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>hive</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analyst</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>My App</span><span class='tstring_end'>&quot;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="advanced-configuration-with-headers">Advanced Configuration with Headers</h3>
 
-<p><code>ruby
-trino = DWH.create(:trino, {
-  host: 'trino.example.com',
-  port: 8080,
-  catalog: 'delta_lake',
-  schema: 'analytics',
-  username: 'analyst',
-  query_timeout: 1800,  # seconds, default: 3600
-  extra_connection_params: {
-    http_headers: {
-      'X-Trino-User' =&gt; 'Real User Name',
-      'X-Trino-Source' =&gt; 'Analytics Dashboard',
-      'X-Forwarded-Request' =&gt; 'client-request-id'
-    },
-    ssl: {
-      verify: true,
-    }
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_trino'>trino</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:trino</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>trino.example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>8080</span><span class='comma'>,</span>
+  <span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>delta_lake</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analytics</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analyst</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>query_timeout:</span> <span class='int'>1800</span><span class='comma'>,</span>  <span class='comment'># seconds, default: 3600
+</span>  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>http_headers:</span> <span class='lbrace'>{</span>
+      <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Trino-User</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Real User Name</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Trino-Source</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Analytics Dashboard</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Forwarded-Request</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>client-request-id</span><span class='tstring_end'>&#39;</span></span>
+    <span class='rbrace'>}</span><span class='comma'>,</span>
+    <span class='label'>ssl:</span> <span class='lbrace'>{</span>
+      <span class='label'>verify:</span> <span class='kw'>true</span><span class='comma'>,</span>
+    <span class='rbrace'>}</span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h2 id="apache-druid-adapter">Apache Druid Adapter</h2>
 
 <p>The Druid adapter uses HTTP API calls via the <code>faraday</code> gem for real-time analytics.</p>
 
-<h3 id="basic-configuration-5">Basic Configuration</h3>
+<h3 id="basic-configuration">Basic Configuration</h3>
 
-<p><code>ruby
-druid = DWH.create(:druid, {
-  protocol: 'http',             # 'http' or 'https'
-  host: 'localhost',
-  port: 8080,                   # Default: 8081
-  client_name: 'My Application' # Default: 'DWH Ruby Gem'
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_druid'>druid</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:druid</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>protocol:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>             <span class='comment'># &#39;http&#39; or &#39;https&#39;
+</span>  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>8080</span><span class='comma'>,</span>                   <span class='comment'># Default: 8081
+</span>  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>My Application</span><span class='tstring_end'>&#39;</span></span> <span class='comment'># Default: &#39;DWH Ruby Gem&#39;
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="https-with-basic-authentication">HTTPS with Basic Authentication</h3>
 
-<p><code>ruby
-druid = DWH.create(:druid, {
-  protocol: 'https',
-  host: 'druid.example.com',
-  port: 443,
-  basic_auth: 'base64_encoded_credentials',  # Base64 encoded username:password
-  query_timeout: 600,          # seconds, default: 600
-  open_timeout: 30             # connection timeout, default: nil
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_druid'>druid</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:druid</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>protocol:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>druid.example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>443</span><span class='comma'>,</span>
+  <span class='label'>basic_auth:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>base64_encoded_credentials</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>  <span class='comment'># Base64 encoded username:password
+</span>  <span class='label'>query_timeout:</span> <span class='int'>600</span><span class='comma'>,</span>          <span class='comment'># seconds, default: 600
+</span>  <span class='label'>open_timeout:</span> <span class='int'>30</span>             <span class='comment'># connection timeout, default: nil
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="advanced-configuration-with-context">Advanced Configuration with Context</h3>
 
-<p><code>ruby
-druid = DWH.create(:druid, {
-  protocol: 'https',
-  host: 'druid.example.com',
-  port: 8080,
-  basic_auth: 'dXNlcjpwYXNz',  # base64 for 'user:pass'
-  extra_connection_params: {
-    context: {
-      user: 'analyst_name',
-      team: 'data_engineering',
-      priority: 10,
-      useCache: true
-    }
-  }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_druid'>druid</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:druid</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>protocol:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>druid.example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>8080</span><span class='comma'>,</span>
+  <span class='label'>basic_auth:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>dXNlcjpwYXNz</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>  <span class='comment'># base64 for &#39;user:pass&#39;
+</span>  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>context:</span> <span class='lbrace'>{</span>
+      <span class='label'>user:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analyst_name</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+      <span class='label'>team:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>data_engineering</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+      <span class='label'>priority:</span> <span class='int'>10</span><span class='comma'>,</span>
+      <span class='label'>useCache:</span> <span class='kw'>true</span>
+    <span class='rbrace'>}</span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
 <h2 id="aws-athena-adapter">AWS Athena Adapter</h2>
 
 <p>The Athean adapter requires the <code>aws-athena-sdk</code> gem and works with both Trino and Presto.</p>
 
-<h3 id="basic-configuration-6">Basic Configuration</h3>
+<h3 id="basic-configuration">Basic Configuration</h3>
 
-<p><code>ruby
-athena = DWH.create(:athena, {
-    region: 'us-east-1',
-    database: 'default',
-    s3_output_location: 's3://my-athena-results-bucket/queries/',
-    access_key_id: 'AKIAIOSFODNN7EXAMPLE',
-    secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-    catalog: 'hive',       # optional will default to awsdatacatalog
-    database: 'default',   # Optional. Db or schema
-    workgroup: 'my-dept-strata' # optional workgroup
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_athena'>athena</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:athena</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+    <span class='label'>region:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>us-east-1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>default</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>s3_output_location:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>s3://my-athena-results-bucket/queries/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>access_key_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AKIAIOSFODNN7EXAMPLE</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>secret_access_key:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>hive</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>       <span class='comment'># optional will default to awsdatacatalog
+</span>    <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>default</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>   <span class='comment'># Optional. Db or schema
+</span>    <span class='label'>workgroup:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my-dept-strata</span><span class='tstring_end'>&#39;</span></span> <span class='comment'># optional workgroup
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
-<h3 id="ssl-configuration-3">SSL Configuration</h3>
+<h3 id="ssl-configuration">SSL Configuration</h3>
 
-<p><code>ruby
-athena = DWH.create(:athena, {
-    region: 'us-east-1',
-    database: 'default',
-    s3_output_location: 's3://my-athena-results-bucket/queries/',
-    access_key_id: 'AKIAIOSFODNN7EXAMPLE',
-    secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-    catalog: 'hive',       # optional will default to awsdatacatalog
-    database: 'default',   # Optional. Db or schema
-    workgroup: 'my-dept-strata', # optional workgroup
-    extra_connection_params: {
-      ssl_ca_directory: 'path/to/certs/'
-    }
-})
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_athena'>athena</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:athena</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+    <span class='label'>region:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>us-east-1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>default</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>s3_output_location:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>s3://my-athena-results-bucket/queries/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>access_key_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>AKIAIOSFODNN7EXAMPLE</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>secret_access_key:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>hive</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>       <span class='comment'># optional will default to awsdatacatalog
+</span>    <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>default</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>   <span class='comment'># Optional. Db or schema
+</span>    <span class='label'>workgroup:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my-dept-strata</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='comment'># optional workgroup
+</span>    <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+      <span class='label'>ssl_ca_directory:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>path/to/certs/</span><span class='tstring_end'>&#39;</span></span>
+    <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
 
-<h3 id="advanced-configuration-with-headers-1">Advanced Configuration with Headers</h3>
+<h3 id="advanced-configuration-with-headers">Advanced Configuration with Headers</h3>
 
 <p>See full list of config options here: <a href="https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/Athena/Client.html#initialize-instance_method">athena-api</a></p>
 
@@ -492,19 +468,18 @@ athena = DWH.create(:athena, {
 
 <p>DWH validates configuration parameters at creation time:</p>
 
-<p><code>ruby
-begin
-  adapter = DWH.create(:postgres, { host: 'localhost' })  # Missing required database
-rescue DWH::ConfigError =&gt; e
-  puts "Configuration error: #{e.message}"
-end
-</code></p>
+<pre class="code ruby"><code class="ruby"><span class='kw'>begin</span>
+  <span class='id identifier rubyid_adapter'>adapter</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span> <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span> <span class='rbrace'>}</span><span class='rparen'>)</span>  <span class='comment'># Missing required database
+</span><span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DWH/ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Configuration error: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
+</code></pre>
 
 <p>Each adapter defines required and optional parameters with validation rules. Check the adapter-specific sections above for the complete list of supported parameters.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Aug 25 14:18:51 2025 by
+  Generated on Mon Aug 25 15:02:42 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

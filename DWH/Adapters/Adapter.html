@@ -117,12 +117,12 @@
 and implement these core required methods:</p>
 
 <ul>
-  <li><span class='object_link'><a href="#stats-instance_method" title="DWH::Adapters::Adapter#stats (method)">#stats</a></span> - get table statistics</li>
-  <li><span class='object_link'><a href="#tables-instance_method" title="DWH::Adapters::Adapter#tables (method)">#tables</a></span> - list tables</li>
-  <li><span class='object_link'><a href="#metadata-instance_method" title="DWH::Adapters::Adapter#metadata (method)">#metadata</a></span> - get metadata for a specific table</li>
-  <li><span class='object_link'><a href="#execute-instance_method" title="DWH::Adapters::Adapter#execute (method)">#execute</a></span> - run query and return result</li>
-  <li><span class='object_link'><a href="#execute_stream-instance_method" title="DWH::Adapters::Adapter#execute_stream (method)">#execute_stream</a></span> - run query and stream results to provided IO</li>
-  <li><span class='object_link'><a href="#stream-instance_method" title="DWH::Adapters::Adapter#stream (method)">#stream</a></span> - run query and yeild streaming results</li>
+<li><span class='object_link'><a href="#stats-instance_method" title="DWH::Adapters::Adapter#stats (method)">#stats</a></span> - get table statistics</li>
+<li><span class='object_link'><a href="#tables-instance_method" title="DWH::Adapters::Adapter#tables (method)">#tables</a></span> - list tables</li>
+<li><span class='object_link'><a href="#metadata-instance_method" title="DWH::Adapters::Adapter#metadata (method)">#metadata</a></span> - get metadata for a specific table</li>
+<li><span class='object_link'><a href="#execute-instance_method" title="DWH::Adapters::Adapter#execute (method)">#execute</a></span> - run query and return result</li>
+<li><span class='object_link'><a href="#execute_stream-instance_method" title="DWH::Adapters::Adapter#execute_stream (method)">#execute_stream</a></span> - run query and stream results to provided IO</li>
+<li><span class='object_link'><a href="#stream-instance_method" title="DWH::Adapters::Adapter#stream (method)">#stream</a></span> - run query and yeild streaming results</li>
 </ul>
 </div>
 </div>
@@ -136,7 +136,7 @@ file in a relative directory like so: <em>settings/my_adapter.yml</em>. Or, you 
 an exact settings file location at the class level:</p>
 
 <p>class MyAdapter &lt; DWH::Adapters::Adapter
-    settings_file_path “my_dir/my_settings.yml”
+    settings_file_path &quot;my_dir/my_settings.yml&quot;
   end</p>
 
 
@@ -1700,13 +1700,19 @@ connection object or self</p>
       
       
         &mdash;
-        <div class='inline'><p>return format type
-- array returns array of array
-- object returns array of Hashes
-- csv returns as csv
-- native returns the native result from any clients used
-  - For example: Postgres using pg client will return PG::Result
-  - Http clients will returns the HTTP response object</p>
+        <div class='inline'><p>return format type</p>
+
+<ul>
+<li>array returns array of array</li>
+<li>object returns array of Hashes</li>
+<li>csv returns as csv</li>
+<li>native returns the native result from any clients used
+
+<ul>
+<li>For example: Postgres using pg client will return PG::Result</li>
+<li>Http clients will returns the HTTP response object</li>
+</ul></li>
+</ul>
 </div>
       
     </li>
@@ -2044,9 +2050,9 @@ from the config to the executor.</p>
 Pass in optional catalog and schema info.</p>
 
 <p>Example:
-  metadata(“public.big_table”)
-  metadata(“big_table”)
-  metadata(“big_table”,schema: “public”)</p>
+  metadata(&quot;public.big_table&quot;)
+  metadata(&quot;big_table&quot;)
+  metadata(&quot;big_table&quot;,schema: &quot;public&quot;)</p>
 
 
   </div>
@@ -2066,7 +2072,7 @@ Pass in optional catalog and schema info.</p>
       
         &mdash;
         <div class='inline'><ul>
-  <li>table name</li>
+<li>table name</li>
 </ul>
 </div>
       
@@ -2105,7 +2111,7 @@ Pass in optional catalog and schema info.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2118,7 +2124,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2330,7 +2336,7 @@ date_start, and date_end.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2343,7 +2349,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2543,7 +2549,7 @@ might vary depending on the target db and settings</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2556,7 +2562,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2652,7 +2658,7 @@ config only specified here.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2665,7 +2671,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -3043,7 +3049,7 @@ will just return the block.call</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Aug 25 14:18:51 2025 by
+  Generated on Mon Aug 25 15:02:42 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
