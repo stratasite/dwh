@@ -110,10 +110,13 @@
   <div class="discussion">
     <p>Snowflake adapter for executing SQL queries against Snowflake databases.</p>
 
-<p>Supports two authentication modes:
-- Personal Access Token (pat)
-- Key Pair Authentication (kp)
-- OAuth 2.0 (oauth)</p>
+<p>Supports two authentication modes:</p>
+
+<ul>
+<li>Personal Access Token (pat)</li>
+<li>Key Pair Authentication (kp)</li>
+<li>OAuth 2.0 (oauth)</li>
+</ul>
 
 
   </div>
@@ -783,13 +786,19 @@ connection object or self</p>
       
       
         &mdash;
-        <div class='inline'><p>return format type
-- array returns array of array
-- object returns array of Hashes
-- csv returns as csv
-- native returns the native result from any clients used
-  - For example: Postgres using pg client will return PG::Result
-  - Http clients will returns the HTTP response object</p>
+        <div class='inline'><p>return format type</p>
+
+<ul>
+<li>array returns array of array</li>
+<li>object returns array of Hashes</li>
+<li>csv returns as csv</li>
+<li>native returns the native result from any clients used
+
+<ul>
+<li>For example: Postgres using pg client will return PG::Result</li>
+<li>Http clients will returns the HTTP response object</li>
+</ul></li>
+</ul>
 </div>
       
     </li>
@@ -920,13 +929,19 @@ connection object or self</p>
       
       
         &mdash;
-        <div class='inline'><p>return format type
-- array returns array of array
-- object returns array of Hashes
-- csv returns as csv
-- native returns the native result from any clients used
-  - For example: Postgres using pg client will return PG::Result
-  - Http clients will returns the HTTP response object</p>
+        <div class='inline'><p>return format type</p>
+
+<ul>
+<li>array returns array of array</li>
+<li>object returns array of Hashes</li>
+<li>csv returns as csv</li>
+<li>native returns the native result from any clients used
+
+<ul>
+<li>For example: Postgres using pg client will return PG::Result</li>
+<li>Http clients will returns the HTTP response object</li>
+</ul></li>
+</ul>
 </div>
       
     </li>
@@ -1069,7 +1084,7 @@ config only specified here.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1082,7 +1097,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1379,7 +1394,7 @@ date_start, and date_end.</p>
       
       
         &mdash;
-        <div class='inline'><p>yields each chunk of data as it’s processed</p>
+        <div class='inline'><p>yields each chunk of data as it&#39;s processed</p>
 </div>
       
     </li>
@@ -1472,7 +1487,7 @@ the db name to correctly constrain to the target db.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1485,7 +1500,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1652,7 +1667,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Aug 22 08:31:22 2025 by
+  Generated on Mon Aug 25 10:59:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

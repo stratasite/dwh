@@ -313,8 +313,7 @@ extra_connection_params: {
   
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -336,8 +335,7 @@ extra_connection_params: {
   
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -520,8 +518,7 @@ extra_connection_params: {
   
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -841,13 +838,19 @@ connection object or self</p>
       
       
         &mdash;
-        <div class='inline'><p>return format type
-- array returns array of array
-- object returns array of Hashes
-- csv returns as csv
-- native returns the native result from any clients used
-  - For example: Postgres using pg client will return PG::Result
-  - Http clients will returns the HTTP response object</p>
+        <div class='inline'><p>return format type</p>
+
+<ul>
+<li>array returns array of array</li>
+<li>object returns array of Hashes</li>
+<li>csv returns as csv</li>
+<li>native returns the native result from any clients used
+
+<ul>
+<li>For example: Postgres using pg client will return PG::Result</li>
+<li>Http clients will returns the HTTP response object</li>
+</ul></li>
+</ul>
 </div>
       
     </li>
@@ -1201,9 +1204,9 @@ to the provided IO object.</p>
 Pass in optional catalog and schema info.</p>
 
 <p>Example:
-  metadata(“public.big_table”)
-  metadata(“big_table”)
-  metadata(“big_table”,schema: “public”)</p>
+  metadata(&quot;public.big_table&quot;)
+  metadata(&quot;big_table&quot;)
+  metadata(&quot;big_table&quot;,schema: &quot;public&quot;)</p>
 
 
   </div>
@@ -1223,7 +1226,7 @@ Pass in optional catalog and schema info.</p>
       
         &mdash;
         <div class='inline'><ul>
-  <li>table name</li>
+<li>table name</li>
 </ul>
 </div>
       
@@ -1262,7 +1265,7 @@ Pass in optional catalog and schema info.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1275,7 +1278,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1511,7 +1514,7 @@ date_start, and date_end.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1524,7 +1527,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1844,7 +1847,7 @@ config only specified here.</p>
           </span>
           
             &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -1857,7 +1860,7 @@ will be ignored if the adapter doesn’t support</p>
           </span>
           
             &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn’t support</p>
+will be ignored if the adapter doesn&#39;t support</p>
 </div>
           
         </li>
@@ -2023,7 +2026,6 @@ connection object or self</p>
   <div class="discussion">
     
 
-
   </div>
 </div>
 <div class="tags">
@@ -2074,7 +2076,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Aug 22 08:31:22 2025 by
+  Generated on Mon Aug 25 10:59:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

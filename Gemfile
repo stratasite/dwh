@@ -28,7 +28,7 @@ group :development, :test do
   gem 'debug'
 
   # for documentation
-  gem 'kramdown'
+  gem 'redcarpet'
   gem 'yard'
 
   gem 'rake', '~> 13.0'

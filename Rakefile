@@ -11,7 +11,7 @@ YARD::Rake::YardocTask.new(:doc) do |t|
   t.options = [
     '--output-dir', 'docs',
     '--markup', 'markdown',
-    '--markup-provider', 'kramdown',
+    '--markup-provider', 'redcarpet',
     '--charset', 'utf-8',
     '--verbose', '--debug',
     '--files', 'docs/guides/*.md'

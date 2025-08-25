@@ -84,10 +84,11 @@ Standardized API across adapters:
 
 ## Tutorials and Guides
 
-- [Getting Started](/docs/guides/getting-started.md)
-- [Adapter Configuration](/docs/guides/adapters.md)
-- [Creating an Adapter](/docs/guides/creating-adapters.md)
-- [API](https://rubydoc.info/github/stratasite/dwh.git)
+- [Getting Started](https://strata.site/dwh/file.getting-started.html)
+- [Adapter Configuration](https://strata.site/dwh/file.adapters.html)
+- [Creating an Adapter](https://strata.site/dwh/file.creating-adapters.html)
+- [Advanced Usage](https://strata.site/dwh/file.usage.html)
+- [API](https://strata.site/dwh/DWH.html)
 
 ## Testing
 

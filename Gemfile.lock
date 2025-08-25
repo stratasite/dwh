@@ -77,8 +77,6 @@ GEM
     json (2.13.2)
     jwt (2.10.2)
       base64
-    kramdown (2.5.1)
-      rexml (>= 3.3.9)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -111,10 +109,10 @@ GEM
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
+    redcarpet (3.6.1)
     regexp_parser (2.11.2)
     reline (0.6.2)
       io-console (~> 0.5)
-    rexml (3.4.1)
     rubocop (1.79.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -176,11 +174,11 @@ DEPENDENCIES
   duckdb
   dwh!
   irb
-  kramdown
   minitest (~> 5.16)
   mysql2
   pg
   rake (~> 13.0)
+  redcarpet
   rubocop
   rubocop-minitest
   tiny_tds
