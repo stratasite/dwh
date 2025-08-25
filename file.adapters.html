@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: Adapter Configuration
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "adapters";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: Adapter Configuration</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="adapter-configuration">Adapter Configuration</h1>
+
+<p>This guide covers all the database adapters supported by DWH and their specific configuration options. Each adapter is designed to work with specific database clients and provides database-specific optimizations.</p>
+
+<h2 id="postgresql-adapter">PostgreSQL Adapter</h2>
+
+<p>The PostgreSQL adapter uses the <code>pg</code> gem and provides full-featured RDBMS support.</p>
+
+<h3 id="basic-configuration">Basic Configuration</h3>
+
+<p><code>ruby
+postgres = DWH.create(:postgres, {
+  host: 'localhost',
+  port: 5432,                    # Default: 5432
+  database: 'mydb',
+  schema: 'public',              # Default: 'public'
+  username: 'user',
+  password: 'password',
+  client_name: 'My Application'  # Default: 'DWH Ruby Gem'
+})
+</code></p>
+
+<h3 id="ssl-configuration">SSL Configuration</h3>
+
+<p>```ruby
+# Basic SSL
+postgres = DWH.create(:postgres, {
+  host: ‘localhost’,
+  database: ‘mydb’,
+  username: ‘user’,
+  password: ‘password’,
+  ssl: true,
+  extra_connection_params: {
+    sslmode: ‘require’  # disable, prefer, require, verify-ca, verify-full
+  }
+})</p>
+
+<h1 id="certificate-based-ssl">Certificate-based SSL</h1>
+<p>postgres = DWH.create(:postgres, {
+  host: ‘localhost’,
+  database: ‘mydb’,
+  username: ‘user’,
+  ssl: true,
+  extra_connection_params: {
+    sslmode: ‘verify-full’,
+    sslrootcert: ‘/path/to/ca-cert.pem’,
+    sslcert: ‘/path/to/client-cert.pem’,
+    sslkey: ‘/path/to/client-key.pem’
+  }
+})
+```</p>
+
+<h3 id="advanced-configuration">Advanced Configuration</h3>
+
+<p><code>ruby
+postgres = DWH.create(:postgres, {
+  host: 'localhost',
+  database: 'mydb',
+  username: 'user',
+  password: 'password',
+  query_timeout: 3600,  # seconds, default: 3600
+  extra_connection_params: {
+    application_name: 'Data Analysis Tool',
+    connect_timeout: 10,
+    options: '-c maintenance_work_mem=256MB'
+  }
+})
+</code></p>
+
+<h2 id="snowflake">Snowflake</h2>
+
+<p>Snowflake adapter use the REST apis (https) to connect and query. This adapter also supports Multi-Database
+authentication methods: Personal Access Token, Key Pair, and OAuth.</p>
+
+<h3 id="basic-connection-with-personal-access-token">Basic connection with Personal Access Token</h3>
+
+<p>```ruby
+DWH.create(:snowflake, {
+    auth_mode: ‘pat’,
+    account_identifier: ‘myorg-myaccount’,
+    personal_access_token: ‘your-token-here’,
+    warehouse: ‘COMPUTE_WH’,
+    database: ‘ANALYTICS’,
+    schema: ‘PUBLIC’
+})</p>
+
+<p>```</p>
+
+<h3 id="connection-with-key-pair-authentication">Connection with Key Pair Authentication</h3>
+
+<p>```ruby
+ DWH.create(:snowflake, {
+    auth_mode: ‘kp’,
+    account_identifier: ‘myorg-myaccount.us-east-1’,
+    username: ‘john_doe’,
+    private_key: ‘/path/to/private_key.pem’,
+    warehouse: ‘COMPUTE_WH’,
+    database: ‘ANALYTICS’
+})</p>
+
+<p>```</p>
+
+<h3 id="connecting-with-oauth">Connecting with OAuth</h3>
+
+<p>This is the Snowflake OAuth mechanism. Not the External one.  You must first create an OAuth security integration and apply to the releveant roles.
+Follow this <a href="https://docs.snowflake.com/en/user-guide/oauth-custom">document</a> for more.</p>
+
+<p><code>ruby
+adapter = DWH.create(:snowflake, {
+  auth_mode: 'oauth',
+  account_identifier: 'myorg-myaccount.us-east-1',
+  oauth_client_id: '&lt;YOUR_CLIENT_ID&gt;',
+  oauth_client_secret: '&lt;YOUR_CLIENT_SECRET&gt;',
+  oauth_redirect_url: 'https://localhost:3030/some/path',
+  database: 'ANALYTICS',
+  client_name: 'myapp' # sent as user agent header value
+})
+</code></p>
+
+<p>To successfully use OAuth you have to pass the adapter valid access and refresh tokens. Or, it can generate them from a valid authorization code.</p>
+
+<p>The typical flow is like so:</p>
+
+<ol>
+  <li>Generate an authorization code by visiting the url generated by <code>adapter.authorization_url.</code>  This will redirect to the configured <code>oauth_redirect_url.</code>  You must be able to retrieve the <code>code</code> from there.</li>
+  <li>Take the code from above and generate new access tokens: <code>adapter.generate_oauth_tokens(code)</code>. This will return Hash with access_token and refresh_token.  You can cache and reuse this until the refresh_token gets expired. This method will also apply the token to the current adapter instance.</li>
+  <li>You can apply an existing set of tokens like so:<code>adapter.apply_oauth_tokens(access_token: token, refresh_token: token, expires_at: Time.now)</code></li>
+</ol>
+
+<h2 id="mysql-adapter">MySQL Adapter</h2>
+
+<p>The MySQL adapter uses the <code>mysql2</code> gem. Note that MySQL’s concept of “database” maps to “schema” in DWH.</p>
+
+<h3 id="basic-configuration-1">Basic Configuration</h3>
+
+<p><code>ruby
+mysql = DWH.create(:mysql, {
+  host: '127.0.0.1',            # Use 127.0.0.1 for local Docker instances
+  port: 3306,                   # Default: 3306
+  database: 'mydb',
+  username: 'user',
+  password: 'password',
+  client_name: 'My Application' # Default: 'DWH Ruby Gem'
+})
+</code></p>
+
+<h3 id="ssl-configuration-1">SSL Configuration</h3>
+
+<p><code>ruby
+# Basic SSL
+mysql = DWH.create(:mysql, {
+  host: '127.0.0.1',
+  database: 'mydb',
+  username: 'user',
+  password: 'password',
+  ssl: true,  # Defaults ssl_mode to 'required'
+  extra_connection_params: {
+    ssl_mode: 'verify_identity',  # disabled, preferred, required, verify_ca, verify_identity
+    sslca: '/path/to/ca-cert.pem',
+    sslcert: '/path/to/client-cert.pem',
+    sslkey: '/path/to/client-key.pem'
+  }
+})
+</code></p>
+
+<h3 id="advanced-configuration-1">Advanced Configuration</h3>
+
+<p><code>ruby
+mysql = DWH.create(:mysql, {
+  host: 'mysql.example.com',
+  database: 'analytics',
+  username: 'analyst',
+  password: 'password',
+  client_name: "My App", # defaults to 'DWH Ruby Gem'
+  query_timeout: 1800,  # seconds, default: 3600
+  extra_connection_params: {
+    encoding: 'utf8mb4',
+    read_timeout: 60,
+    write_timeout: 60,
+    connect_timeout: 10
+  }
+})
+</code></p>
+
+<h2 id="sql-server-adapter">SQL Server Adapter</h2>
+
+<p>The SQL Server adapter uses the <code>tiny_tds</code> gem and supports both on-premises and Azure SQL Server.</p>
+
+<h3 id="basic-configuration-2">Basic Configuration</h3>
+
+<p><code>ruby
+sqlserver = DWH.create(:sqlserver, {
+  host: 'localhost',
+  port: 1433,                   # Default: 1433
+  database: 'mydb',
+  username: 'sa',
+  password: 'password',
+  client_name: 'My Application' # Default: 'DWH Ruby Gem'
+})
+</code></p>
+
+<h3 id="azure-sql-server">Azure SQL Server</h3>
+
+<p><code>ruby
+azure_sql = DWH.create(:sqlserver, {
+  host: 'myserver.database.windows.net',
+  database: 'mydb',
+  username: 'myuser@myserver',
+  password: 'password',
+  azure: true,
+  client_name: 'My Application'
+})
+</code></p>
+
+<h3 id="advanced-configuration-2">Advanced Configuration</h3>
+
+<p><code>ruby
+sqlserver = DWH.create(:sqlserver, {
+  host: 'sql.example.com',
+  database: 'analytics',
+  username: 'analyst',
+  password: 'password',
+  query_timeout: 1800,  # seconds, default: 3600
+  extra_connection_params: {
+    container: true,     # For SQL Server running in containers
+    use_utf16: false,    # Character encoding options
+    timeout: 60,         # Connection timeout
+    login_timeout: 60    # Login timeout
+  }
+})
+</code></p>
+
+<h3 id="multi-database-operations">Multi-Database Operations</h3>
+
+<p>```ruby
+# List tables in another database
+tables = sqlserver.tables(catalog: ‘other_database’)</p>
+
+<h1 id="get-metadata-for-table-in-another-database">Get metadata for table in another database</h1>
+<p>metadata = sqlserver.metadata(‘other_database.dbo.my_table’)
+# OR
+metadata = sqlserver.metadata(‘my_table’, catalog: ‘other_database’)
+```</p>
+
+<h2 id="duckdb-adapter">DuckDB Adapter</h2>
+
+<p>The DuckDB adapter uses the <code>ruby-duckdb</code> gem for in-process analytical queries. This requires DuckDB header files and library to already be installed.</p>
+
+<h3 id="basic-configuration-3">Basic Configuration</h3>
+
+<p>```ruby
+# File-based database
+duckdb = DWH.create(:duckdb, {
+  file: ‘/path/to/my/database.duckdb’,
+  schema: ‘main’  # Default: ‘main’
+})</p>
+
+<h1 id="in-memory-database">In-memory database</h1>
+<p>duckdb = DWH.create(:duckdb, {
+  file: ‘:memory:’
+})
+```</p>
+
+<h3 id="read-only-mode">Read-Only Mode</h3>
+
+<p><code>ruby
+duckdb = DWH.create(:duckdb, {
+  file: '/path/to/readonly/database.duckdb',
+  duck_config: {
+    access_mode: 'READ_ONLY'
+  }
+})
+</code></p>
+
+<h3 id="advanced-configuration-3">Advanced Configuration</h3>
+
+<p><code>ruby
+duckdb = DWH.create(:duckdb, {
+  file: '/path/to/my/database.duckdb',
+  duck_config: {
+    access_mode: 'READ_WRITE',
+    max_memory: '2GB',
+    threads: 4,
+    temp_directory: '/tmp/duckdb'
+  }
+})
+</code></p>
+
+<h2 id="trino-adapter">Trino Adapter</h2>
+
+<p>The Trino adapter requires the <code>trino-client-ruby</code> gem and works with both Trino and Presto.</p>
+
+<h3 id="basic-configuration-4">Basic Configuration</h3>
+
+<p><code>ruby
+trino = DWH.create(:trino, {
+  host: 'localhost',
+  port: 8080,                   # Default: 8080
+  catalog: 'hive',              # Required
+  schema: 'default',            # Optional
+  username: 'analyst',
+  password: 'password',         # Optional
+  client_name: 'My Application' # Default: 'DWH Ruby Gem'
+})
+</code></p>
+
+<h3 id="ssl-configuration-2">SSL Configuration</h3>
+
+<p><code>ruby
+trino = DWH.create(:trino, {
+  host: 'trino.example.com',
+  port: 443,
+  ssl: true, # will set {ssl: {verify: false}}
+  catalog: 'hive',
+  username: 'analyst',
+  password: 'password',
+  client_name: "My App"
+})
+</code></p>
+
+<h3 id="advanced-configuration-with-headers">Advanced Configuration with Headers</h3>
+
+<p><code>ruby
+trino = DWH.create(:trino, {
+  host: 'trino.example.com',
+  port: 8080,
+  catalog: 'delta_lake',
+  schema: 'analytics',
+  username: 'analyst',
+  query_timeout: 1800,  # seconds, default: 3600
+  extra_connection_params: {
+    http_headers: {
+      'X-Trino-User' =&gt; 'Real User Name',
+      'X-Trino-Source' =&gt; 'Analytics Dashboard',
+      'X-Forwarded-Request' =&gt; 'client-request-id'
+    },
+    ssl: {
+      verify: true,
+    }
+  }
+})
+</code></p>
+
+<h2 id="apache-druid-adapter">Apache Druid Adapter</h2>
+
+<p>The Druid adapter uses HTTP API calls via the <code>faraday</code> gem for real-time analytics.</p>
+
+<h3 id="basic-configuration-5">Basic Configuration</h3>
+
+<p><code>ruby
+druid = DWH.create(:druid, {
+  protocol: 'http',             # 'http' or 'https'
+  host: 'localhost',
+  port: 8080,                   # Default: 8081
+  client_name: 'My Application' # Default: 'DWH Ruby Gem'
+})
+</code></p>
+
+<h3 id="https-with-basic-authentication">HTTPS with Basic Authentication</h3>
+
+<p><code>ruby
+druid = DWH.create(:druid, {
+  protocol: 'https',
+  host: 'druid.example.com',
+  port: 443,
+  basic_auth: 'base64_encoded_credentials',  # Base64 encoded username:password
+  query_timeout: 600,          # seconds, default: 600
+  open_timeout: 30             # connection timeout, default: nil
+})
+</code></p>
+
+<h3 id="advanced-configuration-with-context">Advanced Configuration with Context</h3>
+
+<p><code>ruby
+druid = DWH.create(:druid, {
+  protocol: 'https',
+  host: 'druid.example.com',
+  port: 8080,
+  basic_auth: 'dXNlcjpwYXNz',  # base64 for 'user:pass'
+  extra_connection_params: {
+    context: {
+      user: 'analyst_name',
+      team: 'data_engineering',
+      priority: 10,
+      useCache: true
+    }
+  }
+})
+</code></p>
+
+<h2 id="aws-athena-adapter">AWS Athena Adapter</h2>
+
+<p>The Athean adapter requires the <code>aws-athena-sdk</code> gem and works with both Trino and Presto.</p>
+
+<h3 id="basic-configuration-6">Basic Configuration</h3>
+
+<p><code>ruby
+athena = DWH.create(:athena, {
+    region: 'us-east-1',
+    database: 'default',
+    s3_output_location: 's3://my-athena-results-bucket/queries/',
+    access_key_id: 'AKIAIOSFODNN7EXAMPLE',
+    secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    catalog: 'hive',       # optional will default to awsdatacatalog
+    database: 'default',   # Optional. Db or schema
+    workgroup: 'my-dept-strata' # optional workgroup
+})
+</code></p>
+
+<h3 id="ssl-configuration-3">SSL Configuration</h3>
+
+<p><code>ruby
+athena = DWH.create(:athena, {
+    region: 'us-east-1',
+    database: 'default',
+    s3_output_location: 's3://my-athena-results-bucket/queries/',
+    access_key_id: 'AKIAIOSFODNN7EXAMPLE',
+    secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    catalog: 'hive',       # optional will default to awsdatacatalog
+    database: 'default',   # Optional. Db or schema
+    workgroup: 'my-dept-strata', # optional workgroup
+    extra_connection_params: {
+      ssl_ca_directory: 'path/to/certs/'
+    }
+})
+</code></p>
+
+<h3 id="advanced-configuration-with-headers-1">Advanced Configuration with Headers</h3>
+
+<p>See full list of config options here: <a href="https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/Athena/Client.html#initialize-instance_method">athena-api</a></p>
+
+<h2 id="configuration-validation">Configuration Validation</h2>
+
+<p>DWH validates configuration parameters at creation time:</p>
+
+<p><code>ruby
+begin
+  adapter = DWH.create(:postgres, { host: 'localhost' })  # Missing required database
+rescue DWH::ConfigError =&gt; e
+  puts "Configuration error: #{e.message}"
+end
+</code></p>
+
+<p>Each adapter defines required and optional parameters with validation rules. Check the adapter-specific sections above for the complete list of supported parameters.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Aug 25 14:18:51 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>
