@@ -335,7 +335,7 @@ module DWH
 
         # Check for missing required parameters
         missing_params = definitions.select do |name, options|
-          options[:required] && !config.key?(name) && options[:default].nil?
+          options[:required] && !config[name] && options[:default].nil?
         end
 
         if missing_params.any?
@@ -351,7 +351,7 @@ module DWH
 
           raise ConfigError, "Invalid value. Only allowed: #{opts[:allowed]}." if opts[:allowed].any? && !opts[:allowed].include?(config[name])
 
-          config[name] = opts[:default] if opts[:default] && !config.key?(name)
+          config[name] = opts[:default] if opts[:default] && !config[name]
 
           if opts[:required] && !config[name].is_a?(opts[:type]) && !opts[:type].is_a?(Boolean)
             raise ConfigError, "#{name} should be a #{opts[:type]}. Got #{opts[name.to_sym].class.name}"

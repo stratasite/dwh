@@ -18,4 +18,17 @@ class TestDwh < Minitest::Test
 
     assert DWH.adapter?(:snowflake)
   end
+
+  def test_create_will_use_defaults
+    # Testing issue where nil value is override the default
+    adapter = DWH.create(:trino, { host: 'localhost', username: 'ajo', catalog: 'hive' })
+    assert adapter
+
+    begin
+      DWH.create(:trino, { port: nil,
+                           host: 'localhost', username: 'ajo', catalog: 'hive' })
+    rescue StandardError => e
+      assert_nil e, 'should not raise erro'
+    end
+  end
 end
