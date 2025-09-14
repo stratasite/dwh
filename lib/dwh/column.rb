@@ -22,7 +22,7 @@ module DWH
 
     DEFAULT_RULES = { /[_+]+/ => ' ', /\s+id$/i => ' ID', /desc/i => 'Description' }.freeze
     def namify(rules = DEFAULT_RULES)
-      named = name.titleize keep_id_suffix: true
+      named = titleize(name)
       rules.each do |k, v|
         named = named.gsub(Regexp.new(k), v)
       end
@@ -74,6 +74,17 @@ module DWH
 
     def to_s
       "<Column:#{name}:#{data_type}>"
+    end
+
+    def titleize(name)
+      # Handle underscores, dashes, and multiple spaces
+      # Also preserves existing spacing patterns better
+      name.gsub(/[_-]/, ' ')           # Convert underscores and dashes to spaces
+          .gsub(/\s+/, ' ')            # Normalize multiple spaces to single spaces
+          .strip                       # Remove leading/trailing whitespace
+          .split(' ')                  # Split into words
+          .map(&:capitalize)           # Capitalize each word
+          .join(' ')                   # Join with single spaces
     end
   end
 end
