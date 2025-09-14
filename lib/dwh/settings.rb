@@ -44,7 +44,11 @@ module DWH
         logger.debug "#{adapter_name} Adapter didn't have a settings YAML file. Using only base settings."
       end
 
-      @adapter_settings.symbolize_keys!
+      @adapter_settings.transform_keys! do |key|
+        key.to_sym
+      rescue StandardError
+        key
+      end
     end
 
     # By default settings_file are expected to be in a
@@ -69,7 +73,7 @@ module DWH
     end
 
     def adapter_name
-      name.demodulize.downcase
+      name.split('::').last.downcase
     end
 
     def using_base_settings?

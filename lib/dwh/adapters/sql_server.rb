@@ -142,7 +142,7 @@ module DWH
         change_current_database(db_table.catalog)
 
         schema_where = ''
-        schema_where = "AND table_schema = '#{db_table.schema}'" if db_table.schema.present?
+        schema_where = "AND table_schema = '#{db_table.schema}'" if db_table.schema?
 
         sql = <<-SQL
                     SELECT column_name, data_type, character_maximum_length, numeric_precision,numeric_scale

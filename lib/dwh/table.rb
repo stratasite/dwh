@@ -22,16 +22,16 @@ module DWH
 
       @physical_name = parts.last
       @table_stats = table_stats
-      @catalog = catalog
-      @schema = schema
+      @catalog = catalog&.strip
+      @schema = schema&.strip
 
-      @catalog = parts.first if @catalog.nil? && parts.length > 2
+      @catalog = parts.first.strip if @catalog.nil? && parts.length > 2
 
       if @schema.nil?
         if parts.length == 2
-          @schema = parts.first
+          @schema = parts.first.strip
         elsif parts.length > 2
-          @schema = parts[1]
+          @schema = parts[1].strip
         end
       end
 
@@ -50,12 +50,20 @@ module DWH
       [catalog, schema].compact.join('.')
     end
 
+    def catalog?
+      catalog && !catalog.empty?
+    end
+
+    def schema?
+      schema && !schema.empty?
+    end
+
     def catalog_and_schema?
-      catalog && schema
+      catalog? && schema?
     end
 
     def catalog_or_schema?
-      catalog || schema
+      catalog? || schema?
     end
 
     def stats
@@ -82,13 +90,13 @@ module DWH
 
     def self.from_hash_or_json(physical_name, metadata)
       metadata = JSON.parse(metadata) if metadata.is_a?(String)
-      metadata.symbolize_keys!
+      metadata.transform_keys!(&:to_sym)
 
-      stats = TableStats.new(**metadata[:stats].symbolize_keys) if metadata.key?(:stats)
+      stats = TableStats.new(**metadata[:stats].transform_keys!(&:to_sym)) if metadata.key?(:stats)
       table = new(physical_name, table_stats: stats)
 
       metadata[:columns]&.each do |col|
-        col.symbolize_keys!
+        col.transform_keys!(&:to_sym)
         table << Column.new(
           name: col[:name],
           data_type: col[:data_type],
