@@ -123,6 +123,68 @@
 <span class='rbrace'>}</span><span class='rparen'>)</span>
 </code></pre>
 
+<h2 id="redshift-adapter">Redshift Adapter</h2>
+
+<p>The Redshift adapter uses the <code>pg</code> gem and provides full-featured RDBMS support.</p>
+
+<h3 id="basic-configuration">Basic Configuration</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_redshift'>redshift</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:redshift</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>port:</span> <span class='int'>5432</span><span class='comma'>,</span>                    <span class='comment'># Default: 5432
+</span>  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>public</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>              <span class='comment'># Default: &#39;public&#39;
+</span>  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>client_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>My Application</span><span class='tstring_end'>&#39;</span></span>  <span class='comment'># Default: &#39;DWH Ruby Gem&#39;
+</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="ssl-configuration">SSL Configuration</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Basic SSL
+</span><span class='id identifier rubyid_redshift'>redshift</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:redshift</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>ssl:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>sslmode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>require</span><span class='tstring_end'>&#39;</span></span>  <span class='comment'># disable, prefer, require, verify-ca, verify-full
+</span>  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+
+<span class='comment'># Certificate-based SSL
+</span><span class='id identifier rubyid_redshift'>redshift</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:postgres</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>ssl:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>sslmode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>verify-full</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslrootcert:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/ca-cert.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslcert:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/client-cert.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>sslkey:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/client-key.pem</span><span class='tstring_end'>&#39;</span></span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="advanced-configuration">Advanced Configuration</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_redshift'>redshift</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:redshift</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mydb</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>password:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>query_timeout:</span> <span class='int'>3600</span><span class='comma'>,</span>  <span class='comment'># seconds, default: 3600
+</span>  <span class='label'>extra_connection_params:</span> <span class='lbrace'>{</span>
+    <span class='label'>application_name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Data Analysis Tool</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+    <span class='label'>connect_timeout:</span> <span class='int'>10</span><span class='comma'>,</span>
+    <span class='label'>options:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>-c maintenance_work_mem=256MB</span><span class='tstring_end'>&#39;</span></span>
+  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
 <h2 id="snowflake">Snowflake</h2>
 
 <p>Snowflake adapter use the REST apis (https) to connect and query. This adapter also supports Multi-Database
@@ -479,7 +541,7 @@ Follow this <a href="https://docs.snowflake.com/en/user-guide/oauth-custom">docu
 </div></div>
 
       <div id="footer">
-  Generated on Fri Sep 19 14:34:07 2025 by
+  Generated on Fri Sep 19 18:31:33 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

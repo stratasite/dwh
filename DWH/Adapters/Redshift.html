@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: DWH::Adapters::Redshift
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "DWH::Adapters::Redshift";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (R)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Adapters.html" title="DWH::Adapters (module)">Adapters</a></span></span>
+     &raquo; 
+    <span class="title">Redshift</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: DWH::Adapters::Redshift
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName"><span class='object_link'><a href="Postgres.html" title="DWH::Adapters::Postgres (class)">Postgres</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="Adapter.html" title="DWH::Adapters::Adapter (class)">Adapter</a></span></li>
+          
+            <li class="next"><span class='object_link'><a href="Postgres.html" title="DWH::Adapters::Postgres (class)">Postgres</a></span></li>
+          
+            <li class="next">DWH::Adapters::Redshift</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/dwh/adapters/redshift.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Redshift adapter. Please ensure the pg gem is available before using this adapter.
+Generally, adapters should be created using <span class='object_link'><a href="../Factory.html#create-instance_method" title="DWH::Factory#create (method)">DWH.create</a></span>. Where a configuration
+is passed in as options hash or argument list.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Basic connection with required only options</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="../Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:redshift</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>redshift</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>redshift</span><span class='tstring_end'>&#39;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Connection with cert based SSL connection</p>
+</div></h5>
+      
+      <pre class="example code"><code>DWH.create(:redshift, {host: &#39;localhost&#39;, database: &#39;redshift&#39;,
+  username: &#39;redshift&#39;, ssl: true,
+  extra_connection_params: { sslmode: &#39;require&#39; })
+
+valid sslmodes: disable, prefer, require, verify-ca, verify-full
+For modes requiring Certs make sure you add the appropirate params
+to extra_connection_params. (ie sslrootcert, sslcert etc.)</code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Connection sending custom application name</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="../Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:redshift</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>localhost</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>redshift</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>redshift</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>application_name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Strata CLI</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+
+</div>
+
+
+  <h2>Constant Summary</h2>
+  
+  <h3 class="inherited">Constants included
+     from <span class='object_link'><a href="../Settings.html" title="DWH::Settings (module)">Settings</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Settings.html#BASE_SETTINGS_FILE-constant" title="DWH::Settings::BASE_SETTINGS_FILE (constant)">Settings::BASE_SETTINGS_FILE</a></span></p>
+
+  
+  
+  <h3 class="inherited">Constants included
+     from <span class='object_link'><a href="../Functions/Dates.html" title="DWH::Functions::Dates (module)">Functions::Dates</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Functions/Dates.html#DATE_CLASSES-constant" title="DWH::Functions::Dates::DATE_CLASSES (constant)">Functions::Dates::DATE_CLASSES</a></span>, <span class='object_link'><a href="../Functions/Dates.html#TIMESTAMPABLE_UNITS-constant" title="DWH::Functions::Dates::TIMESTAMPABLE_UNITS (constant)">Functions::Dates::TIMESTAMPABLE_UNITS</a></span></p>
+
+
+
+
+  <h2>Instance Attribute Summary</h2>
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="Adapter.html" title="DWH::Adapters::Adapter (class)">Adapter</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Adapter.html#config-instance_method" title="DWH::Adapters::Adapter#config (method)">#config</a></span>, <span class='object_link'><a href="Adapter.html#settings-instance_method" title="DWH::Adapters::Adapter#settings (method)">#settings</a></span></p>
+
+  
+  
+  <h3 class="inherited">Attributes included from <span class='object_link'><a href="../Settings.html" title="DWH::Settings (module)">Settings</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Settings.html#adapter_settings-instance_method" title="DWH::Settings#adapter_settings (method)">#adapter_settings</a></span></p>
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#date_add-instance_method" title="#date_add (instance method)">#<strong>date_add</strong>(unit, val, exp)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Need to override default add method since redshift doesn&#39;t support quarter as an interval.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="Postgres.html" title="DWH::Adapters::Postgres (class)">Postgres</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Postgres.html#connection-instance_method" title="DWH::Adapters::Postgres#connection (method)">#connection</a></span>, <span class='object_link'><a href="Postgres.html#execute-instance_method" title="DWH::Adapters::Postgres#execute (method)">#execute</a></span>, <span class='object_link'><a href="Postgres.html#execute_stream-instance_method" title="DWH::Adapters::Postgres#execute_stream (method)">#execute_stream</a></span>, <span class='object_link'><a href="Postgres.html#metadata-instance_method" title="DWH::Adapters::Postgres#metadata (method)">#metadata</a></span>, <span class='object_link'><a href="Postgres.html#schema%3F-instance_method" title="DWH::Adapters::Postgres#schema? (method)">#schema?</a></span>, <span class='object_link'><a href="Postgres.html#stats-instance_method" title="DWH::Adapters::Postgres#stats (method)">#stats</a></span>, <span class='object_link'><a href="Postgres.html#stream-instance_method" title="DWH::Adapters::Postgres#stream (method)">#stream</a></span>, <span class='object_link'><a href="Postgres.html#table%3F-instance_method" title="DWH::Adapters::Postgres#table? (method)">#table?</a></span>, <span class='object_link'><a href="Postgres.html#tables-instance_method" title="DWH::Adapters::Postgres#tables (method)">#tables</a></span>, <span class='object_link'><a href="Postgres.html#test_connection-instance_method" title="DWH::Adapters::Postgres#test_connection (method)">#test_connection</a></span>, <span class='object_link'><a href="Postgres.html#valid_config%3F-instance_method" title="DWH::Adapters::Postgres#valid_config? (method)">#valid_config?</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="Adapter.html" title="DWH::Adapters::Adapter (class)">Adapter</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Adapter.html#adapter_name-instance_method" title="DWH::Adapters::Adapter#adapter_name (method)">#adapter_name</a></span>, <span class='object_link'><a href="Adapter.html#alter_settings-instance_method" title="DWH::Adapters::Adapter#alter_settings (method)">#alter_settings</a></span>, <span class='object_link'><a href="Adapter.html#close-instance_method" title="DWH::Adapters::Adapter#close (method)">#close</a></span>, <span class='object_link'><a href="Adapter.html#config-class_method" title="DWH::Adapters::Adapter.config (method)">config</a></span>, <span class='object_link'><a href="Adapter.html#configuration-class_method" title="DWH::Adapters::Adapter.configuration (method)">configuration</a></span>, <span class='object_link'><a href="Adapter.html#connect!-instance_method" title="DWH::Adapters::Adapter#connect! (method)">#connect!</a></span>, <span class='object_link'><a href="Adapter.html#connect%3F-instance_method" title="DWH::Adapters::Adapter#connect? (method)">#connect?</a></span>, <span class='object_link'><a href="Adapter.html#connection-instance_method" title="DWH::Adapters::Adapter#connection (method)">#connection</a></span>, <span class='object_link'><a href="Adapter.html#execute-instance_method" title="DWH::Adapters::Adapter#execute (method)">#execute</a></span>, <span class='object_link'><a href="Adapter.html#execute_stream-instance_method" title="DWH::Adapters::Adapter#execute_stream (method)">#execute_stream</a></span>, <span class='object_link'><a href="Adapter.html#extra_connection_params-instance_method" title="DWH::Adapters::Adapter#extra_connection_params (method)">#extra_connection_params</a></span>, <span class='object_link'><a href="Adapter.html#extra_query_params-instance_method" title="DWH::Adapters::Adapter#extra_query_params (method)">#extra_query_params</a></span>, <span class='object_link'><a href="Adapter.html#initialize-instance_method" title="DWH::Adapters::Adapter#initialize (method)">#initialize</a></span>, <span class='object_link'><a href="Adapter.html#metadata-instance_method" title="DWH::Adapters::Adapter#metadata (method)">#metadata</a></span>, <span class='object_link'><a href="Adapter.html#reset_settings-instance_method" title="DWH::Adapters::Adapter#reset_settings (method)">#reset_settings</a></span>, <span class='object_link'><a href="Adapter.html#stats-instance_method" title="DWH::Adapters::Adapter#stats (method)">#stats</a></span>, <span class='object_link'><a href="Adapter.html#stream-instance_method" title="DWH::Adapters::Adapter#stream (method)">#stream</a></span>, <span class='object_link'><a href="Adapter.html#table%3F-instance_method" title="DWH::Adapters::Adapter#table? (method)">#table?</a></span>, <span class='object_link'><a href="Adapter.html#tables-instance_method" title="DWH::Adapters::Adapter#tables (method)">#tables</a></span>, <span class='object_link'><a href="Adapter.html#test_connection-instance_method" title="DWH::Adapters::Adapter#test_connection (method)">#test_connection</a></span>, <span class='object_link'><a href="Adapter.html#token_expired%3F-instance_method" title="DWH::Adapters::Adapter#token_expired? (method)">#token_expired?</a></span>, <span class='object_link'><a href="Adapter.html#with_debug-instance_method" title="DWH::Adapters::Adapter#with_debug (method)">#with_debug</a></span>, <span class='object_link'><a href="Adapter.html#with_retry-instance_method" title="DWH::Adapters::Adapter#with_retry (method)">#with_retry</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Settings.html" title="DWH::Settings (module)">Settings</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Settings.html#adapter_name-instance_method" title="DWH::Settings#adapter_name (method)">#adapter_name</a></span>, <span class='object_link'><a href="../Settings.html#load_settings-instance_method" title="DWH::Settings#load_settings (method)">#load_settings</a></span>, <span class='object_link'><a href="../Settings.html#settings_file-instance_method" title="DWH::Settings#settings_file (method)">#settings_file</a></span>, <span class='object_link'><a href="../Settings.html#settings_file_path-instance_method" title="DWH::Settings#settings_file_path (method)">#settings_file_path</a></span>, <span class='object_link'><a href="../Settings.html#using_base_settings%3F-instance_method" title="DWH::Settings#using_base_settings? (method)">#using_base_settings?</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Logger.html" title="DWH::Logger (module)">Logger</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Logger.html#logger-instance_method" title="DWH::Logger#logger (method)">#logger</a></span>, <span class='object_link'><a href="../Logger.html#logger-class_method" title="DWH::Logger.logger (method)">logger</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Behaviors.html" title="DWH::Behaviors (module)">Behaviors</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Behaviors.html#apply_advanced_filtering_on_array_projections%3F-instance_method" title="DWH::Behaviors#apply_advanced_filtering_on_array_projections? (method)">#apply_advanced_filtering_on_array_projections?</a></span>, <span class='object_link'><a href="../Behaviors.html#cross_universe_measure_filtering_strategy-instance_method" title="DWH::Behaviors#cross_universe_measure_filtering_strategy (method)">#cross_universe_measure_filtering_strategy</a></span>, <span class='object_link'><a href="../Behaviors.html#extend_ending_date_to_last_hour_of_day%3F-instance_method" title="DWH::Behaviors#extend_ending_date_to_last_hour_of_day? (method)">#extend_ending_date_to_last_hour_of_day?</a></span>, <span class='object_link'><a href="../Behaviors.html#final_measure_filter%3F-instance_method" title="DWH::Behaviors#final_measure_filter? (method)">#final_measure_filter?</a></span>, <span class='object_link'><a href="../Behaviors.html#final_pass_measure_join_type-instance_method" title="DWH::Behaviors#final_pass_measure_join_type (method)">#final_pass_measure_join_type</a></span>, <span class='object_link'><a href="../Behaviors.html#greedy_apply_date_filters-instance_method" title="DWH::Behaviors#greedy_apply_date_filters (method)">#greedy_apply_date_filters</a></span>, <span class='object_link'><a href="../Behaviors.html#intermediate_measure_filter%3F-instance_method" title="DWH::Behaviors#intermediate_measure_filter? (method)">#intermediate_measure_filter?</a></span>, <span class='object_link'><a href="../Behaviors.html#temp_table_prefix-instance_method" title="DWH::Behaviors#temp_table_prefix (method)">#temp_table_prefix</a></span>, <span class='object_link'><a href="../Behaviors.html#temp_table_type-instance_method" title="DWH::Behaviors#temp_table_type (method)">#temp_table_type</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Functions.html" title="DWH::Functions (module)">Functions</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Functions.html#cast-instance_method" title="DWH::Functions#cast (method)">#cast</a></span>, <span class='object_link'><a href="../Functions.html#cross_join-instance_method" title="DWH::Functions#cross_join (method)">#cross_join</a></span>, <span class='object_link'><a href="../Functions.html#gsk-instance_method" title="DWH::Functions#gsk (method)">#gsk</a></span>, <span class='object_link'><a href="../Functions.html#lower_case-instance_method" title="DWH::Functions#lower_case (method)">#lower_case</a></span>, <span class='object_link'><a href="../Functions.html#quote-instance_method" title="DWH::Functions#quote (method)">#quote</a></span>, <span class='object_link'><a href="../Functions.html#string_lit-instance_method" title="DWH::Functions#string_lit (method)">#string_lit</a></span>, <span class='object_link'><a href="../Functions.html#trim-instance_method" title="DWH::Functions#trim (method)">#trim</a></span>, <span class='object_link'><a href="../Functions.html#upper_case-instance_method" title="DWH::Functions#upper_case (method)">#upper_case</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Functions/Arrays.html" title="DWH::Functions::Arrays (module)">Functions::Arrays</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Functions/Arrays.html#array_exclude_list-instance_method" title="DWH::Functions::Arrays#array_exclude_list (method)">#array_exclude_list</a></span>, <span class='object_link'><a href="../Functions/Arrays.html#array_in_list-instance_method" title="DWH::Functions::Arrays#array_in_list (method)">#array_in_list</a></span>, <span class='object_link'><a href="../Functions/Arrays.html#array_unnest_join-instance_method" title="DWH::Functions::Arrays#array_unnest_join (method)">#array_unnest_join</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Functions/Nulls.html" title="DWH::Functions::Nulls (module)">Functions::Nulls</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Functions/Nulls.html#if_null-instance_method" title="DWH::Functions::Nulls#if_null (method)">#if_null</a></span>, <span class='object_link'><a href="../Functions/Nulls.html#null_if-instance_method" title="DWH::Functions::Nulls#null_if (method)">#null_if</a></span>, <span class='object_link'><a href="../Functions/Nulls.html#null_if_zero-instance_method" title="DWH::Functions::Nulls#null_if_zero (method)">#null_if_zero</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Functions/ExtractDatePart.html" title="DWH::Functions::ExtractDatePart (module)">Functions::ExtractDatePart</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_day_name-instance_method" title="DWH::Functions::ExtractDatePart#extract_day_name (method)">#extract_day_name</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_day_of_month-instance_method" title="DWH::Functions::ExtractDatePart#extract_day_of_month (method)">#extract_day_of_month</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_day_of_week-instance_method" title="DWH::Functions::ExtractDatePart#extract_day_of_week (method)">#extract_day_of_week</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_day_of_year-instance_method" title="DWH::Functions::ExtractDatePart#extract_day_of_year (method)">#extract_day_of_year</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_hour-instance_method" title="DWH::Functions::ExtractDatePart#extract_hour (method)">#extract_hour</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_minute-instance_method" title="DWH::Functions::ExtractDatePart#extract_minute (method)">#extract_minute</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_month-instance_method" title="DWH::Functions::ExtractDatePart#extract_month (method)">#extract_month</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_month_name-instance_method" title="DWH::Functions::ExtractDatePart#extract_month_name (method)">#extract_month_name</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_quarter-instance_method" title="DWH::Functions::ExtractDatePart#extract_quarter (method)">#extract_quarter</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_week_of_year-instance_method" title="DWH::Functions::ExtractDatePart#extract_week_of_year (method)">#extract_week_of_year</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_year-instance_method" title="DWH::Functions::ExtractDatePart#extract_year (method)">#extract_year</a></span>, <span class='object_link'><a href="../Functions/ExtractDatePart.html#extract_year_month-instance_method" title="DWH::Functions::ExtractDatePart#extract_year_month (method)">#extract_year_month</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Functions/Dates.html" title="DWH::Functions::Dates (module)">Functions::Dates</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Functions/Dates.html#adjust_week_start_day-instance_method" title="DWH::Functions::Dates#adjust_week_start_day (method)">#adjust_week_start_day</a></span>, <span class='object_link'><a href="../Functions/Dates.html#adjust_week_start_day%3F-instance_method" title="DWH::Functions::Dates#adjust_week_start_day? (method)">#adjust_week_start_day?</a></span>, <span class='object_link'><a href="../Functions/Dates.html#current_date-instance_method" title="DWH::Functions::Dates#current_date (method)">#current_date</a></span>, <span class='object_link'><a href="../Functions/Dates.html#current_time-instance_method" title="DWH::Functions::Dates#current_time (method)">#current_time</a></span>, <span class='object_link'><a href="../Functions/Dates.html#current_timestamp-instance_method" title="DWH::Functions::Dates#current_timestamp (method)">#current_timestamp</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_data_type-instance_method" title="DWH::Functions::Dates#date_data_type (method)">#date_data_type</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_diff-instance_method" title="DWH::Functions::Dates#date_diff (method)">#date_diff</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_format-instance_method" title="DWH::Functions::Dates#date_format (method)">#date_format</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_format_sql-instance_method" title="DWH::Functions::Dates#date_format_sql (method)">#date_format_sql</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_int%3F-instance_method" title="DWH::Functions::Dates#date_int? (method)">#date_int?</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_literal-instance_method" title="DWH::Functions::Dates#date_literal (method)">#date_literal</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_time_format-instance_method" title="DWH::Functions::Dates#date_time_format (method)">#date_time_format</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_time_literal-instance_method" title="DWH::Functions::Dates#date_time_literal (method)">#date_time_literal</a></span>, <span class='object_link'><a href="../Functions/Dates.html#date_time_tz_format-instance_method" title="DWH::Functions::Dates#date_time_tz_format (method)">#date_time_tz_format</a></span>, <span class='object_link'><a href="../Functions/Dates.html#default_week_start_day-instance_method" title="DWH::Functions::Dates#default_week_start_day (method)">#default_week_start_day</a></span>, <span class='object_link'><a href="../Functions/Dates.html#truncate_date-instance_method" title="DWH::Functions::Dates#truncate_date (method)">#truncate_date</a></span>, <span class='object_link'><a href="../Functions/Dates.html#week_start_day-instance_method" title="DWH::Functions::Dates#week_start_day (method)">#week_start_day</a></span>, <span class='object_link'><a href="../Functions/Dates.html#week_starts_on_sunday%3F-instance_method" title="DWH::Functions::Dates#week_starts_on_sunday? (method)">#week_starts_on_sunday?</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Capabilities.html" title="DWH::Capabilities (module)">Capabilities</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Capabilities.html#supports_array_functions%3F-instance_method" title="DWH::Capabilities#supports_array_functions? (method)">#supports_array_functions?</a></span>, <span class='object_link'><a href="../Capabilities.html#supports_common_table_expressions%3F-instance_method" title="DWH::Capabilities#supports_common_table_expressions? (method)">#supports_common_table_expressions?</a></span>, <span class='object_link'><a href="../Capabilities.html#supports_cross_join%3F-instance_method" title="DWH::Capabilities#supports_cross_join? (method)">#supports_cross_join?</a></span>, <span class='object_link'><a href="../Capabilities.html#supports_full_join%3F-instance_method" title="DWH::Capabilities#supports_full_join? (method)">#supports_full_join?</a></span>, <span class='object_link'><a href="../Capabilities.html#supports_sub_queries%3F-instance_method" title="DWH::Capabilities#supports_sub_queries? (method)">#supports_sub_queries?</a></span>, <span class='object_link'><a href="../Capabilities.html#supports_table_join%3F-instance_method" title="DWH::Capabilities#supports_table_join? (method)">#supports_table_join?</a></span>, <span class='object_link'><a href="../Capabilities.html#supports_temp_tables%3F-instance_method" title="DWH::Capabilities#supports_temp_tables? (method)">#supports_temp_tables?</a></span>, <span class='object_link'><a href="../Capabilities.html#supports_window_functions%3F-instance_method" title="DWH::Capabilities#supports_window_functions? (method)">#supports_window_functions?</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <p class="notice">This class inherits a constructor from <span class='object_link'><a href="Adapter.html#initialize-instance_method" title="DWH::Adapters::Adapter#initialize (method)">DWH::Adapters::Adapter</a></span></p>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="date_add-instance_method">
+  
+    #<strong>date_add</strong>(unit, val, exp)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Need to override default add method
+since redshift doesn&#39;t support quarter as an
+interval.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>unit</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Should be one of day, month, quarter etc</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>val</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The number of days to add</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>exp</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The sql expresssion to modify</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+40
+41
+42
+43
+44
+45</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/redshift.rb', line 40</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_date_add'>date_add</span><span class='lparen'>(</span><span class='id identifier rubyid_unit'>unit</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='comma'>,</span> <span class='id identifier rubyid_exp'>exp</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_gsk'>gsk</span><span class='lparen'>(</span><span class='symbol'>:date_add</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>@unit</span><span class='regexp_end'>/i</span></span><span class='comma'>,</span> <span class='id identifier rubyid_unit'>unit</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>@val</span><span class='regexp_end'>/i</span></span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>@exp</span><span class='regexp_end'>/i</span></span><span class='comma'>,</span> <span class='id identifier rubyid_exp'>exp</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Fri Sep 19 18:31:34 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>
