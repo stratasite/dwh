@@ -25,6 +25,7 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 
 - **Snowflake** - High performance cloud warehouse
 - **Trino** (formerly Presto) - Distributed SQL query engine
+- **Redshift** - AWS data warehouse platform
 - **AWS Athena** - AWS big data warehouse
 - **Apache Druid** - Real-time analytics database
 - **DuckDB** - In-process analytical database
@@ -34,7 +35,6 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 
 ## Integrations Coming Soon
 
-- **Redshift** - AWS data warehouse platform
 - **ClickHouse** - High performance analytical db
 - **Databricks** - Big data compute engine
 - **MotherDuck** - Hosted DuckDB service

@@ -27,7 +27,7 @@ module DWH
       config :schema, String, default: 'public', message: 'schema name. defaults to "public"'
       config :username, String, required: true, message: 'connection username'
       config :password, String, required: false, default: nil, message: 'connection password'
-      config :query_timeout, String, required: false, default: 3600, message: 'query execution timeout in seconds'
+      config :query_timeout, Integer, required: false, default: 3600, message: 'query execution timeout in seconds'
       config :ssl, Boolean, required: false, default: false, message: 'use ssl'
       config :client_name, String, required: false, default: 'DWH Ruby Gem', message: 'The name of the connecting app'
 
@@ -45,7 +45,7 @@ module DWH
           password: config[:password],
           application_name: config[:client_name]
         }.merge(extra_connection_params)
-        properties[:options] = "#{properties[:options]} -c statement_timeout=#{config[:query_timeout]}s"
+        properties[:options] = "#{properties[:options]} -c statement_timeout=#{config[:query_timeout] * 1000}"
 
         @connection = PG.connect(properties)
 

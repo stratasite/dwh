@@ -70,6 +70,71 @@ postgres = DWH.create(:postgres, {
 })
 ```
 
+## Redshift Adapter
+
+The Redshift adapter uses the `pg` gem and provides full-featured RDBMS support.
+
+### Basic Configuration
+
+```ruby
+redshift = DWH.create(:redshift, {
+  host: 'localhost',
+  port: 5432,                    # Default: 5432
+  database: 'mydb',
+  schema: 'public',              # Default: 'public'
+  username: 'user',
+  password: 'password',
+  client_name: 'My Application'  # Default: 'DWH Ruby Gem'
+})
+```
+
+### SSL Configuration
+
+```ruby
+# Basic SSL
+redshift = DWH.create(:redshift, {
+  host: 'localhost',
+  database: 'mydb',
+  username: 'user',
+  password: 'password',
+  ssl: true,
+  extra_connection_params: {
+    sslmode: 'require'  # disable, prefer, require, verify-ca, verify-full
+  }
+})
+
+# Certificate-based SSL
+redshift = DWH.create(:postgres, {
+  host: 'localhost',
+  database: 'mydb',
+  username: 'user',
+  ssl: true,
+  extra_connection_params: {
+    sslmode: 'verify-full',
+    sslrootcert: '/path/to/ca-cert.pem',
+    sslcert: '/path/to/client-cert.pem',
+    sslkey: '/path/to/client-key.pem'
+  }
+})
+```
+
+### Advanced Configuration
+
+```ruby
+redshift = DWH.create(:redshift, {
+  host: 'localhost',
+  database: 'mydb',
+  username: 'user',
+  password: 'password',
+  query_timeout: 3600,  # seconds, default: 3600
+  extra_connection_params: {
+    application_name: 'Data Analysis Tool',
+    connect_timeout: 10,
+    options: '-c maintenance_work_mem=256MB'
+  }
+})
+```
+
 ## Snowflake
 
 Snowflake adapter use the REST apis (https) to connect and query. This adapter also supports Multi-Database
