@@ -25,9 +25,9 @@ sunday_week_start_day: "TIME_FLOOR(@exp, 'P7D', TIMESTAMP '1970-01-04 00:00:00')
 monday_week_start_day: "TIME_FLOOR(@exp, 'P7D', TIMESTAMP '1970-01-05 00:00:00')"
 
 # string functions
-trim: "trim(@exp)"
-lower_case: "lower(@exp)"
-upper_case: "upper(@exp)"
+trim: "TRIM(@exp)"
+lower_case: "LOWER(@exp)"
+upper_case: "UPPER(@exp)"
 
 # Relevant db capabilities
 supports_table_join: true
