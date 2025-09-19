@@ -21,14 +21,14 @@ class TestDwh < Minitest::Test
 
   def test_create_will_use_defaults
     # Testing issue where nil value is override the default
-    adapter = DWH.create(:trino, { host: 'localhost', username: 'ajo', catalog: 'hive' })
+    adapter = DWH.create(:druid, { host: 'localhost', username: 'ajo', catalog: 'hive' })
     assert adapter
 
     begin
-      DWH.create(:trino, { port: nil,
+      DWH.create(:druid, { port: nil,
                            host: 'localhost', username: 'ajo', catalog: 'hive' })
     rescue StandardError => e
-      assert_nil e, 'should not raise erro'
+      assert_nil e, 'should not raise error since default port will be used'
     end
   end
 end
