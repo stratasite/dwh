@@ -23,7 +23,8 @@ class PostgresTest < Minitest::Test
                            password: 'test_password',
                            database: 'test_db'
                          })
-    assert_equal 210, adapter.tables.size
+    # nil gets overwritten with default 'public'
+    assert_equal 2, adapter.tables.size
     refute adapter.table? 'simonsays'
     assert adapter.table? 'users'
   end

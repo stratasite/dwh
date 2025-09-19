@@ -114,7 +114,7 @@ module DWH
         db_table = Table.new table, schema: qualifiers[:schema]
 
         schema_where = ''
-        if db_table.schema.present?
+        if db_table.schema?
           schema_where = "AND table_schema = '#{db_table.schema}'"
         elsif schema?
           schema_where = "AND table_schema in (#{qualified_schema_name})"
@@ -143,7 +143,7 @@ module DWH
 
       # True if the configuration was setup with a schema.
       def schema?
-        config[:schema].present?
+        !config[:schema].nil? && !config[:schema]&.strip&.empty?
       end
 
       # (see Adapter#execute)

@@ -150,7 +150,7 @@ module DWH
 
       # True if the configuration was setup with a schema.
       def schema?
-        config[:schema].present?
+        !config[:schema].nil? && !config[:schema]&.strip&.empty?
       end
 
       # (see Adapter#execute)
