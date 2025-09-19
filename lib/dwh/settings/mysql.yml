@@ -24,8 +24,8 @@ extract_minute: 'MINUTE(@exp)'
 extract_year_month: 'CAST(CONCAT(YEAR(@exp), LPAD(MONTH(@exp), 2, "0")) AS UNSIGNED)'
 default_week_start_day: "sunday"
 week_start_day: "monday"
-sunday_week_start_day: "DATE(DATE_SUB(@exp, INTERVAL dayofweek(@exp)-1 DAY ))"
-monday_week_start_day: "DATE(DATE_SUB(@exp, INTERVAL dayofweek(@exp)-2 DAY ))"
+sunday_week_start_day: "DATE(DATE_SUB(@exp, INTERVAL DAYOFWEEK(@exp)-1 DAY ))"
+monday_week_start_day: "DATE(DATE_SUB(@exp, INTERVAL DAYOFWEEK(@exp)-2 DAY ))"
 cast: "CAST(@exp AS @type)"
 
 # string functions

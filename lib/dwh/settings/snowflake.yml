@@ -10,29 +10,29 @@ month_name_format: "MMMM"
 abbreviated_month_name_format: "MON"
 
 # Date functions patterns
-current_date: "current_date()"
-current_time: "current_time()"
-current_timestamp: "current_timestamp()"
+current_date: "CURRENT_DATE()"
+current_time: "CURRENT_TIME()"
+current_timestamp: "CURRENT_TIMESTAMP()"
 
-date_add: "dateadd(@unit, @val, @exp)"
-date_diff: "datediff(@unit, @start_exp, @end_exp)"
+date_add: "DATEADD(@unit, @val, @exp)"
+date_diff: "DATEDIFF(@unit, @start_exp, @end_exp)"
 date_format_sql: "TO_VARCHAR(@exp, '@format')"
 date_literal: "'@val'::DATE"
 date_time_literal: "'@val'::TIMESTAMP"
-extract_year: 'year(@exp)'
-extract_month: 'month(@exp)'
-extract_quarter: 'quarter(@exp)'
+extract_year: 'YEAR(@exp)'
+extract_month: 'MONTH(@exp)'
+extract_quarter: 'QUARTER(@exp)'
 extract_day_of_year: 'DAYOFYEAR(@exp)'
-extract_day_of_month: 'day(@exp)'
+extract_day_of_month: 'DAY(@exp)'
 extract_day_of_week: 'DAYOFWEEK(@exp)'
-extract_week_of_year: 'week(@exp)'
-extract_hour: 'hour(@exp)'
-extract_minute: 'minute(@exp)'
-extract_year_month: 'cast((TO_VARCHAR(@exp, ''YYYY'') || TO_VARCHAR(@exp, ''MM'')) as integer)'
+extract_week_of_year: 'WEEK(@exp)'
+extract_hour: 'HOUR(@exp)'
+extract_minute: 'MINUTE(@exp)'
+extract_year_month: 'CAST((TO_VARCHAR(@exp, ''YYYY'') || TO_VARCHAR(@exp, ''MM'')) as integer)'
 default_week_start_day: "monday"
 week_start_day: "monday"
-sunday_week_start_day: "dateadd(day, -1,date_trunc('week', dateadd(day,1, @exp)))"
-monday_week_start_day: "dateadd(day, 1,date_trunc('week', dateadd(day,-1, @exp)))"
+sunday_week_start_day: "DATEADD(day, -1,DATE_TRUNC('week', DATEADD(day,1, @exp)))"
+monday_week_start_day: "DATEADD(day, 1,DATE_TRUNC('week', DATEADD(day,-1, @exp)))"
 
 # array operations
 array_in_list: "ARRAY_CONTAINS(@exp, ARRAY_CONSTRUCT(@list))"

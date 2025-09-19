@@ -38,7 +38,7 @@ upper_case: "UPPER(@exp)"
 create_temp_table_template: "CREATE TEMP TABLE @table AS \n@sql"
 
 # array operations
-array_in_list: "array_length(array_intersect(@exp, @list)) > 0"
-array_exclude_list: "array_length(array_intersect(@exp, @list)) = 0"
+array_in_list: "ARRAY_LENGTH(ARRAY_INTERSECT(@exp, @list)) > 0"
+array_exclude_list: "ARRAY_LENGTH(ARRAY_INTERSECT(@exp, @list)) = 0"
 array_unnest_join: ", LATERAL (SELECT UNNEST(@exp)) AS @alias"
 

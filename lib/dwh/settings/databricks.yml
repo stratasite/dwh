@@ -13,20 +13,20 @@ abbreviated_day_name_format: "EEE"
 month_name_format: "MMMM"
 abbreviated_month_name_format: "MMM"
 
-date_add: "date_add(@unit, @val, @exp)"
-date_diff: "date_diff(@unit, @start_exp, @end_exp)"
-date_format_sql: "date_format(@exp, '@format')"
-extract_day_of_year: 'dayofyear(@exp)'
-extract_day_of_week: 'dayofweek(@exp)'
-extract_week_of_year: 'weekofyear(@exp)'
-extract_year_month: 'cast(concat(year(@exp), lpad(month(@exp), 2, "0")) as int)'
+date_add: "DATE_ADD(@unit, @val, @exp)"
+date_diff: "DATE_DIFF(@unit, @start_exp, @end_exp)"
+date_format_sql: "DATE_FORMAT(@exp, '@format')"
+extract_day_of_year: 'DAYOFYEAR(@exp)'
+extract_day_of_week: 'DAYOFWEEK(@exp)'
+extract_week_of_year: 'WEEKOFYEAR(@exp)'
+extract_year_month: 'CAST(CONCAT(YEAR(@exp), LPAD(MONTH(@exp), 2, "0")) as INT)'
 
 cast: "CAST(@exp AS @type)"
 
 # string functions
-trim: "trim(@exp)"
-lower_case: "lower(@exp)"
-upper_case: "upper(@exp)"
+trim: "TRIM(@exp)"
+lower_case: "LOWER(@exp)"
+upper_case: "UPPER(@exp)"
 
 # null handling
 if_null: "COALESCE(@exp, @when_null)"
@@ -45,7 +45,7 @@ supports_window_functions: true
 extend_ending_date_to_last_hour_of_day: false # druid needs this for inclusive filtering
 
 # array operations
-array_in_list: "exists(@exp, x -> x IN (@list))"
-array_exclude_list: "not exists(@exp, x -> x IN (@list))"
-array_unnest_join: "LATERAL VIEW explode(@exp) AS @alias"
+array_in_list: "EXISTS(@exp, x -> x IN (@list))"
+array_exclude_list: "NOT EXISTS(@exp, x -> x IN (@list))"
+array_unnest_join: "LATERAL VIEW EXPLODE(@exp) AS @alias"
 
