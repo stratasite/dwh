@@ -92,7 +92,7 @@ module DWH
       metadata = JSON.parse(metadata) if metadata.is_a?(String)
       metadata.transform_keys!(&:to_sym)
 
-      stats = TableStats.new(**metadata[:stats].transform_keys!(&:to_sym)) if metadata.key?(:stats)
+      stats = TableStats.new(**metadata[:stats]&.transform_keys!(&:to_sym)) if metadata.key?(:stats)
       table = new(physical_name, table_stats: stats)
 
       metadata[:columns]&.each do |col|
