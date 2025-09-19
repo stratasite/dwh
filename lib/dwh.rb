@@ -16,6 +16,7 @@ require_relative 'dwh/adapters/my_sql'
 require_relative 'dwh/adapters/sql_server'
 require_relative 'dwh/adapters/duck_db'
 require_relative 'dwh/adapters/athena'
+require_relative 'dwh/adapters/redshift'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -45,6 +46,7 @@ module DWH
   register(:sqlserver, Adapters::SqlServer)
   register(:duckdb, Adapters::DuckDb)
   register(:athena, Adapters::Athena)
+  register(:redshift, Adapters::Redshift)
 
   # start_reaper
 end
