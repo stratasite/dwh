@@ -124,10 +124,20 @@ module DWH
         gsk(:date_literal).gsub(/@val/i, val)
       end
 
+      # @see #date_literal
+      def date_lit(val)
+        date_literal(val)
+      end
+
       # @param val [String, Date, DateTime, Time]
       def date_time_literal(val)
         val = DATE_CLASSES.include?(val.class) ? val.strftime(date_time_format) : val
         gsk(:date_time_literal).gsub(/@val/i, val)
+      end
+
+      # @see #date_time_literal
+      def timestamp_lit(val)
+        date_time_literal(val)
       end
 
       # The current default week start day. This is how
