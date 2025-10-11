@@ -140,6 +140,11 @@ module DWH
         date_time_literal(val)
       end
 
+      # @see #date_time_literal
+      def timestamp_literal(val)
+        date_time_literal(val)
+      end
+
       # The current default week start day. This is how
       # the db is currently setup.  Should be either monday or sunday
       def default_week_start_day
