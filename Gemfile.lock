@@ -113,6 +113,12 @@ GEM
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
     ruby-progressbar (1.13.0)
+    sqlite3 (2.7.4-aarch64-linux-gnu)
+    sqlite3 (2.7.4-aarch64-linux-musl)
+    sqlite3 (2.7.4-arm64-darwin)
+    sqlite3 (2.7.4-x86_64-darwin)
+    sqlite3 (2.7.4-x86_64-linux-gnu)
+    sqlite3 (2.7.4-x86_64-linux-musl)
     stringio (3.1.7)
     tiny_tds (3.2.1)
       bigdecimal (~> 3)
@@ -141,7 +147,6 @@ PLATFORMS
   aarch64-linux-gnu
   aarch64-linux-musl
   arm64-darwin
-  ruby
   x86_64-darwin
   x86_64-linux-gnu
   x86_64-linux-musl
@@ -159,6 +164,7 @@ DEPENDENCIES
   redcarpet
   rubocop
   rubocop-minitest
+  sqlite3
   tiny_tds
   trino-client
   yard

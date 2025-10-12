@@ -40,9 +40,14 @@ postgres = DWH.create(:postgres, {
   password: 'password'
 })
 
+# Connect to SQLite (lightweight, embedded)
+sqlite = DWH.create(:sqlite, {
+  file: '/path/to/analytics.db'
+})
+
 # Connect to DuckDB (in-memory)
 duckdb = DWH.create(:duckdb, {
-  database: ':memory:'
+  file: ':memory:'
 })
 ```
 
