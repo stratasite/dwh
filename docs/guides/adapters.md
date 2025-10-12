@@ -352,6 +352,99 @@ duckdb = DWH.create(:duckdb, {
 })
 ```
 
+## SQLite Adapter
+
+The SQLite adapter uses the `sqlite3` gem for lightweight embedded database analytics. It's optimized for analytical workloads with WAL mode enabled by default for better concurrent read performance.
+
+### Basic Configuration
+
+```ruby
+# File-based database
+sqlite = DWH.create(:sqlite, {
+  file: '/path/to/my/database.sqlite'
+})
+
+# In-memory database
+sqlite = DWH.create(:sqlite, {
+  file: ':memory:'
+})
+```
+
+### Read-Only Mode
+
+```ruby
+sqlite = DWH.create(:sqlite, {
+  file: '/path/to/readonly/database.sqlite',
+  readonly: true
+})
+```
+
+### Performance Optimization
+
+The adapter includes default optimizations for analytical workloads:
+- WAL mode enabled by default for concurrent reads
+- 64MB cache size
+- Memory-mapped I/O (128MB)
+- Temp tables stored in memory
+
+```ruby
+# Customize performance settings
+sqlite = DWH.create(:sqlite, {
+  file: '/path/to/my/database.sqlite',
+  timeout: 5000,  # busy timeout in milliseconds, default: 5000
+  pragmas: {
+    cache_size: -128000,      # 128MB cache (negative means KB)
+    mmap_size: 268435456,     # 256MB memory-mapped I/O
+    temp_store: 'MEMORY',     # Store temp tables in memory
+    synchronous: 'NORMAL'     # Faster than FULL, safe with WAL
+  }
+})
+```
+
+### Disable WAL Mode
+
+```ruby
+# Disable WAL mode if needed (e.g., for NFS or network filesystems)
+sqlite = DWH.create(:sqlite, {
+  file: '/path/to/my/database.sqlite',
+  enable_wal: false
+})
+```
+
+### Advanced Configuration
+
+```ruby
+sqlite = DWH.create(:sqlite, {
+  file: '/path/to/analytics.sqlite',
+  readonly: false,
+  enable_wal: true,           # Default: true
+  timeout: 10000,             # 10 second busy timeout
+  pragmas: {
+    journal_mode: 'WAL',      # Explicitly set WAL (done by default)
+    cache_size: -256000,      # 256MB cache
+    page_size: 8192,          # Larger page size for analytics
+    mmap_size: 536870912,     # 512MB memory-mapped I/O
+    temp_store: 'MEMORY',     # Keep temp data in memory
+    synchronous: 'NORMAL',    # Balance between safety and speed
+    locking_mode: 'NORMAL'    # Allow multiple connections
+  }
+})
+```
+
+### Multiple Connections
+
+Unlike DuckDB, SQLite allows multiple independent connections to the same database file:
+
+```ruby
+# Multiple readers/writers to the same file
+reader = DWH.create(:sqlite, { file: '/path/to/data.sqlite', readonly: true })
+writer = DWH.create(:sqlite, { file: '/path/to/data.sqlite' })
+
+# Both can operate concurrently with WAL mode enabled
+data = reader.execute('SELECT * FROM sales')
+writer.execute('INSERT INTO sales VALUES (...)')
+```
+
 ## Trino Adapter
 
 The Trino adapter requires the `trino-client-ruby` gem and works with both Trino and Presto.

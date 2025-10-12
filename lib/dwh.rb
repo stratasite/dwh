@@ -15,6 +15,7 @@ require_relative 'dwh/adapters/snowflake'
 require_relative 'dwh/adapters/my_sql'
 require_relative 'dwh/adapters/sql_server'
 require_relative 'dwh/adapters/duck_db'
+require_relative 'dwh/adapters/sqlite'
 require_relative 'dwh/adapters/athena'
 require_relative 'dwh/adapters/redshift'
 
@@ -45,6 +46,7 @@ module DWH
   register(:mysql, Adapters::MySql)
   register(:sqlserver, Adapters::SqlServer)
   register(:duckdb, Adapters::DuckDb)
+  register(:sqlite, Adapters::Sqlite)
   register(:athena, Adapters::Athena)
   register(:redshift, Adapters::Redshift)
 

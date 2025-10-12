@@ -29,6 +29,7 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 - **AWS Athena** - AWS big data warehouse
 - **Apache Druid** - Real-time analytics database
 - **DuckDB** - In-process analytical database
+- **SQLite** - Lightweight embedded database
 - **PostgreSQL** - Full-featured RDBMS with advanced SQL support
 - **MySQL** - Popular open-source database
 - **SQL Server** - Microsoft's enterprise database
@@ -61,6 +62,14 @@ druid = DWH.create(:druid, {
 
 # basic query execution
 results = druid.execute("SELECT * FROM web_sales", format: :csv)
+
+# Connect to SQLite for local analytics
+sqlite = DWH.create(:sqlite, {
+  file: 'path/to/analytics.db'
+})
+
+# Query with optimized WAL mode enabled by default
+results = sqlite.execute("SELECT * FROM sales_data", format: :array)
 ```
 
 ## Core API

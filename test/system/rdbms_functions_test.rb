@@ -7,7 +7,8 @@ class RdbmsFunctions < Minitest::Test
       DWH.create(:mysql, { host: '127.0.0.1', username: 'test_user', password: 'test_password', database: 'test_db' }),
       DWH.create(:postgres, { host: 'localhost', port: 9432, username: 'test_user', password: 'test_password', database: 'test_db' }),
       DWH.create(:sqlserver, { host: 'localhost', username: 'sa', password: 'TestPassword123!', database: 'test_db' }),
-      DWH.create(:duckdb, { file: File.join(__dir__, '..', 'support', 'duckdb', 'test_db.duckdb'), duck_config: { access_mode: 'READ_ONLY' } })
+      DWH.create(:duckdb, { file: File.join(__dir__, '..', 'support', 'duckdb', 'test_db.duckdb'), duck_config: { access_mode: 'READ_ONLY' } }),
+      DWH.create(:sqlite, { file: File.join(__dir__, '..', 'support', 'sqlite', 'test_db.sqlite'), readonly: true })
     ]
   end
 

@@ -1,0 +1,42 @@
+
+
+# Date Literal Formats
+day_name_format: "%A"
+abbreviated_day_name_format: "%a"
+month_name_format: "%B"
+abbreviated_month_name_format: "%b"
+
+# Date functions patterns
+# SQLite uses strftime for most date operations
+date_add: "datetime(@exp, '+@val @unit')"
+date_diff: "CAST((julianday(@end_exp) - julianday(@start_exp)) AS INTEGER)"
+date_format_sql: "strftime('@format', @exp)"
+extract_year: "CAST(strftime('%Y', @exp) AS INTEGER)"
+extract_month: "CAST(strftime('%m', @exp) AS INTEGER)"
+extract_quarter: "CAST(((strftime('%m', @exp) - 1) / 3) + 1 AS INTEGER)"
+extract_day_of_year: "CAST(strftime('%j', @exp) AS INTEGER)"
+extract_day_of_month: "CAST(strftime('%d', @exp) AS INTEGER)"
+extract_day_of_week: "CAST(strftime('%w', @exp) AS INTEGER)"
+extract_week_of_year: "CAST(strftime('%W', @exp) AS INTEGER)"
+extract_hour: "CAST(strftime('%H', @exp) AS INTEGER)"
+extract_minute: "CAST(strftime('%M', @exp) AS INTEGER)"
+extract_year_month: "CAST(strftime('%Y%m', @exp) AS INTEGER)"
+default_week_start_day: "monday"
+week_start_day: "monday"
+sunday_week_start_day: "date(@exp, '-' || strftime('%w', @exp) || ' days')"
+monday_week_start_day: "date(@exp, '-' || ((CAST(strftime('%w', @exp) AS INTEGER) + 6) % 7) || ' days')"
+
+cast: "CAST(@exp AS @type)"
+
+# string functions
+trim: "TRIM(@exp)"
+lower_case: "LOWER(@exp)"
+upper_case: "UPPER(@exp)"
+
+# Relevant db capabilities for query gen
+create_temp_table_template: "CREATE TEMP TABLE @table AS \n@sql"
+
+# array operations - SQLite has limited native array support
+# These would need JSON extension or custom implementation
+# array_in_list: "EXISTS(SELECT 1 FROM json_each(@exp) WHERE value IN @list)"
+# array_exclude_list: "NOT EXISTS(SELECT 1 FROM json_each(@exp) WHERE value IN @list)"

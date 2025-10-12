@@ -13,6 +13,7 @@ group :development do
   gem 'duckdb'
   gem 'mysql2'
   gem 'pg'
+  gem 'sqlite3'
   gem 'tiny_tds'
   gem 'trino-client'
 
