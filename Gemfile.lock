@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dwh (0.1.1)
+    dwh (0.2.0)
       connection_pool (~> 2.4)
       csv (~> 3.3.5)
       faraday
