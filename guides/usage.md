@@ -293,7 +293,7 @@ native = adapter.execute(sql, format: :native)   # Database's native format
 # Use streaming for large result sets
 def export_large_table(adapter, table_name, output_file)
   query = "SELECT * FROM #{table_name}"
-  
+
   File.open(output_file, 'w') do |file|
     adapter.execute_stream(query, file)
   end
@@ -307,6 +307,38 @@ def process_large_dataset(adapter, query)
     chunk.each { |row| process_row(row) }
   end
 end
+```
+
+### SQLite Performance Tuning
+
+SQLite adapter comes with optimized defaults for analytical workloads, but can be further tuned:
+
+```ruby
+# High-performance SQLite configuration for analytics
+sqlite = DWH.create(:sqlite, {
+  file: '/path/to/large_analytics.db',
+  enable_wal: true,           # WAL mode for concurrent reads (default: true)
+  timeout: 30000,             # 30 second busy timeout for heavy writes
+  pragmas: {
+    cache_size: -512000,      # 512MB cache for large datasets
+    page_size: 8192,          # Larger pages for sequential scans
+    mmap_size: 1073741824,    # 1GB memory-mapped I/O
+    temp_store: 'MEMORY',     # Keep temp tables in RAM
+    synchronous: 'NORMAL',    # Balance safety/speed (safe with WAL)
+    journal_size_limit: 67108864  # 64MB journal limit
+  }
+})
+
+# Read-only analytics queries with maximum performance
+readonly_analytics = DWH.create(:sqlite, {
+  file: '/path/to/data.db',
+  readonly: true,             # Read-only for maximum concurrency
+  pragmas: {
+    cache_size: -256000,      # 256MB cache
+    mmap_size: 2147483648,    # 2GB memory mapping for large files
+    temp_store: 'MEMORY'      # Fast temp operations
+  }
+})
 ```
 
 ## Error Handling and Debugging

@@ -349,6 +349,37 @@
 <span class='kw'>end</span>
 </code></pre>
 
+<h3 id="sqlite-performance-tuning">SQLite Performance Tuning</h3>
+
+<p>SQLite adapter comes with optimized defaults for analytical workloads, but can be further tuned:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># High-performance SQLite configuration for analytics
+</span><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/large_analytics.db</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>enable_wal:</span> <span class='kw'>true</span><span class='comma'>,</span>           <span class='comment'># WAL mode for concurrent reads (default: true)
+</span>  <span class='label'>timeout:</span> <span class='int'>30000</span><span class='comma'>,</span>             <span class='comment'># 30 second busy timeout for heavy writes
+</span>  <span class='label'>pragmas:</span> <span class='lbrace'>{</span>
+    <span class='label'>cache_size:</span> <span class='op'>-</span><span class='int'>512000</span><span class='comma'>,</span>      <span class='comment'># 512MB cache for large datasets
+</span>    <span class='label'>page_size:</span> <span class='int'>8192</span><span class='comma'>,</span>          <span class='comment'># Larger pages for sequential scans
+</span>    <span class='label'>mmap_size:</span> <span class='int'>1073741824</span><span class='comma'>,</span>    <span class='comment'># 1GB memory-mapped I/O
+</span>    <span class='label'>temp_store:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MEMORY</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>     <span class='comment'># Keep temp tables in RAM
+</span>    <span class='label'>synchronous:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NORMAL</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>    <span class='comment'># Balance safety/speed (safe with WAL)
+</span>    <span class='label'>journal_size_limit:</span> <span class='int'>67108864</span>  <span class='comment'># 64MB journal limit
+</span>  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+
+<span class='comment'># Read-only analytics queries with maximum performance
+</span><span class='id identifier rubyid_readonly_analytics'>readonly_analytics</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/data.db</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>readonly:</span> <span class='kw'>true</span><span class='comma'>,</span>             <span class='comment'># Read-only for maximum concurrency
+</span>  <span class='label'>pragmas:</span> <span class='lbrace'>{</span>
+    <span class='label'>cache_size:</span> <span class='op'>-</span><span class='int'>256000</span><span class='comma'>,</span>      <span class='comment'># 256MB cache
+</span>    <span class='label'>mmap_size:</span> <span class='int'>2147483648</span><span class='comma'>,</span>    <span class='comment'># 2GB memory mapping for large files
+</span>    <span class='label'>temp_store:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MEMORY</span><span class='tstring_end'>&#39;</span></span>      <span class='comment'># Fast temp operations
+</span>  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
 <h2 id="error-handling-and-debugging">Error Handling and Debugging</h2>
 
 <h3 id="comprehensive-error-handling">Comprehensive Error Handling</h3>
@@ -415,7 +446,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Sat Oct 11 18:04:43 2025 by
+  Generated on Sun Oct 12 19:16:00 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

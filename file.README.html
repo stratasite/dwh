@@ -92,6 +92,7 @@
 <li><strong>AWS Athena</strong> - AWS big data warehouse</li>
 <li><strong>Apache Druid</strong> - Real-time analytics database</li>
 <li><strong>DuckDB</strong> - In-process analytical database</li>
+<li><strong>SQLite</strong> - Lightweight embedded database</li>
 <li><strong>PostgreSQL</strong> - Full-featured RDBMS with advanced SQL support</li>
 <li><strong>MySQL</strong> - Popular open-source database</li>
 <li><strong>SQL Server</strong> - Microsoft&#39;s enterprise database</li>
@@ -125,6 +126,14 @@
 
 <span class='comment'># basic query execution
 </span><span class='id identifier rubyid_results'>results</span> <span class='op'>=</span> <span class='id identifier rubyid_druid'>druid</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM web_sales</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:csv</span><span class='rparen'>)</span>
+
+<span class='comment'># Connect to SQLite for local analytics
+</span><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>path/to/analytics.db</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+
+<span class='comment'># Query with optimized WAL mode enabled by default
+</span><span class='id identifier rubyid_results'>results</span> <span class='op'>=</span> <span class='id identifier rubyid_sqlite'>sqlite</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT * FROM sales_data</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:array</span><span class='rparen'>)</span>
 </code></pre>
 
 <h2 id="core-api">Core API</h2>
@@ -195,7 +204,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Sat Oct 11 18:04:43 2025 by
+  Generated on Sun Oct 12 19:16:00 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

@@ -391,6 +391,96 @@ Follow this <a href="https://docs.snowflake.com/en/user-guide/oauth-custom">docu
 <span class='rbrace'>}</span><span class='rparen'>)</span>
 </code></pre>
 
+<h2 id="sqlite-adapter">SQLite Adapter</h2>
+
+<p>The SQLite adapter uses the <code>sqlite3</code> gem for lightweight embedded database analytics. It&#39;s optimized for analytical workloads with WAL mode enabled by default for better concurrent read performance.</p>
+
+<h3 id="basic-configuration">Basic Configuration</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># File-based database
+</span><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/my/database.sqlite</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+
+<span class='comment'># In-memory database
+</span><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>:memory:</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="read-only-mode">Read-Only Mode</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/readonly/database.sqlite</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>readonly:</span> <span class='kw'>true</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="performance-optimization">Performance Optimization</h3>
+
+<p>The adapter includes default optimizations for analytical workloads:</p>
+
+<ul>
+<li>WAL mode enabled by default for concurrent reads</li>
+<li>64MB cache size</li>
+<li>Memory-mapped I/O (128MB)</li>
+<li>Temp tables stored in memory</li>
+</ul>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Customize performance settings
+</span><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/my/database.sqlite</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>timeout:</span> <span class='int'>5000</span><span class='comma'>,</span>  <span class='comment'># busy timeout in milliseconds, default: 5000
+</span>  <span class='label'>pragmas:</span> <span class='lbrace'>{</span>
+    <span class='label'>cache_size:</span> <span class='op'>-</span><span class='int'>128000</span><span class='comma'>,</span>      <span class='comment'># 128MB cache (negative means KB)
+</span>    <span class='label'>mmap_size:</span> <span class='int'>268435456</span><span class='comma'>,</span>     <span class='comment'># 256MB memory-mapped I/O
+</span>    <span class='label'>temp_store:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MEMORY</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>     <span class='comment'># Store temp tables in memory
+</span>    <span class='label'>synchronous:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NORMAL</span><span class='tstring_end'>&#39;</span></span>     <span class='comment'># Faster than FULL, safe with WAL
+</span>  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="disable-wal-mode">Disable WAL Mode</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Disable WAL mode if needed (e.g., for NFS or network filesystems)
+</span><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/my/database.sqlite</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>enable_wal:</span> <span class='kw'>false</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="advanced-configuration">Advanced Configuration</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_sqlite'>sqlite</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/analytics.sqlite</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>readonly:</span> <span class='kw'>false</span><span class='comma'>,</span>
+  <span class='label'>enable_wal:</span> <span class='kw'>true</span><span class='comma'>,</span>           <span class='comment'># Default: true
+</span>  <span class='label'>timeout:</span> <span class='int'>10000</span><span class='comma'>,</span>             <span class='comment'># 10 second busy timeout
+</span>  <span class='label'>pragmas:</span> <span class='lbrace'>{</span>
+    <span class='label'>journal_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>WAL</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>      <span class='comment'># Explicitly set WAL (done by default)
+</span>    <span class='label'>cache_size:</span> <span class='op'>-</span><span class='int'>256000</span><span class='comma'>,</span>      <span class='comment'># 256MB cache
+</span>    <span class='label'>page_size:</span> <span class='int'>8192</span><span class='comma'>,</span>          <span class='comment'># Larger page size for analytics
+</span>    <span class='label'>mmap_size:</span> <span class='int'>536870912</span><span class='comma'>,</span>     <span class='comment'># 512MB memory-mapped I/O
+</span>    <span class='label'>temp_store:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MEMORY</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>     <span class='comment'># Keep temp data in memory
+</span>    <span class='label'>synchronous:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NORMAL</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>    <span class='comment'># Balance between safety and speed
+</span>    <span class='label'>locking_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NORMAL</span><span class='tstring_end'>&#39;</span></span>    <span class='comment'># Allow multiple connections
+</span>  <span class='rbrace'>}</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="multiple-connections">Multiple Connections</h3>
+
+<p>Unlike DuckDB, SQLite allows multiple independent connections to the same database file:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Multiple readers/writers to the same file
+</span><span class='id identifier rubyid_reader'>reader</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span> <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/data.sqlite</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>readonly:</span> <span class='kw'>true</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_writer'>writer</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:sqlite</span><span class='comma'>,</span> <span class='lbrace'>{</span> <span class='label'>file:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/data.sqlite</span><span class='tstring_end'>&#39;</span></span> <span class='rbrace'>}</span><span class='rparen'>)</span>
+
+<span class='comment'># Both can operate concurrently with WAL mode enabled
+</span><span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='id identifier rubyid_reader'>reader</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SELECT * FROM sales</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_writer'>writer</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>INSERT INTO sales VALUES (...)</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+</code></pre>
+
 <h2 id="trino-adapter">Trino Adapter</h2>
 
 <p>The Trino adapter requires the <code>trino-client-ruby</code> gem and works with both Trino and Presto.</p>
@@ -541,7 +631,7 @@ Follow this <a href="https://docs.snowflake.com/en/user-guide/oauth-custom">docu
 </div></div>
 
       <div id="footer">
-  Generated on Sat Oct 11 18:04:43 2025 by
+  Generated on Sun Oct 12 19:16:00 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
