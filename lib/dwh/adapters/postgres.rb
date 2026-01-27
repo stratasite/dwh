@@ -230,6 +230,7 @@ module DWH
             macOS:  brew install postgresql
             Ubuntu: sudo apt-get install libpq-dev
             RHEL:   sudo dnf install postgresql-devel
+            Windows: vcpkg (https://vcpkg.io) or https://www.postgresql.org/download/windows/
         MSG
       end
 

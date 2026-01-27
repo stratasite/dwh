@@ -243,6 +243,7 @@ module DWH
             macOS:  brew install freetds
             Ubuntu: sudo apt-get install freetds-dev
             RHEL:   sudo dnf install freetds-devel
+            Windows: vcpkg (https://vcpkg.io) or http://www.freetds.org/
         MSG
       end
 
