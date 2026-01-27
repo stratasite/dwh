@@ -239,11 +239,7 @@ module DWH
 
           Install with: gem install tiny_tds
 
-          System libraries required (FreeTDS):
-            macOS:  brew install freetds
-            Ubuntu: sudo apt-get install freetds-dev
-            RHEL:   sudo dnf install freetds-devel
-            Windows: vcpkg (https://vcpkg.io) or http://www.freetds.org/
+          System libraries (FreeTDS): https://www.freetds.org/
         MSG
       end
 

@@ -224,11 +224,7 @@ module DWH
 
           Install with: gem install mysql2
 
-          System libraries required:
-            macOS:  brew install mysql
-            Ubuntu: sudo apt-get install libmysqlclient-dev
-            RHEL:   sudo dnf install mysql-devel
-            Windows: vcpkg (https://vcpkg.io) or https://dev.mysql.com/downloads/mysql/
+          System libraries: https://dev.mysql.com/downloads/
         MSG
       end
 
