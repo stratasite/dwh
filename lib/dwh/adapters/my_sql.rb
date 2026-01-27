@@ -219,7 +219,16 @@ module DWH
         super
         require 'mysql2'
       rescue LoadError
-        raise ConfigError, "Required 'MySql2' gem missing. Please add it to your Gemfile."
+        raise ConfigError, <<~MSG
+          MySQL adapter requires the 'mysql2' gem.
+
+          Install with: gem install mysql2
+
+          System libraries required:
+            macOS:  brew install mysql
+            Ubuntu: sudo apt-get install libmysqlclient-dev
+            RHEL:   sudo dnf install mysql-devel
+        MSG
       end
 
       def result_to_csv(result)

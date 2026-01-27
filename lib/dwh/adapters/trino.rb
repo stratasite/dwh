@@ -194,7 +194,13 @@ module DWH
         super
         require 'trino-client'
       rescue LoadError
-        raise ConfigError, "Required 'trino-client' gem missing. Please add it to your Gemfile."
+        raise ConfigError, <<~MSG
+          Trino adapter requires the 'trino-client' gem.
+
+          Install with: gem install trino-client
+
+          No system libraries required (pure Ruby).
+        MSG
       end
 
       private
