@@ -4,7 +4,7 @@
 
 ### Changed
 
-- **Adapter missing-gem error messages** (MySQL, PostgreSQL, SQL Server): replace platform-specific system library install instructions with links to official documentation. Messages now include `gem install` and a single link for system libraries.
+- **Adapter missing-gem error messages** (Athena, DuckDB, MySQL, PostgreSQL, SQL Server, Trino): replace platform-specific system library install instructions with links to official documentation. Messages now include `gem install` and a single link for system libraries.
 
 ## [0.2.0] - 2025-10-12
 
