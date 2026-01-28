@@ -234,7 +234,13 @@ module DWH
         super
         require 'tiny_tds'
       rescue LoadError
-        raise ConfigError, "Required 'tiny_tds' gem missing. Please add it to your Gemfile."
+        raise ConfigError, <<~MSG
+          SQL Server adapter requires the 'tiny_tds' gem.
+
+          Install with: gem install tiny_tds
+
+          System libraries (FreeTDS): https://www.freetds.org/
+        MSG
       end
 
       private

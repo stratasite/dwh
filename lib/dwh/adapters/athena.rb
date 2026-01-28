@@ -202,8 +202,15 @@ module DWH
       def valid_config?
         super
         require 'aws-sdk-athena'
+        require 'aws-sdk-s3'
       rescue LoadError
-        raise ConfigError, "Required 'aws-sdk-athena' and 'aws-sdk-s3' gems missing. Please add them to your Gemfile."
+        raise ConfigError, <<~MSG
+          Athena adapter requires the 'aws-sdk-athena' and 'aws-sdk-s3' gems.
+
+          Install with: gem install aws-sdk-athena aws-sdk-s3
+
+          No system libraries required (pure Ruby).
+        MSG
       end
 
       private

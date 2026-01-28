@@ -221,7 +221,13 @@ module DWH
         super
         require 'pg'
       rescue LoadError
-        raise ConfigError, "Required 'pg' gem missing. Please add it to your Gemfile."
+        raise ConfigError, <<~MSG
+          PostgreSQL adapter requires the 'pg' gem.
+
+          Install with: gem install pg
+
+          System libraries: https://www.postgresql.org/download/
+        MSG
       end
 
       private

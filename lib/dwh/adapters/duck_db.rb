@@ -209,7 +209,13 @@ module DWH
         super
         require 'duckdb'
       rescue LoadError
-        raise ConfigError, "Required 'duckdb' gem missing. Please add it to your Gemfile."
+        raise ConfigError, <<~MSG
+          DuckDB adapter requires the 'duckdb' gem.
+
+          Install with: gem install duckdb
+
+          See https://github.com/suketa/ruby-duckdb for installation details.
+        MSG
       end
 
       private
