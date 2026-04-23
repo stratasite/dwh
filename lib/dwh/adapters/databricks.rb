@@ -29,7 +29,7 @@ module DWH
       DEFAULT_POLL_INTERVAL = 0.25
       MAX_POLL_INTERVAL = 30
 
-      API_STATEMENTS = '/api/2.0/sql/statements'.freeze
+      STATEMENTS_API = '/api/2.0/sql/statements'.freeze
 
       def initialize(config)
         super
@@ -195,7 +195,7 @@ module DWH
       end
 
       def submit_query(sql)
-        connection.post(API_STATEMENTS) do |req|
+        connection.post(STATEMENTS_API) do |req|
           req.body = {
             statement: sql,
             warehouse_id: config[:warehouse],
@@ -230,7 +230,7 @@ module DWH
         logger.debug "Polling for query completion: #{statement_id}"
 
         loop do
-          response = connection.get("#{API_STATEMENTS}/#{statement_id}")
+          response = connection.get("#{STATEMENTS_API}/#{statement_id}")
           body = JSON.parse(response.body)
           state = body.dig('status', 'state')
 
@@ -269,7 +269,7 @@ module DWH
           chunk_index = chunk['chunk_index']
           logger.debug "Fetching chunk #{chunk_index} of #{chunks.size} for statement: #{statement_id}"
 
-          resp = connection.get("#{API_STATEMENTS}/#{statement_id}/result/chunks/#{chunk_index}")
+          resp = connection.get("#{STATEMENTS_API}/#{statement_id}/result/chunks/#{chunk_index}")
           raise ExecutionError, "Failed to fetch chunk #{chunk_index}: #{resp.body}" unless resp.status == 200
 
           chunk_data = JSON.parse(resp.body)
