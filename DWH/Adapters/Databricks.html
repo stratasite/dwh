@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Class: DWH::Adapters::Snowflake
+  Class: DWH::Adapters::Databricks
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="../../css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "DWH::Adapters::Snowflake";
+  pathId = "DWH::Adapters::Databricks";
   relpath = '../../';
 </script>
 
@@ -36,10 +36,10 @@
       <div id="header">
         <div id="menu">
   
-    <a href="../../_index.html">Index (S)</a> &raquo;
+    <a href="../../_index.html">Index (D)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Adapters.html" title="DWH::Adapters (module)">Adapters</a></span></span>
      &raquo; 
-    <span class="title">Snowflake</span>
+    <span class="title">Databricks</span>
   
 </div>
 
@@ -59,7 +59,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><h1>Class: DWH::Adapters::Snowflake
+      <div id="content"><h1>Class: DWH::Adapters::Databricks
   
   
   
@@ -76,7 +76,7 @@
           
             <li class="next"><span class='object_link'><a href="Adapter.html" title="DWH::Adapters::Adapter (class)">Adapter</a></span></li>
           
-            <li class="next">DWH::Adapters::Snowflake</li>
+            <li class="next">DWH::Adapters::Databricks</li>
           
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
@@ -89,11 +89,6 @@
   
   
   
-  <dl>
-      <dt>Includes:</dt>
-      <dd><span class='object_link'><a href="OpenAuthorizable.html" title="DWH::Adapters::OpenAuthorizable (module)">OpenAuthorizable</a></span></dd>
-  </dl>
-  
   
 
   
@@ -101,22 +96,16 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/dwh/adapters/snowflake.rb</dd>
+    <dd>lib/dwh/adapters/databricks.rb</dd>
   </dl>
   
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Snowflake adapter for executing SQL queries against Snowflake databases.</p>
+    <p>Databricks adapter for executing SQL queries against Databricks SQL warehouses.</p>
 
-<p>Supports two authentication modes:</p>
-
-<ul>
-<li>Personal Access Token (pat)</li>
-<li>Key Pair Authentication (kp)</li>
-<li>OAuth 2.0 (oauth)</li>
-</ul>
+<p>Supports OAuth M2M (service principal) authentication only.</p>
 
 
   </div>
@@ -127,55 +116,17 @@
     <h4 class="tag_title">Examples:</h4>
     
       
-        <h5 class="example_title"><div class='inline'><p>Basic connection with Personal Access Token</p>
+        <h5 class="example_title"><div class='inline'><p>Connection with OAuth (service principal)</p>
 </div></h5>
       
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="../Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:snowflake</span><span class='comma'>,</span> <span class='lbrace'>{</span>
-  <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pat</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>account_identifier:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myorg-myaccount</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>personal_access_token:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>your-token-here</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>warehouse:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>COMPUTE_WH</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ANALYTICS</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>PUBLIC</span><span class='tstring_end'>&#39;</span></span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="../Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:databricks</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>adb-1234567890123456.7.azuredatabricks.net</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>warehouse:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>abc123def456</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>oauth_client_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service-principal-app-id</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>oauth_client_secret:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>your-oauth-secret-here</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>catalog:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>main</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>default</span><span class='tstring_end'>&#39;</span></span>
 <span class='rbrace'>}</span><span class='rparen'>)</span></code></pre>
-    
-      
-        <h5 class="example_title"><div class='inline'><p>Connection with Key Pair Authentication</p>
-</div></h5>
-      
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="../Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:snowflake</span><span class='comma'>,</span> <span class='lbrace'>{</span>
-  <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>kp</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>account_identifier:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myorg-myaccount.us-east-1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>username:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>john_doe</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>private_key:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/private_key.pem</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>warehouse:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>COMPUTE_WH</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ANALYTICS</span><span class='tstring_end'>&#39;</span></span>
-<span class='rbrace'>}</span><span class='rparen'>)</span></code></pre>
-    
-      
-        <h5 class="example_title"><div class='inline'><p>Connecting with OAuth</p>
-</div></h5>
-      
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../../DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="../Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:snowflake</span><span class='comma'>,</span> <span class='lbrace'>{</span>
-  <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>oauth</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>account_identifier:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>myorg-myaccount.us-east-1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>oauth_client_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>&lt;YOUR_CLIENT_ID&gt;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>oauth_client_secret:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>&lt;YOUR_CLIENT_SECRET&gt;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>oauth_redirect_url:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://localhost:3030/some/path</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>database:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ANALYTICS</span><span class='tstring_end'>&#39;</span></span>
-<span class='rbrace'>}</span><span class='rparen'>)</span>
-
-<span class='comment'># This sill only work if you setup an OAuth security integration
-</span><span class='comment'># and grant it to the correct users.
-</span>
-<span class='comment'># Use this url to get auth code
-</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_authorization_url'>authorization_url</span>
-
-<span class='comment'># Pass the code to generate oauth tokens
-</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_generate_oauth_tokens'>generate_oauth_tokens</span><span class='lparen'>(</span><span class='id identifier rubyid_authorization_code'>authorization_code</span><span class='rparen'>)</span>
-
-<span class='comment'># Apply previously created tokens for new connections
-</span><span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_apply_oauth_tokens'>apply_oauth_tokens</span><span class='lparen'>(</span><span class='label'>access_token:</span> <span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='label'>refresh_token:</span> <span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='label'>expires_at:</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='rparen'>)</span></code></pre>
     
   </div>
 
@@ -189,44 +140,6 @@
 
     <dl class="constants">
       
-        <dt id="AUTH_TOKEN_TYPES-constant" class="">AUTH_TOKEN_TYPES =
-          <div class="docstring">
-  <div class="discussion">
-    <p>Constants</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div>
-        </dt>
-        <dd><pre class="code"><span class='lbrace'>{</span>
-  <span class='label'>pat:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>PROGRAMMATIC_ACCESS_TOKEN</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>kp:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>KEYPAIR_JWT</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>oauth:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>OAUTH</span><span class='tstring_end'>&#39;</span></span>
-<span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
-      
-        <dt id="API_ENDPOINTS-constant" class="">API_ENDPOINTS =
-          
-        </dt>
-        <dd><pre class="code"><span class='lbrace'>{</span>
-  <span class='label'>statements:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/api/v2/statements</span><span class='tstring_end'>&#39;</span></span>
-<span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
-      
-        <dt id="DEFAULT_PARAMETERS-constant" class="">DEFAULT_PARAMETERS =
-          
-        </dt>
-        <dd><pre class="code"><span class='lbrace'>{</span>
-  <span class='label'>DATE_OUTPUT_FORMAT:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>YYYY-MM-DD</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>TIMESTAMP_OUTPUT_FORMAT:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>YYYY-MM-DD HH24:MI:SS</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>TIMESTAMP_TZ_OUTPUT_FORMAT:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>YYYY-MM-DD HH24:MI:SS TZH</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>TIMESTAMP_NTZ_OUTPUT_FORMAT:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>YYYY-MM-DD HH24:MI:SS</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>TIMESTAMP_LTZ_OUTPUT_FORMAT:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>YYYY-MM-DD HH24:MI:SS TZH</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-  <span class='label'>TIME_OUTPUT_FORMAT:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>HH24:MI:SS</span><span class='tstring_end'>&#39;</span></span>
-<span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
-      
         <dt id="DEFAULT_POLL_INTERVAL-constant" class="">DEFAULT_POLL_INTERVAL =
           
         </dt>
@@ -237,10 +150,10 @@
         </dt>
         <dd><pre class="code"><span class='int'>30</span></pre></dd>
       
-        <dt id="TOKEN_VALIDITY_SECONDS-constant" class="">TOKEN_VALIDITY_SECONDS =
+        <dt id="STATEMENTS_API-constant" class="">STATEMENTS_API =
           
         </dt>
-        <dd><pre class="code"><span class='int'>3600</span></pre></dd>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/api/2.0/sql/statements</span><span class='tstring_end'>&#39;</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
     </dl>
   
@@ -298,8 +211,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Creates a connection to the target database and returns the connection object or self.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -330,7 +242,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#execute_stream-instance_method" title="#execute_stream (instance method)">#<strong>execute_stream</strong>(sql, io, stats: nil, retries: 0)  &#x21d2; Array&lt;Array&gt;, ... </a>
+      <a href="#execute_stream-instance_method" title="#execute_stream (instance method)">#<strong>execute_stream</strong>(sql, io, stats: nil, retries: 0)  &#x21d2; Object </a>
     
 
     
@@ -344,8 +256,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Execute sql on the target database.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -353,7 +264,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(config)  &#x21d2; Snowflake </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(config)  &#x21d2; Databricks </a>
     
 
     
@@ -369,7 +280,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>A new instance of Snowflake.</p>
+    <span class="summary_desc"><div class='inline'><p>A new instance of Databricks.</p>
 </div></span>
   
 </li>
@@ -378,7 +289,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#metadata-instance_method" title="#metadata (instance method)">#<strong>metadata</strong>(table, **qualifiers)  &#x21d2; Array&lt;String&gt; </a>
+      <a href="#metadata-instance_method" title="#metadata (instance method)">#<strong>metadata</strong>(table, **qualifiers)  &#x21d2; Object </a>
     
 
     
@@ -392,8 +303,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Get all tables available in the target db.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -401,7 +311,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#stats-instance_method" title="#stats (instance method)">#<strong>stats</strong>(table, date_column: nil)  &#x21d2; DWH::Table </a>
+      <a href="#stats-instance_method" title="#stats (instance method)">#<strong>stats</strong>(table, date_column: nil)  &#x21d2; Object </a>
     
 
     
@@ -415,8 +325,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Returns basic stats of a given table.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -447,7 +356,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#tables-instance_method" title="#tables (instance method)">#<strong>tables</strong>(**qualifiers)  &#x21d2; Array&lt;String&gt; </a>
+      <a href="#tables-instance_method" title="#tables (instance method)">#<strong>tables</strong>(**qualifiers)  &#x21d2; Object </a>
     
 
     
@@ -461,8 +370,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Get all tables available in the target db.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -470,7 +378,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#test_connection-instance_method" title="#test_connection (instance method)">#<strong>test_connection</strong>(raise_exception: false)  &#x21d2; Boolean </a>
+      <a href="#test_connection-instance_method" title="#test_connection (instance method)">#<strong>test_connection</strong>(raise_exception: false)  &#x21d2; Object </a>
     
 
     
@@ -484,8 +392,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Tests the connection to the target database and returns true if successful, or raise Exception or false connection object or self.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -493,17 +400,6 @@
     </ul>
   
 
-
-  
-  
-  
-  
-  
-  
-  
-  
-  <h3 class="inherited">Methods included from <span class='object_link'><a href="OpenAuthorizable.html" title="DWH::Adapters::OpenAuthorizable (module)">OpenAuthorizable</a></span></h3>
-  <p class="inherited"><span class='object_link'><a href="OpenAuthorizable.html#apply_oauth_tokens-instance_method" title="DWH::Adapters::OpenAuthorizable#apply_oauth_tokens (method)">#apply_oauth_tokens</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#authorization_url-instance_method" title="DWH::Adapters::OpenAuthorizable#authorization_url (method)">#authorization_url</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#generate_oauth_tokens-instance_method" title="DWH::Adapters::OpenAuthorizable#generate_oauth_tokens (method)">#generate_oauth_tokens</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#included-class_method" title="DWH::Adapters::OpenAuthorizable.included (method)">included</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#oauth_access_token-instance_method" title="DWH::Adapters::OpenAuthorizable#oauth_access_token (method)">#oauth_access_token</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#oauth_authenticated%3F-instance_method" title="DWH::Adapters::OpenAuthorizable#oauth_authenticated? (method)">#oauth_authenticated?</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#oauth_settings-instance_method" title="DWH::Adapters::OpenAuthorizable#oauth_settings (method)">#oauth_settings</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#oauth_token_info-instance_method" title="DWH::Adapters::OpenAuthorizable#oauth_token_info (method)">#oauth_token_info</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#oauth_tokenization_url-instance_method" title="DWH::Adapters::OpenAuthorizable#oauth_tokenization_url (method)">#oauth_tokenization_url</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#refresh_access_token-instance_method" title="DWH::Adapters::OpenAuthorizable#refresh_access_token (method)">#refresh_access_token</a></span>, <span class='object_link'><a href="OpenAuthorizable.html#validate_oauth_config-instance_method" title="DWH::Adapters::OpenAuthorizable#validate_oauth_config (method)">#validate_oauth_config</a></span></p>
 
   
   
@@ -620,7 +516,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(config)  &#x21d2; <tt><span class='object_link'><a href="" title="DWH::Adapters::Snowflake (class)">Snowflake</a></span></tt> 
+    #<strong>initialize</strong>(config)  &#x21d2; <tt><span class='object_link'><a href="" title="DWH::Adapters::Databricks (class)">Databricks</a></span></tt> 
   
 
   
@@ -628,7 +524,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns a new instance of Snowflake.</p>
+    <p>Returns a new instance of Databricks.</p>
 
 
   </div>
@@ -642,13 +538,13 @@
       <pre class="lines">
 
 
-130
-131
-132
-133</pre>
+34
+35
+36
+37</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 130</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 34</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span>
   <span class='kw'>super</span>
@@ -675,58 +571,41 @@
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Creates a connection to the target database and returns the
-connection object or self</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154</pre>
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 136</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 39</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_connection'>connection</span>
   <span class='kw'>return</span> <span class='ivar'>@connection</span> <span class='kw'>if</span> <span class='ivar'>@connection</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_token_expired?'>token_expired?</span>
 
   <span class='id identifier rubyid_reset_connection'>reset_connection</span> <span class='kw'>if</span> <span class='id identifier rubyid_token_expired?'>token_expired?</span>
-  <span class='ivar'>@token_expires_at</span> <span class='op'>||=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='op'>+</span> <span class='const'><span class='object_link'><a href="#TOKEN_VALIDITY_SECONDS-constant" title="DWH::Adapters::Snowflake::TOKEN_VALIDITY_SECONDS (constant)">TOKEN_VALIDITY_SECONDS</a></span></span>
-
   <span class='ivar'>@connection</span> <span class='op'>=</span> <span class='const'>Faraday</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
-    <span class='label'>url:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:account_identifier</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>.snowflakecomputing.com</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>url:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_workspace_host'>workspace_host</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
     <span class='label'>headers:</span> <span class='lbrace'>{</span>
       <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
       <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Authorization</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Bearer </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_auth_token'>auth_token</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-      <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Snowflake-Authorization-Token-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_auth_token_type'>auth_token_type</span><span class='comma'>,</span>
       <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>User-Agent</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:client_name</span><span class='rbracket'>]</span>
     <span class='rbrace'>}</span><span class='comma'>,</span>
     <span class='label'>request:</span> <span class='lbrace'>{</span>
@@ -855,19 +734,19 @@ connection object or self</p>
       <pre class="lines">
 
 
-168
-169
-170
-171
-172
-173
-174
-175
-176
-177</pre>
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 168</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 67</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:array</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_with_retry'>with_retry</span><span class='lparen'>(</span><span class='id identifier rubyid_retries'>retries</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -887,131 +766,32 @@ connection object or self</p>
       <div class="method_details ">
   <h3 class="signature " id="execute_stream-instance_method">
   
-    #<strong>execute_stream</strong>(sql, io, stats: nil, retries: 0)  &#x21d2; <tt>Array&lt;Array&gt;</tt>, ... 
+    #<strong>execute_stream</strong>(sql, io, stats: nil, retries: 0)  &#x21d2; <tt>Object</tt> 
   
 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Execute sql on the target database.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>sql</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>actual sql</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>format</span>
-      
-      
-        <span class='type'>(<tt>Symbol</tt>, <tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>return format type</p>
-
-<ul>
-<li>array returns array of array</li>
-<li>object returns array of Hashes</li>
-<li>csv returns as csv</li>
-<li>native returns the native result from any clients used
-
-<ul>
-<li>For example: Postgres using pg client will return PG::Result</li>
-<li>Http clients will returns the HTTP response object</li>
-</ul></li>
-</ul>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>retries</span>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-        <em class="default">(defaults to: <tt>0</tt>)</em>
-      
-      
-        &mdash;
-        <div class='inline'><p>number of retries in case of failure. Default is 0</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Array&lt;Array&gt;</tt>, <tt>Hash</tt>, <tt>CSV</tt>, <tt>Native</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></tt>, <tt><span class='object_link'><a href="../ExecutionError.html" title="DWH::ExecutionError (class)">ExecutionError</a></span></tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-180
-181
-182
-183
-184
-185
-186
-187
-188
-189
-190</pre>
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 180</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 78</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='id identifier rubyid_io'>io</span><span class='comma'>,</span> <span class='label'>stats:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_retry'>with_retry</span><span class='lparen'>(</span><span class='id identifier rubyid_retries'>retries</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -1032,7 +812,7 @@ connection object or self</p>
       <div class="method_details ">
   <h3 class="signature " id="metadata-instance_method">
   
-    #<strong>metadata</strong>(table, **qualifiers)  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+    #<strong>metadata</strong>(table, **qualifiers)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -1040,78 +820,19 @@ connection object or self</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get all tables available in the
-target db.  It will use the default catalog and schema
-config only specified here.</p>
-
+    
 
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
   
-    <li>
-      
-        <span class='name'>qualifiers</span>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>a customizable set of options</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-  
-    
-    
-    
-    
-    <p class="tag_title">Options Hash (<tt>**qualifiers</tt>):</p>
-    <ul class="option">
-      
-        <li>
-          <span class="name">:catalog</span>
-          <span class="type">(<tt>String</tt>)</span>
-          <span class="default">
-            
-          </span>
-          
-            &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn&#39;t support</p>
-</div>
-          
-        </li>
-      
-        <li>
-          <span class="name">:schema</span>
-          <span class="type">(<tt>String</tt>)</span>
-          <span class="default">
-            
-          </span>
-          
-            &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn&#39;t support</p>
-</div>
-          
-        </li>
-      
-    </ul>
-  
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
+<p class="tag_title">Raises:</p>
+<ul class="raise">
   
     <li>
       
       
-        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></tt>)</span>
       
       
       
@@ -1125,49 +846,55 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-226
-227
-228
-229
-230
-231
-232
-233
-234
-235
-236
-237
-238
-239
-240
-241
-242
-243
-244
-245
-246
-247
-248
-249
-250
-251</pre>
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 226</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 113</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_catalog'>catalog</span><span class='comma'>,</span> <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_values_at'>values_at</span><span class='lparen'>(</span><span class='symbol'>:catalog</span><span class='comma'>,</span> <span class='symbol'>:schema</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_catalog'>catalog</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='lbracket'>[</span><span class='symbol'>:catalog</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:catalog</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>catalog is required for Databricks metadata query</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_catalog'>catalog</span>
+
   <span class='id identifier rubyid_db_table'>db_table</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">Table</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Table.html#initialize-instance_method" title="DWH::Table#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>schema:</span> <span class='id identifier rubyid_schema'>schema</span><span class='comma'>,</span> <span class='label'>catalog:</span> <span class='id identifier rubyid_catalog'>catalog</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_db'>db</span> <span class='op'>=</span> <span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_catalog'>catalog</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:database</span><span class='rbracket'>]</span>
+
   <span class='id identifier rubyid_sql'>sql</span> <span class='op'>=</span> <span class='heredoc_beg'>&lt;&lt;~SQL</span>
 <span class='tstring_content'>    SELECT column_name, data_type, numeric_precision, numeric_scale, character_maximum_length
-</span><span class='tstring_content'>    FROM </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db'>db</span><span class='embexpr_end'>}</span><span class='tstring_content'>.information_schema.columns
+</span><span class='tstring_content'>    FROM </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_catalog'>catalog</span><span class='embexpr_end'>}</span><span class='tstring_content'>.information_schema.columns
+</span><span class='tstring_content'>    WHERE table_name = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_physical_name'>physical_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;
 </span><span class='heredoc_end'>  SQL
-</span>
-  <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>table_name = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_physical_name'>physical_name</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-  <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>table_schema = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_schema'>schema</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_schema'>schema</span>
+</span>  <span class='id identifier rubyid_sql'>sql</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> AND table_schema = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_schema'>schema</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_schema'>schema</span>
 
-  <span class='id identifier rubyid_columns'>columns</span> <span class='op'>=</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_sql'>sql</span><span class='embexpr_end'>}</span><span class='tstring_content'> WHERE </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_conditions'>conditions</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> AND </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_columns'>columns</span> <span class='op'>=</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
 
   <span class='id identifier rubyid_columns'>columns</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_col'>col</span><span class='op'>|</span>
     <span class='id identifier rubyid_db_table'>db_table</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="../Column.html" title="DWH::Column (class)">Column</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Column.html#initialize-instance_method" title="DWH::Column#initialize (method)">new</a></span></span><span class='lparen'>(</span>
@@ -1189,141 +916,37 @@ will be ignored if the adapter doesn&#39;t support</p>
       <div class="method_details ">
   <h3 class="signature " id="stats-instance_method">
   
-    #<strong>stats</strong>(table, date_column: nil)  &#x21d2; <tt><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">DWH::Table</a></span></tt> 
+    #<strong>stats</strong>(table, date_column: nil)  &#x21d2; <tt>Object</tt> 
   
 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Returns basic stats of a given table.  Will typically include row_count,
-date_start, and date_end.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  <div class="examples">
-    <h4 class="tag_title">Examples:</h4>
-    
-      
-      <pre class="example code"><code><span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>public.big_table</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>date_column:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>fact_date</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>big_table</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>big_table</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='label'>schema:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>public</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></code></pre>
-    
-  </div>
-<p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>table</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>table name</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>date_column</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-        <em class="default">(defaults to: <tt>nil</tt>)</em>
-      
-      
-        &mdash;
-        <div class='inline'><p>optional date column to use to find range</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>qualifiers</span>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>a customizable set of options</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-  
-    
-    
-    
-    
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">DWH::Table</a></span></tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></tt>, <tt><span class='object_link'><a href="../ExecutionError.html" title="DWH::ExecutionError (class)">ExecutionError</a></span></tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-254
-255
-256
-257
-258
-259
-260
-261
-262
-263
-264
-265
-266
-267
-268
-269</pre>
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 254</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 143</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>date_column:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_date_fields'>date_fields</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_date_column'>date_column</span>
@@ -1407,15 +1030,15 @@ date_start, and date_end.</p>
       <pre class="lines">
 
 
-195
-196
-197
-198
-199
-200</pre>
+93
+94
+95
+96
+97
+98</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 195</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 93</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stream'>stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -1431,7 +1054,7 @@ date_start, and date_end.</p>
       <div class="method_details ">
   <h3 class="signature " id="tables-instance_method">
   
-    #<strong>tables</strong>(**qualifiers)  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+    #<strong>tables</strong>(**qualifiers)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -1439,97 +1062,21 @@ date_start, and date_end.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get all tables available in the
-target db.  It will use the default catalog and schema
-config only specified here.</p>
-
-<p>For metadata queries table_catalog and database are
-the same in the Snowflake information_schema.</p>
-
-<p>However, we need to prefix the information_schema table with
-the db name to correctly constrain to the target db.</p>
-
+    
 
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
   
-    <li>
-      
-        <span class='name'>qualifiers</span>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>a customizable set of options</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-  
-    
-    
-    <p class="tag_title">Options Hash (<tt>**qualifiers</tt>):</p>
-    <ul class="option">
-      
-        <li>
-          <span class="name">:catalog</span>
-          <span class="type">(<tt>String</tt>)</span>
-          <span class="default">
-            
-          </span>
-          
-            &mdash; <div class='inline'><p>optional catalog or equivalent name space.
-will be ignored if the adapter doesn&#39;t support</p>
-</div>
-          
-        </li>
-      
-        <li>
-          <span class="name">:schema</span>
-          <span class="type">(<tt>String</tt>)</span>
-          <span class="default">
-            
-          </span>
-          
-            &mdash; <div class='inline'><p>optional schema to scope to.
-will be ignored if the adapter doesn&#39;t support</p>
-</div>
-          
-        </li>
-      
-    </ul>
-  
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
+<p class="tag_title">Raises:</p>
+<ul class="raise">
   
     <li>
       
       
-        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></tt>)</span>
       
       
-      
-    </li>
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>list of table names</p>
-</div>
       
     </li>
   
@@ -1541,34 +1088,30 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-210
-211
-212
-213
-214
-215
-216
-217
-218
-219
-220
-221
-222
-223</pre>
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 210</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 100</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_catalog'>catalog</span><span class='comma'>,</span> <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_values_at'>values_at</span><span class='lparen'>(</span><span class='symbol'>:catalog</span><span class='comma'>,</span> <span class='symbol'>:schema</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_catalog'>catalog</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='lbracket'>[</span><span class='symbol'>:catalog</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:catalog</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span>
 
-  <span class='id identifier rubyid_db'>db</span> <span class='op'>=</span> <span class='id identifier rubyid_catalog'>catalog</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:database</span><span class='rbracket'>]</span>
-  <span class='id identifier rubyid_sql'>sql</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT table_name FROM </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db'>db</span><span class='embexpr_end'>}</span><span class='tstring_content'>.information_schema.tables</span><span class='tstring_end'>&quot;</span></span>
-  <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConfigError.html" title="DWH::ConfigError (class)">ConfigError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>catalog is required for Databricks tables query</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_catalog'>catalog</span>
 
-  <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>table_schema = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_schema'>schema</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_schema'>schema</span>
-
-  <span class='id identifier rubyid_sql'>sql</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> WHERE </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_conditions'>conditions</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> AND </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_conditions'>conditions</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span>
+  <span class='id identifier rubyid_sql'>sql</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT table_name FROM </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_catalog'>catalog</span><span class='embexpr_end'>}</span><span class='tstring_content'>.information_schema.tables</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_sql'>sql</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> WHERE table_schema = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_schema'>schema</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_schema'>schema</span>
 
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span>
@@ -1581,78 +1124,36 @@ will be ignored if the adapter doesn&#39;t support</p>
       <div class="method_details ">
   <h3 class="signature " id="test_connection-instance_method">
   
-    #<strong>test_connection</strong>(raise_exception: false)  &#x21d2; <tt><span class='object_link'><a href="Boolean.html" title="DWH::Adapters::Boolean (class)">Boolean</a></span></tt> 
+    #<strong>test_connection</strong>(raise_exception: false)  &#x21d2; <tt>Object</tt> 
   
 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Tests the connection to the target database and returns true
-if successful, or raise Exception or false
-connection object or self</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="Boolean.html" title="DWH::Adapters::Boolean (class)">Boolean</a></span></tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>when a connection cannot be made</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-157
-158
-159
-160
-161
-162
-163
-164
-165</pre>
+56
+57
+58
+59
+60
+61
+62
+63
+64</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 157</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/databricks.rb', line 56</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_test_connection'>test_connection</span><span class='lparen'>(</span><span class='label'>raise_exception:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SELECT 1</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='kw'>true</span>
 <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to connect to Snowflake: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_raise_exception'>raise_exception</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to connect to Databricks: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_raise_exception'>raise_exception</span>
 
   <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Connection test failed: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>false</span>
