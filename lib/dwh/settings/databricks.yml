@@ -1,6 +1,5 @@
-
 # quotes and string lit
-quote: "\"@exp\""
+quote: "`@exp`"
 string_literal: "'@exp'"
 
 # Date Literal Formats
