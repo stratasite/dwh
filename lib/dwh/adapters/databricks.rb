@@ -219,7 +219,7 @@ module DWH
         when 202
           poll(body['statement_id'])
         else
-          error_message = body.dig('message') || body.dig('error_code') || response.body
+          error_message = body['message'] || body['error_code'] || response.body
           raise ExecutionError, "Databricks query failed (#{response.status}): #{error_message}"
         end
       end

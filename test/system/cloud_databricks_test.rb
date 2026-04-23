@@ -34,7 +34,7 @@ class CloudDatabricksTest < Minitest::Test
   def test_can_get_metadata
     skip 'Requires a real test table'
     md = adapter.metadata('test_table')
-    assert md.columns.size > 0
+    assert md.columns.size.positive?
     col = md.find_column('id')
     assert col, 'column should be found'
   end
@@ -81,7 +81,7 @@ class CloudDatabricksTest < Minitest::Test
     io = StringIO.new
     stats = DWH::StreamingStats.new
     res = adapter.execute_stream('SELECT * FROM test_table LIMIT 10', io, stats: stats)
-    assert res.each_line.count > 0
+    assert res.each_line.count.positive?
     assert_match(/\w+/, res.string)
   end
 
@@ -91,7 +91,7 @@ class CloudDatabricksTest < Minitest::Test
     adapter.stream('SELECT * FROM test_table LIMIT 5') do
       rows << it
     end
-    assert rows.size > 0
+    assert rows.size.positive?
   end
 
   def test_requires_oauth_client_credentials
