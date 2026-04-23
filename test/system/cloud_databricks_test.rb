@@ -1,16 +1,16 @@
 require 'test_helper'
 
 class CloudDatabricksTest < Minitest::Test
-  TPCDS_TABLE = 'customer'
-  TPCDS_KEY_COLUMN = 'c_customer_sk'
-  TPCDS_STATS_TABLE = 'store_sales'
+  TPCDS_TABLE = 'customer'.freeze
+  TPCDS_KEY_COLUMN = 'c_customer_sk'.freeze
+  TPCDS_STATS_TABLE = 'store_sales'.freeze
   STREAM_LIMIT = 10
-  SCHEMA = 'tpcds_sf1'
-  CATALOG = 'samples'
-  HOST = 'workspace.cloud.databricks.com'
-  WAREHOUSE = 'warehouse_id'
-  OAUTH_CLIENT_ID = ''
-  OAUTH_CLIENT_SECRET = ''
+  SCHEMA = 'tpcds_sf1'.freeze
+  CATALOG = 'samples'.freeze
+  HOST = 'workspace.cloud.databricks.com'.freeze
+  WAREHOUSE = 'warehouse_id'.freeze
+  OAUTH_CLIENT_ID = ''.freeze
+  OAUTH_CLIENT_SECRET = ''.freeze
 
   def adapter
     @adapter ||=
@@ -33,7 +33,7 @@ class CloudDatabricksTest < Minitest::Test
     res = adapter.tables(schema: SCHEMA)
     assert res.is_a?(Array)
     assert res.any? { |name| name.to_s.downcase == TPCDS_TABLE.downcase },
-      "Expected '#{TPCDS_TABLE}' in tables list"
+           "Expected '#{TPCDS_TABLE}' in tables list"
   end
 
   def test_get_table_stats
