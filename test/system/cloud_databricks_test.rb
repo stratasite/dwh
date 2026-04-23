@@ -103,20 +103,4 @@ class CloudDatabricksTest < Minitest::Test
                  })
     end
   end
-
-  def test_oauth_m2m_flow
-    # This test validates OAuth M2M auth works with valid credentials
-    # Skip for CI unless credentials are configured
-    skip 'Requires valid Databricks OAuth credentials'
-
-    adapter = DWH.create(:databricks, {
-                           host: 'MYWORKSPACE.cloud.databricks.com',
-                           warehouse: 'test_warehouse_id',
-                           oauth_client_id: 'test_client_id',
-                           oauth_client_secret: 'test_client_secret',
-                           catalog: 'main'
-                         })
-    assert adapter.connect?
-    assert adapter.tables.is_a?(Array)
-  end
 end
