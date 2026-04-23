@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-22
+
+### Changed
+
+- Added Databricks Adapter
+
 ## [0.2.1] - 2025-01-27
 
 ### Changed

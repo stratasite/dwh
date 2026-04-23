@@ -18,6 +18,7 @@ require_relative 'dwh/adapters/duck_db'
 require_relative 'dwh/adapters/sqlite'
 require_relative 'dwh/adapters/athena'
 require_relative 'dwh/adapters/redshift'
+require_relative 'dwh/adapters/databricks'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -49,6 +50,7 @@ module DWH
   register(:sqlite, Adapters::Sqlite)
   register(:athena, Adapters::Athena)
   register(:redshift, Adapters::Redshift)
+  register(:databricks, Adapters::Databricks)
 
   # start_reaper
 end

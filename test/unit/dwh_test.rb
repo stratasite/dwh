@@ -17,6 +17,7 @@ class TestDwh < Minitest::Test
     assert_equal count - 1, DWH.adapters.size
 
     assert DWH.adapter?(:snowflake)
+    assert DWH.adapter?(:databricks)
   end
 
   def test_create_will_use_defaults
