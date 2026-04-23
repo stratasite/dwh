@@ -1,16 +1,27 @@
 require 'test_helper'
 
 class CloudDatabricksTest < Minitest::Test
+  TPCDS_TABLE = 'customer'
+  TPCDS_KEY_COLUMN = 'c_customer_sk'
+  TPCDS_STATS_TABLE = 'store_sales'
+  STREAM_LIMIT = 10
+  SCHEMA = 'tpcds_sf1'
+  CATALOG = 'samples'
+  HOST = 'workspace.cloud.databricks.com'
+  WAREHOUSE = 'warehouse_id'
+  OAUTH_CLIENT_ID = ''
+  OAUTH_CLIENT_SECRET = ''
+
   def adapter
     @adapter ||=
       DWH.create(:databricks,
                  {
-                   host: 'MYWORKSPACE.cloud.databricks.com',
-                   warehouse: 'test_warehouse_id',
-                   oauth_client_id: '',
-                   oauth_client_secret: '',
-                   catalog: 'main',
-                   schema: 'default'
+                   host: HOST,
+                   warehouse: WAREHOUSE,
+                   oauth_client_id: OAUTH_CLIENT_ID,
+                   oauth_client_secret: OAUTH_CLIENT_SECRET,
+                   catalog: CATALOG,
+                   schema: SCHEMA
                  })
   end
 
@@ -19,30 +30,22 @@ class CloudDatabricksTest < Minitest::Test
   end
 
   def test_get_table_list
-    res = adapter.tables(schema: 'default')
+    res = adapter.tables(schema: SCHEMA)
     assert res.is_a?(Array)
+    assert res.any? { |name| name.to_s.downcase == TPCDS_TABLE.downcase },
+      "Expected '#{TPCDS_TABLE}' in tables list"
   end
 
   def test_get_table_stats
-    skip 'Requires a real test table with data'
-    stats = adapter.stats('test_table', date_column: 'created_at')
+    stats = adapter.stats(TPCDS_STATS_TABLE)
     assert stats.row_count >= 0
-    assert stats.date_start.is_a?(Date) if stats.date_start
-    assert stats.date_end.is_a?(Date) if stats.date_end
   end
 
   def test_can_get_metadata
-    skip 'Requires a real test table'
-    md = adapter.metadata('test_table')
+    md = adapter.metadata(TPCDS_TABLE)
     assert md.columns.size.positive?
-    col = md.find_column('id')
+    col = md.find_column(TPCDS_KEY_COLUMN)
     assert col, 'column should be found'
-  end
-
-  def test_get_tables_from_other_catalog
-    skip 'Requires access to multiple catalogs'
-    tables = adapter.tables(catalog: 'samples', schema: 'tpch')
-    assert tables.is_a?(Array)
   end
 
   def test_execute_basic
@@ -77,18 +80,16 @@ class CloudDatabricksTest < Minitest::Test
   end
 
   def test_execute_stream
-    skip 'Requires a real test table with data'
     io = StringIO.new
     stats = DWH::StreamingStats.new
-    res = adapter.execute_stream('SELECT * FROM test_table LIMIT 10', io, stats: stats)
+    res = adapter.execute_stream("SELECT * FROM #{TPCDS_TABLE} LIMIT #{STREAM_LIMIT}", io, stats: stats)
     assert res.each_line.count.positive?
     assert_match(/\w+/, res.string)
   end
 
   def test_stream_with_block
-    skip 'Requires a real test table with data'
     rows = []
-    adapter.stream('SELECT * FROM test_table LIMIT 5') do
+    adapter.stream("SELECT * FROM #{TPCDS_TABLE} LIMIT #{[STREAM_LIMIT, 5].min}") do
       rows << it
     end
     assert rows.size.positive?
