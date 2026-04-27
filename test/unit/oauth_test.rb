@@ -2,6 +2,20 @@ require 'test_helper'
 require 'json'
 
 class OAuthTest < Minitest::Test
+  TokenStore = Struct.new(:payload, :stored, :deleted) do
+    def load
+      payload
+    end
+
+    def store(token)
+      self.stored = token
+    end
+
+    def delete
+      self.deleted = true
+    end
+  end
+
   class TestAdapter < DWH::Adapters::Adapter
     include DWH::Adapters::OpenAuthorizable
 
@@ -24,12 +38,16 @@ class OAuthTest < Minitest::Test
 
   def setup
     TestAdapter.load_settings
-    @adapter = TestAdapter.new(
+    @adapter = build_adapter
+  end
+
+  def build_adapter(overrides = {})
+    TestAdapter.new({
       database: 'test_db',
       oauth_client_id: 'test_client_id',
       oauth_client_secret: 'test_client_secret',
       oauth_redirect_uri: 'https://example.com/callback'
-    )
+    }.merge(overrides))
   end
 
   def test_oauth_endpoints_configuration
@@ -131,6 +149,41 @@ class OAuthTest < Minitest::Test
     def execute_stream(_sql, _io, stats:); end
   end
 
+  class TestM2MAdapter < DWH::Adapters::Adapter
+    include DWH::Adapters::OpenAuthorizable
+
+    config :database, String, required: true
+    config :oauth_client_id, String, required: false
+    config :oauth_client_secret, String, required: false
+
+    def execute_stream(_sql, _io, stats:); end
+
+    private
+
+    def oauth_tokenization_url
+      'https://example.com/oauth/m2m/token'
+    end
+
+    def oauth_supports_authorization_code_flow?
+      false
+    end
+
+    def oauth_supports_client_credentials_flow?
+      true
+    end
+
+    def oauth_redirect_uri_required?
+      false
+    end
+
+    def oauth_client_credentials_params
+      {
+        grant_type: 'client_credentials',
+        scope: 'all-apis'
+      }
+    end
+  end
+
   def test_oauth_endpoints_with_proc_configuration
     TestAdapterProc.load_settings
     adapter = TestAdapterProc.new(
@@ -146,5 +199,85 @@ class OAuthTest < Minitest::Test
     assert_equal 'https://mydatabase.example.com/oauth/authorize', endpoints[:authorize]
     assert_equal 'https://mydatabase.example.com/oauth/token', endpoints[:tokenize]
     assert_equal 'dynamic_scope', endpoints[:default_scope]
+  end
+
+  def test_oauth_access_token_hydrates_from_token_store
+    store = TokenStore.new({
+      access_token: 'store-token',
+      refresh_token: 'store-refresh',
+      expires_at: Time.now + 3600
+    })
+    adapter = build_adapter(token_store: store)
+
+    assert_equal 'store-token', adapter.oauth_access_token
+  end
+
+  def test_oauth_token_response_stores_tokens_in_store
+    store = TokenStore.new(nil)
+    adapter = build_adapter(token_store: store)
+
+    response = Struct.new(:status, :body).new(200, JSON.generate({
+      access_token: 'new-token',
+      refresh_token: 'new-refresh',
+      expires_in: 1800,
+      token_type: 'Bearer'
+    }))
+
+    adapter.send(:oauth_token_response, response)
+
+    refute_nil store.stored
+    assert_equal 'new-token', store.stored[:access_token]
+    assert_equal 'new-refresh', store.stored[:refresh_token]
+    assert store.stored[:expires_at].is_a?(Time)
+  end
+
+  def test_oauth_invalid_grant_deletes_stored_token
+    store = TokenStore.new(nil)
+    adapter = build_adapter(token_store: store)
+    adapter.apply_oauth_tokens(access_token: 'expired', refresh_token: 'refresh', expires_at: Time.now - 10)
+
+    response = Struct.new(:status, :body).new(400, JSON.generate({
+      error: 'invalid_grant',
+      message: 'refresh token expired'
+    }))
+
+    assert_raises(DWH::TokenExpiredError) { adapter.send(:oauth_token_response, response) }
+    assert_equal true, store.deleted
+  end
+
+  def test_oauth_access_token_mints_for_client_credentials_flow
+    TestM2MAdapter.load_settings
+    adapter = TestM2MAdapter.new(
+      database: 'test_db',
+      oauth_client_id: 'test_id',
+      oauth_client_secret: 'test_secret'
+    )
+    adapter.apply_oauth_tokens(access_token: nil, refresh_token: nil, expires_at: nil)
+
+    response = Struct.new(:status, :body).new(200, JSON.generate({
+      access_token: 'm2m-access-token',
+      expires_in: 1800,
+      token_type: 'Bearer'
+    }))
+
+    fake_client = Class.new do
+      define_method(:initialize) { |result| @result = result }
+      define_method(:post) { |_url| @result }
+    end.new(response)
+
+    adapter.stub(:oauth_http_client, fake_client) do
+      assert_equal 'm2m-access-token', adapter.oauth_access_token
+    end
+  end
+
+  def test_validate_oauth_config_without_redirect_uri_for_m2m
+    TestM2MAdapter.load_settings
+    adapter = TestM2MAdapter.new(
+      database: 'test_db',
+      oauth_client_id: 'test_id',
+      oauth_client_secret: 'test_secret'
+    )
+
+    assert adapter.validate_oauth_config
   end
 end
