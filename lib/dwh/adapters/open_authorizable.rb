@@ -1,5 +1,6 @@
 require 'base64'
 require 'securerandom'
+require 'digest'
 require_relative 'token_manageable'
 
 module DWH
@@ -51,6 +52,7 @@ module DWH
       def authorization_url(state: SecureRandom.hex(16), scope: nil)
         raise UnsupportedCapability, "#{adapter_name} does not support authorization-code OAuth flow" unless oauth_supports_authorization_code_flow?
 
+        code_verifier = oauth_pkce_code_verifier_for_session
         params = {
           'response_type' => 'code',
           'client_id' => oauth_client_id,
@@ -58,6 +60,7 @@ module DWH
           'state' => state,
           'scope' => scope || oauth_scope || oauth_settings[:default_scope]
         }.compact
+        params.merge!(oauth_pkce_authorization_params(code_verifier))
 
         uri = URI(oauth_settings[:authorize])
         uri.query = URI.encode_www_form(params)
@@ -83,11 +86,13 @@ module DWH
       def generate_oauth_tokens(authorization_code)
         raise UnsupportedCapability, "#{adapter_name} does not support authorization-code OAuth flow" unless oauth_supports_authorization_code_flow?
 
+        code_verifier = oauth_pkce_code_verifier_for_session
         params = {
           grant_type: 'authorization_code',
           code: authorization_code,
           redirect_uri: oauth_redirect_uri
         }
+        params.merge!(oauth_pkce_token_params(code_verifier))
 
         response = oauth_http_client.post(oauth_tokenization_url) do |req|
           req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -222,6 +227,25 @@ module DWH
         0
       end
 
+      # PKCE is optional and disabled by default
+      def oauth_uses_pkce?
+        false
+      end
+
+      def oauth_pkce_code_challenge_method
+        'S256'
+      end
+
+      def oauth_pkce_code_verifier_for_session
+        return nil unless oauth_uses_pkce?
+
+        @oauth_pkce_code_verifier ||= oauth_pkce_code_verifier
+      end
+
+      def oauth_pkce_code_verifier
+        SecureRandom.urlsafe_base64(64).delete('=')
+      end
+
       def oauth_token_usable?
         return false unless @oauth_access_token
 
@@ -297,6 +321,32 @@ module DWH
         JSON.parse(response.body)
       rescue JSON::ParserError
         { 'error' => 'unknown', 'message' => response.body }
+      end
+
+      def oauth_pkce_authorization_params(code_verifier)
+        return {} unless oauth_uses_pkce?
+
+        {
+          'code_challenge' => oauth_pkce_code_challenge(code_verifier),
+          'code_challenge_method' => oauth_pkce_code_challenge_method
+        }
+      end
+
+      def oauth_pkce_token_params(code_verifier)
+        return {} unless oauth_uses_pkce?
+
+        { code_verifier: code_verifier }
+      end
+
+      def oauth_pkce_code_challenge(code_verifier)
+        case oauth_pkce_code_challenge_method
+        when 'S256'
+          Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
+        when 'plain'
+          code_verifier
+        else
+          raise ConfigError, "Unsupported PKCE code challenge method: #{oauth_pkce_code_challenge_method}"
+        end
       end
     end
   end

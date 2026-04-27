@@ -184,6 +184,27 @@ class OAuthTest < Minitest::Test
     end
   end
 
+  class TestPkceAdapter < DWH::Adapters::Adapter
+    include DWH::Adapters::OpenAuthorizable
+
+    oauth_with authorize: 'https://example.com/oauth/authorize',
+               tokenize: 'https://example.com/oauth/token',
+               default_scope: 'openid profile'
+
+    config :database, String, required: true
+    config :oauth_client_id, String, required: false
+    config :oauth_client_secret, String, required: false
+    config :oauth_redirect_uri, String, required: false
+
+    def execute_stream(_sql, _io, stats:); end
+
+    private
+
+    def oauth_uses_pkce?
+      true
+    end
+  end
+
   def test_oauth_endpoints_with_proc_configuration
     TestAdapterProc.load_settings
     adapter = TestAdapterProc.new(
@@ -199,6 +220,69 @@ class OAuthTest < Minitest::Test
     assert_equal 'https://mydatabase.example.com/oauth/authorize', endpoints[:authorize]
     assert_equal 'https://mydatabase.example.com/oauth/token', endpoints[:tokenize]
     assert_equal 'dynamic_scope', endpoints[:default_scope]
+  end
+
+  def test_non_pkce_authorization_url_omits_pkce_parameters
+    url = @adapter.authorization_url(state: 'test_state')
+    params = URI.decode_www_form(URI.parse(url).query).to_h
+
+    refute params.key?('code_challenge')
+    refute params.key?('code_challenge_method')
+  end
+
+  def test_pkce_authorization_url_adds_challenge_parameters
+    TestPkceAdapter.load_settings
+    adapter = TestPkceAdapter.new(
+      database: 'test_db',
+      oauth_client_id: 'test_id',
+      oauth_client_secret: 'test_secret',
+      oauth_redirect_uri: 'https://example.com/callback'
+    )
+    adapter.stub(:oauth_pkce_code_verifier, 'pkce-verifier') do
+      url = adapter.authorization_url(state: 'state-1')
+      params = URI.decode_www_form(URI.parse(url).query).to_h
+
+      assert_equal 'S256', params['code_challenge_method']
+      assert_equal Base64.urlsafe_encode64(Digest::SHA256.digest('pkce-verifier'), padding: false), params['code_challenge']
+    end
+  end
+
+  def test_pkce_generate_oauth_tokens_sends_code_verifier
+    TestPkceAdapter.load_settings
+    adapter = TestPkceAdapter.new(
+      database: 'test_db',
+      oauth_client_id: 'test_id',
+      oauth_client_secret: 'test_secret',
+      oauth_redirect_uri: 'https://example.com/callback'
+    )
+    adapter.instance_variable_set(:@oauth_pkce_code_verifier, 'pkce-verifier')
+
+    request_bodies = []
+    response = Struct.new(:status, :body).new(200, JSON.generate({
+      access_token: 'new-token',
+      refresh_token: 'new-refresh',
+      expires_in: 1800,
+      token_type: 'Bearer'
+    }))
+
+    fake_client = Class.new do
+      define_method(:initialize) { |result, seen| @result = result; @seen = seen }
+      define_method(:post) do |_url|
+        req = Struct.new(:headers, :body).new({}, nil)
+        yield req if block_given?
+        @seen << req.body
+        @result
+      end
+    end.new(response, request_bodies)
+
+    adapter.stub(:oauth_http_client, fake_client) do
+      adapter.generate_oauth_tokens('auth-code-1')
+    end
+
+    params = URI.decode_www_form(request_bodies.first).to_h
+    assert_equal 'pkce-verifier', params['code_verifier']
+    assert_equal 'authorization_code', params['grant_type']
+    assert_equal 'auth-code-1', params['code']
   end
 
   def test_oauth_access_token_hydrates_from_token_store
