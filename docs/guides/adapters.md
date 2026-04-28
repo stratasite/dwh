@@ -193,6 +193,48 @@ The typical flow is like so:
 2. Take the code from above and generate new access tokens: `adapter.generate_oauth_tokens(code)`. This will return Hash with access_token and refresh_token.  You can cache and reuse this until the refresh_token gets expired. This method will also apply the token to the current adapter instance.
 3. You can apply an existing set of tokens like so:`adapter.apply_oauth_tokens(access_token: token, refresh_token: token, expires_at: Time.now)`
 
+## Databricks
+
+The Databricks adapter uses the SQL Statements REST API and supports OAuth with
+both machine-to-machine (M2M) and user-to-machine (U2M) authorization-code flow.
+Set `auth_mode` explicitly to select the flow.
+
+### Basic configuration
+
+```ruby
+adapter = DWH.create(:databricks, {
+  host: 'workspace.cloud.databricks.com',
+  auth_mode: 'oauth_m2m',
+  warehouse: 'warehouse_id',
+  oauth_client_id: '<CLIENT_ID>',
+  oauth_client_secret: '<CLIENT_SECRET>',
+  catalog: 'main',
+  schema: 'default'
+})
+```
+
+### M2M (service principal) flow
+
+Set `auth_mode: 'oauth_m2m'`. The adapter mints access tokens using
+`grant_type=client_credentials`.
+
+### U2M (authorization code) flow
+
+Set `auth_mode: 'oauth_u2m'` and provide `oauth_redirect_uri` in config, then run:
+
+1. Generate authorize URL from `adapter.authorization_url`
+2. Capture `code` from redirect callback
+3. Exchange with `adapter.generate_oauth_tokens(code)`
+
+When U2M is active, PKCE is applied automatically by the adapter.
+
+### Migration note
+
+Databricks now requires explicit `auth_mode`.
+
+- Existing service-principal setups should set `auth_mode: 'oauth_m2m'`
+- U2M setups should set `auth_mode: 'oauth_u2m'` and provide `oauth_redirect_uri`
+
 ## MySQL Adapter
 
 The MySQL adapter uses the `mysql2` gem. Note that MySQL's concept of "database" maps to "schema" in DWH.

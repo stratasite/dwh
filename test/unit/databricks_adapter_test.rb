@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'digest'
 
 class DatabricksAdapterTest < Minitest::Test
   FakeResponse = Struct.new(:status, :body)
@@ -44,13 +45,17 @@ class DatabricksAdapterTest < Minitest::Test
   end
 
   class FakeOAuthClient
+    attr_reader :request_bodies
+
     def initialize(response)
       @response = response
+      @request_bodies = []
     end
 
     def post(_path)
       req = Struct.new(:headers, :body).new({}, nil)
       yield req if block_given?
+      @request_bodies << req.body
       @response
     end
   end
@@ -195,6 +200,72 @@ class DatabricksAdapterTest < Minitest::Test
     assert_equal 'cached-token', token
   end
 
+  def test_m2m_defaults_remain_without_oauth_redirect_uri
+    adapter = build_adapter
+
+    assert_equal false, adapter.send(:oauth_supports_authorization_code_flow?)
+    assert_equal true, adapter.send(:oauth_supports_client_credentials_flow?)
+    assert_equal false, adapter.send(:oauth_redirect_uri_required?)
+    assert_equal false, adapter.send(:oauth_uses_pkce?)
+  end
+
+  def test_u2m_flow_is_enabled_when_oauth_redirect_uri_is_configured
+    adapter = build_adapter(auth_mode: 'oauth_u2m', oauth_redirect_uri: 'http://localhost:8787/callback')
+
+    assert_equal true, adapter.send(:oauth_supports_authorization_code_flow?)
+    assert_equal false, adapter.send(:oauth_supports_client_credentials_flow?)
+    assert_equal true, adapter.send(:oauth_redirect_uri_required?)
+    assert_equal true, adapter.send(:oauth_uses_pkce?)
+  end
+
+  def test_u2m_authorization_url_includes_expected_core_parameters
+    adapter = build_adapter(auth_mode: 'oauth_u2m', oauth_redirect_uri: 'http://localhost:8787/callback')
+    url = adapter.authorization_url(state: 'abc123')
+    uri = URI.parse(url)
+    params = URI.decode_www_form(uri.query).to_h
+
+    assert_equal 'https', uri.scheme
+    assert_equal 'workspace.cloud.databricks.com', uri.host
+    assert_equal '/oidc/v1/authorize', uri.path
+    assert_equal 'code', params['response_type']
+    assert_equal 'client-id', params['client_id']
+    assert_equal 'http://localhost:8787/callback', params['redirect_uri']
+    assert_equal 'abc123', params['state']
+  end
+
+  def test_u2m_authorization_url_includes_pkce_challenge
+    adapter = build_adapter(auth_mode: 'oauth_u2m', oauth_redirect_uri: 'http://localhost:8787/callback')
+    adapter.stub(:oauth_pkce_code_verifier, 'pkce-verifier') do
+      url = adapter.authorization_url(state: 'abc123')
+      params = URI.decode_www_form(URI.parse(url).query).to_h
+
+      assert_equal 'S256', params['code_challenge_method']
+      assert_equal Base64.urlsafe_encode64(Digest::SHA256.digest('pkce-verifier'), padding: false), params['code_challenge']
+    end
+  end
+
+  def test_u2m_token_exchange_includes_code_verifier
+    adapter = build_adapter(auth_mode: 'oauth_u2m', oauth_redirect_uri: 'http://localhost:8787/callback')
+    adapter.instance_variable_set(:@oauth_pkce_code_verifier, 'pkce-verifier')
+    oauth_response = FakeResponse.new(200, JSON.generate({
+      access_token: 'u2m-token',
+      refresh_token: 'u2m-refresh',
+      expires_in: 1800,
+      token_type: 'Bearer'
+    }))
+    fake_client = FakeOAuthClient.new(oauth_response)
+
+    adapter.stub(:oauth_http_client, fake_client) do
+      adapter.generate_oauth_tokens('auth-code-1')
+    end
+
+    params = URI.decode_www_form(fake_client.request_bodies.first).to_h
+    assert_equal 'authorization_code', params['grant_type']
+    assert_equal 'auth-code-1', params['code']
+    assert_equal 'http://localhost:8787/callback', params['redirect_uri']
+    assert_equal 'pkce-verifier', params['code_verifier']
+  end
+
   def test_oauth_access_token_mints_and_stores_when_store_is_empty
     store = TokenStore.new(nil)
     adapter = build_adapter(token_store: store)
@@ -213,6 +284,34 @@ class DatabricksAdapterTest < Minitest::Test
     refute_nil store.stored
     assert_equal 'minted-token', store.stored[:access_token]
     assert store.stored[:expires_at].is_a?(Time)
+  end
+
+  def test_missing_auth_mode_raises_configuration_error
+    error = assert_raises(DWH::ConfigError) do
+      DWH.create(:databricks, {
+        host: 'workspace.cloud.databricks.com',
+        warehouse: 'warehouse_123',
+        oauth_client_id: 'client-id',
+        oauth_client_secret: 'client-secret',
+        catalog: 'main',
+        schema: 'default'
+      })
+    end
+    assert_match(/auth_mode/, error.message)
+  end
+
+  def test_invalid_auth_mode_raises_configuration_error
+    error = assert_raises(DWH::ConfigError) do
+      build_adapter(auth_mode: 'oauth')
+    end
+    assert_match(/Only allowed/, error.message)
+  end
+
+  def test_u2m_requires_oauth_redirect_uri
+    error = assert_raises(DWH::ConfigError) do
+      build_adapter(auth_mode: 'oauth_u2m', oauth_redirect_uri: nil).validate_oauth_config
+    end
+    assert_match(/oauth_redirect_uri/, error.message)
   end
 
   def test_oauth_access_token_with_invalid_expiry_falls_back_to_mint
@@ -274,6 +373,7 @@ class DatabricksAdapterTest < Minitest::Test
   def build_adapter(overrides = {})
     DWH.create(:databricks, {
       host: 'workspace.cloud.databricks.com',
+      auth_mode: 'oauth_m2m',
       warehouse: 'warehouse_123',
       oauth_client_id: 'client-id',
       oauth_client_secret: 'client-secret',
