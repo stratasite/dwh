@@ -193,6 +193,46 @@ The typical flow is like so:
 2. Take the code from above and generate new access tokens: `adapter.generate_oauth_tokens(code)`. This will return Hash with access_token and refresh_token.  You can cache and reuse this until the refresh_token gets expired. This method will also apply the token to the current adapter instance.
 3. You can apply an existing set of tokens like so:`adapter.apply_oauth_tokens(access_token: token, refresh_token: token, expires_at: Time.now)`
 
+### Host integration contract (CLI / server)
+
+The host application is responsible for orchestration and persistence. DWH is responsible for OAuth protocol calls and token lifecycle methods.
+
+Public OAuth methods you can call on adapters that include `OpenAuthorizable`:
+
+- `authorization_url(state:, scope:)` - build provider authorize URL (authorization-code flow only)
+- `generate_oauth_tokens(code)` - exchange auth code for tokens and apply/store them
+- `apply_oauth_tokens(access_token:, refresh_token:, expires_at:)` - inject tokens from host storage
+- `oauth_access_token` - get a usable access token (load/refresh/mint as needed)
+- `refresh_access_token` - explicitly refresh using current refresh token
+- `mint_access_token` - explicitly mint via client credentials (M2M only)
+- `oauth_token_info` - inspect current token state
+
+Host requirements:
+
+1. Build and pass adapter config to `DWH.create(...)`, including correct `auth_mode` and OAuth fields.
+2. For U2M, implement browser redirect + callback capture, then call `generate_oauth_tokens(code)`.
+3. Validate OAuth `state` in the host callback handler (DWH does not enforce callback state verification).
+4. Persist tokens either by:
+   - passing a `token_store` object (`load`, `store`, `delete`), or
+   - storing tokens externally and rehydrating with `apply_oauth_tokens`.
+5. Handle auth exceptions and trigger reconnect UX when needed (for example, expired/invalid refresh token).
+
+Call order by mode:
+
+- **M2M (`oauth_m2m`)**
+  1. `adapter = DWH.create(...)`
+  2. Run query/test methods (`execute`, `test_connection`, etc.)
+  3. DWH internally calls `oauth_access_token`, which mints or refreshes as required
+
+- **U2M (`oauth_u2m`)**
+  1. `adapter = DWH.create(...)`
+  2. `url = adapter.authorization_url(...)`
+  3. Host sends user to URL and receives callback with `code`
+  4. `adapter.generate_oauth_tokens(code)`
+  5. Run query/test methods; DWH reuses and refreshes tokens as needed
+
+Note: for PKCE-enabled U2M providers, call `authorization_url` and `generate_oauth_tokens` on the same adapter instance.
+
 ## Databricks
 
 The Databricks adapter uses the SQL Statements REST API and supports OAuth with
