@@ -355,7 +355,11 @@ adapter config so DWH remains agnostic of app-level user/datasource models.
 class MyTokenStore < DWH::TokenStore
   def load
     # return nil or hash with:
-    # access_token (required), refresh_token (optional), expires_at (required for reuse)
+    # access_token (optional), refresh_token (optional), expires_at (optional)
+    #
+    # Notes:
+    # - providing expires_at enables proactive refresh/mint behavior
+    # - providing refresh_token enables refresh when access_token expires
   end
 
   def store(token)
@@ -375,6 +379,7 @@ store = DatasourceTokenStore.new(datasource_id: datasource.id)
 
 client = DWH.create(:databricks, {
   host: datasource.host,
+  auth_mode: 'oauth_m2m',
   warehouse: datasource.warehouse,
   oauth_client_id: datasource.oauth_client_id,
   oauth_client_secret: datasource.oauth_client_secret,
@@ -382,7 +387,7 @@ client = DWH.create(:databricks, {
 })
 ```
 
-### Per-User OAuth Example
+### Per-User OAuth Example (host-owned)
 
 ```ruby
 store = UserDatasourceTokenStore.new(
