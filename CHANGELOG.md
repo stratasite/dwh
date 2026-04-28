@@ -1,5 +1,19 @@
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-28
+
+### Added
+
+- Token persistence interface via `DWH::TokenStore` for adapters that support OAuth token lifecycle management.
+- `TokenManageable` adapter concern for standardized token read/write behavior across adapters.
+- PKCE-based U2M OAuth support for the Databricks adapter.
+- Expanded tests for OAuth and Databricks token flows.
+
+### Changed
+
+- Databricks adapter now requires explicit `auth_mode` to reduce ambiguous auth configuration.
+- Updated documentation for adapter auth/token usage and adapter authoring.
+
 ## [0.3.0] - 2026-04-22
 
 ### Changed
