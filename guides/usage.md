@@ -341,6 +341,71 @@ readonly_analytics = DWH.create(:sqlite, {
 })
 ```
 
+## Identity-Bound Token Stores
+
+For OAuth and M2M adapters, DWH can optionally reuse tokens through a host-provided
+`token_store` object. The store should be identity-bound before it is passed into
+adapter config so DWH remains agnostic of app-level user/datasource models.
+
+### Token Store Contract
+
+`DWH::TokenStore` is the reference contract, but duck-typed objects are supported.
+
+```ruby
+class MyTokenStore < DWH::TokenStore
+  def load
+    # return nil or hash with:
+    # access_token (optional), refresh_token (optional), expires_at (optional)
+    #
+    # Notes:
+    # - providing expires_at enables proactive refresh/mint behavior
+    # - providing refresh_token enables refresh when access_token expires
+  end
+
+  def store(token)
+    # token includes at least access_token and expires_at
+  end
+
+  def delete
+    # optional cleanup/revoke path for terminal auth failures
+  end
+end
+```
+
+### Service Account (M2M) Example
+
+```ruby
+store = DatasourceTokenStore.new(datasource_id: datasource.id)
+
+client = DWH.create(:databricks, {
+  host: datasource.host,
+  auth_mode: 'oauth_m2m',
+  warehouse: datasource.warehouse,
+  oauth_client_id: datasource.oauth_client_id,
+  oauth_client_secret: datasource.oauth_client_secret,
+  token_store: store
+})
+```
+
+### Per-User OAuth Example (host-owned)
+
+```ruby
+store = UserDatasourceTokenStore.new(
+  user_id: current_user.id,
+  datasource_id: datasource.id
+)
+
+client = DWH.create(:snowflake, {
+  auth_mode: 'oauth',
+  account_identifier: datasource.account_identifier,
+  database: datasource.database,
+  oauth_client_id: datasource.oauth_client_id,
+  oauth_client_secret: datasource.oauth_client_secret,
+  oauth_redirect_uri: datasource.oauth_redirect_uri,
+  token_store: store
+})
+```
+
 ## Error Handling and Debugging
 
 ### Comprehensive Error Handling

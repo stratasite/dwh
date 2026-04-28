@@ -412,6 +412,52 @@ max_query_length: 1000000
 
 <h2 id="advanced-features">Advanced Features</h2>
 
+<h3 id="identity-bound-token-store-integration">Identity-Bound Token Store Integration</h3>
+
+<p>Adapters that use OAuth/M2M token exchange can support host-managed persistence by
+accepting <code>token_store</code> in adapter config and using base helpers from <code>Adapter</code>.</p>
+
+<p><code>token_store</code> should be identity-bound by the host app (for example datasource-bound
+for service accounts, user+datasource-bound for per-user OAuth). The adapter should
+not parse or infer identity keys.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>MyOAuthAdapter</span> <span class='op'>&lt;</span> <span class='const'>Adapter</span>
+  <span class='id identifier rubyid_config'>config</span> <span class='symbol'>:token_store</span><span class='comma'>,</span> <span class='const'>Object</span><span class='comma'>,</span> <span class='label'>required:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>default:</span> <span class='kw'>nil</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_access_token'>access_token</span>
+    <span class='id identifier rubyid_payload'>payload</span> <span class='op'>=</span> <span class='id identifier rubyid_load_tokens_from_store'>load_tokens_from_store</span>
+    <span class='id identifier rubyid_apply_token_payload'>apply_token_payload</span><span class='lparen'>(</span><span class='id identifier rubyid_payload'>payload</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_payload'>payload</span>
+    <span class='kw'>return</span> <span class='ivar'>@access_token</span> <span class='kw'>if</span> <span class='ivar'>@access_token</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_token_expired?'>token_expired?</span>
+
+    <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='id identifier rubyid_request_new_token!'>request_new_token!</span>
+    <span class='id identifier rubyid_store_tokens_in_store'>store_tokens_in_store</span><span class='lparen'>(</span>
+      <span class='label'>access_token:</span> <span class='id identifier rubyid_token'>token</span><span class='lbracket'>[</span><span class='symbol'>:access_token</span><span class='rbracket'>]</span><span class='comma'>,</span>
+      <span class='label'>refresh_token:</span> <span class='id identifier rubyid_token'>token</span><span class='lbracket'>[</span><span class='symbol'>:refresh_token</span><span class='rbracket'>]</span><span class='comma'>,</span>
+      <span class='label'>expires_at:</span> <span class='id identifier rubyid_token'>token</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span>
+    <span class='rparen'>)</span>
+    <span class='ivar'>@access_token</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Expected token-store methods:</p>
+
+<ul>
+<li><code>load</code> -&gt; returns <code>nil</code> or hash with <code>access_token</code>, optional <code>refresh_token</code>, and <code>expires_at</code></li>
+<li><code>store(token_hash)</code> -&gt; persists latest token payload</li>
+<li><code>delete</code> -&gt; optional revoke/cleanup hook for terminal auth failures</li>
+</ul>
+
+<p>For OAuth adapters, keep token persistence centralized and only override provider hooks:</p>
+
+<ul>
+<li><code>oauth_supports_authorization_code_flow?</code> -&gt; <code>true</code> for U2M flows</li>
+<li><code>oauth_supports_client_credentials_flow?</code> -&gt; <code>true</code> for M2M flows</li>
+<li><code>oauth_client_credentials_params</code> -&gt; provider-specific client-credentials form body</li>
+<li><code>oauth_tokenization_url</code> -&gt; provider token endpoint</li>
+<li><code>oauth_token_expiry_leeway_seconds</code> -&gt; eager refresh buffer (for near-expiry tokens)</li>
+</ul>
+
 <h3 id="error-handling">Error Handling</h3>
 
 <pre class="code ruby"><code class="ruby"><span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:array</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
@@ -477,7 +523,7 @@ max_query_length: 1000000
 </div></div>
 
       <div id="footer">
-  Generated on Thu Apr 23 17:36:44 2026 by
+  Generated on Tue Apr 28 11:14:14 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

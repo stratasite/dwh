@@ -380,6 +380,68 @@
 <span class='rbrace'>}</span><span class='rparen'>)</span>
 </code></pre>
 
+<h2 id="identity-bound-token-stores">Identity-Bound Token Stores</h2>
+
+<p>For OAuth and M2M adapters, DWH can optionally reuse tokens through a host-provided
+<code>token_store</code> object. The store should be identity-bound before it is passed into
+adapter config so DWH remains agnostic of app-level user/datasource models.</p>
+
+<h3 id="token-store-contract">Token Store Contract</h3>
+
+<p><code>DWH::TokenStore</code> is the reference contract, but duck-typed objects are supported.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>MyTokenStore</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DWH/TokenStore.html" title="DWH::TokenStore (class)">TokenStore</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_load'>load</span>
+    <span class='comment'># return nil or hash with:
+</span>    <span class='comment'># access_token (optional), refresh_token (optional), expires_at (optional)
+</span>    <span class='comment'>#
+</span>    <span class='comment'># Notes:
+</span>    <span class='comment'># - providing expires_at enables proactive refresh/mint behavior
+</span>    <span class='comment'># - providing refresh_token enables refresh when access_token expires
+</span>  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_store'>store</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+    <span class='comment'># token includes at least access_token and expires_at
+</span>  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_delete'>delete</span>
+    <span class='comment'># optional cleanup/revoke path for terminal auth failures
+</span>  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="service-account-m2m-example">Service Account (M2M) Example</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_store'>store</span> <span class='op'>=</span> <span class='const'>DatasourceTokenStore</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>datasource_id:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
+
+<span class='id identifier rubyid_client'>client</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:databricks</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span><span class='comma'>,</span>
+  <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>oauth_m2m</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>warehouse:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_warehouse'>warehouse</span><span class='comma'>,</span>
+  <span class='label'>oauth_client_id:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_oauth_client_id'>oauth_client_id</span><span class='comma'>,</span>
+  <span class='label'>oauth_client_secret:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_oauth_client_secret'>oauth_client_secret</span><span class='comma'>,</span>
+  <span class='label'>token_store:</span> <span class='id identifier rubyid_store'>store</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="per-user-oauth-example-host-owned">Per-User OAuth Example (host-owned)</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_store'>store</span> <span class='op'>=</span> <span class='const'>UserDatasourceTokenStore</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+  <span class='label'>user_id:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='comma'>,</span>
+  <span class='label'>datasource_id:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span>
+<span class='rparen'>)</span>
+
+<span class='id identifier rubyid_client'>client</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:snowflake</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>oauth</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>account_identifier:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_account_identifier'>account_identifier</span><span class='comma'>,</span>
+  <span class='label'>database:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_database'>database</span><span class='comma'>,</span>
+  <span class='label'>oauth_client_id:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_oauth_client_id'>oauth_client_id</span><span class='comma'>,</span>
+  <span class='label'>oauth_client_secret:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_oauth_client_secret'>oauth_client_secret</span><span class='comma'>,</span>
+  <span class='label'>oauth_redirect_uri:</span> <span class='id identifier rubyid_datasource'>datasource</span><span class='period'>.</span><span class='id identifier rubyid_oauth_redirect_uri'>oauth_redirect_uri</span><span class='comma'>,</span>
+  <span class='label'>token_store:</span> <span class='id identifier rubyid_store'>store</span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
 <h2 id="error-handling-and-debugging">Error Handling and Debugging</h2>
 
 <h3 id="comprehensive-error-handling">Comprehensive Error Handling</h3>
@@ -446,7 +508,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Thu Apr 23 17:36:44 2026 by
+  Generated on Tue Apr 28 11:14:14 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
