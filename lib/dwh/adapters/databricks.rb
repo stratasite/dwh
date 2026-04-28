@@ -28,7 +28,7 @@ module DWH
 
       config :host, String, required: true, message: 'Databricks workspace host (e.g., adb-xxx.databricks.cloud.com)'
       config :auth_mode, String, required: true, allowed: %w[oauth_m2m oauth_u2m],
-                         message: 'Authentication mode: oauth_m2m or oauth_u2m'
+                                 message: 'Authentication mode: oauth_m2m or oauth_u2m'
       config :oauth_client_id, String, required: true, message: 'OAuth client ID (service principal application ID)'
       config :oauth_client_secret, String, required: true, message: 'OAuth client secret'
       config :client_name, String, required: false, default: 'Ruby DWH Gem', message: 'Client name sent to Databricks'

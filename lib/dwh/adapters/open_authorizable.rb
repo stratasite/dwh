@@ -168,9 +168,8 @@ module DWH
       def validate_oauth_config
         raise ConfigError, 'Missing config: oauth_client_id. Required for OAuth.' unless config[:oauth_client_id]
         raise ConfigError, 'Missing config: oauth_client_secret. Required for OAuth.' unless config[:oauth_client_secret]
-        if oauth_redirect_uri_required?
-          raise ConfigError, 'Missing config: oauth_redirect_uri. Required for OAuth.' unless config[:oauth_redirect_uri]
-        end
+
+        raise ConfigError, 'Missing config: oauth_redirect_uri. Required for OAuth.' if oauth_redirect_uri_required? && !config[:oauth_redirect_uri]
 
         oauth_settings if oauth_supports_authorization_code_flow?
         true
@@ -239,7 +238,7 @@ module DWH
       def oauth_pkce_code_verifier_for_session
         return nil unless oauth_uses_pkce?
 
-        @oauth_pkce_code_verifier ||= oauth_pkce_code_verifier
+        @oauth_pkce_code_verifier_for_session ||= oauth_pkce_code_verifier
       end
 
       def oauth_pkce_code_verifier

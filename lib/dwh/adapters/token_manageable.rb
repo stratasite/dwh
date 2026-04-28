@@ -2,15 +2,14 @@ require 'time'
 
 module DWH
   module Adapters
+    # TokenManageable hold the logic to load, store and delete tokens from the token store.
     module TokenManageable
-
-      
       def token_store
         config[:token_store]
       end
 
       def load_tokens_from_store
-        return nil unless token_store&.respond_to?(:load)
+        return nil unless token_store.respond_to?(:load)
 
         payload = token_store.load
         normalize_token_payload(payload)
@@ -20,7 +19,7 @@ module DWH
       end
 
       def store_tokens_in_store(token_payload)
-        return unless token_store&.respond_to?(:store)
+        return unless token_store.respond_to?(:store)
 
         token_store.store(normalize_token_payload_for_store(token_payload))
       rescue StandardError => e
@@ -28,7 +27,7 @@ module DWH
       end
 
       def delete_tokens_from_store
-        return unless token_store&.respond_to?(:delete)
+        return unless token_store.respond_to?(:delete)
 
         token_store.delete
       rescue StandardError => e

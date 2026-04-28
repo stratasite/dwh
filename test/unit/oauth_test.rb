@@ -258,11 +258,11 @@ class OAuthTest < Minitest::Test
     adapter.instance_variable_set(:@oauth_pkce_code_verifier, 'pkce-verifier')
 
     response = Struct.new(:status, :body).new(200, JSON.generate({
-      access_token: 'new-token',
-      refresh_token: 'new-refresh',
-      expires_in: 1800,
-      token_type: 'Bearer'
-    }))
+                                                                   access_token: 'new-token',
+                                                                   refresh_token: 'new-refresh',
+                                                                   expires_in: 1800,
+                                                                   token_type: 'Bearer'
+                                                                 }))
 
     seen_verifier = nil
     fake_client = Class.new do
@@ -284,10 +284,10 @@ class OAuthTest < Minitest::Test
 
   def test_oauth_access_token_hydrates_from_token_store
     store = TokenStore.new({
-      access_token: 'store-token',
-      refresh_token: 'store-refresh',
-      expires_at: Time.now + 3600
-    })
+                             access_token: 'store-token',
+                             refresh_token: 'store-refresh',
+                             expires_at: Time.now + 3600
+                           })
     adapter = build_adapter(token_store: store)
 
     assert_equal 'store-token', adapter.oauth_access_token
@@ -298,11 +298,11 @@ class OAuthTest < Minitest::Test
     adapter = build_adapter(token_store: store)
 
     response = Struct.new(:status, :body).new(200, JSON.generate({
-      access_token: 'new-token',
-      refresh_token: 'new-refresh',
-      expires_in: 1800,
-      token_type: 'Bearer'
-    }))
+                                                                   access_token: 'new-token',
+                                                                   refresh_token: 'new-refresh',
+                                                                   expires_in: 1800,
+                                                                   token_type: 'Bearer'
+                                                                 }))
 
     adapter.send(:oauth_token_response, response)
 
@@ -318,9 +318,9 @@ class OAuthTest < Minitest::Test
     adapter.apply_oauth_tokens(access_token: 'expired', refresh_token: 'refresh', expires_at: Time.now - 10)
 
     response = Struct.new(:status, :body).new(400, JSON.generate({
-      error: 'invalid_grant',
-      message: 'refresh token expired'
-    }))
+                                                                   error: 'invalid_grant',
+                                                                   message: 'refresh token expired'
+                                                                 }))
 
     assert_raises(DWH::TokenExpiredError) { adapter.send(:oauth_token_response, response) }
     assert_equal true, store.deleted
@@ -336,10 +336,10 @@ class OAuthTest < Minitest::Test
     adapter.apply_oauth_tokens(access_token: nil, refresh_token: nil, expires_at: nil)
 
     response = Struct.new(:status, :body).new(200, JSON.generate({
-      access_token: 'm2m-access-token',
-      expires_in: 1800,
-      token_type: 'Bearer'
-    }))
+                                                                   access_token: 'm2m-access-token',
+                                                                   expires_in: 1800,
+                                                                   token_type: 'Bearer'
+                                                                 }))
 
     fake_client = Class.new do
       define_method(:initialize) { |result| @result = result }
@@ -362,10 +362,10 @@ class OAuthTest < Minitest::Test
     )
 
     response = Struct.new(:status, :body).new(200, JSON.generate({
-      access_token: 'm2m-access-token',
-      expires_in: 1800,
-      token_type: 'Bearer'
-    }))
+                                                                   access_token: 'm2m-access-token',
+                                                                   expires_in: 1800,
+                                                                   token_type: 'Bearer'
+                                                                 }))
 
     fake_client = Class.new do
       define_method(:initialize) { |result| @result = result }
@@ -387,18 +387,18 @@ class OAuthTest < Minitest::Test
 
   def test_oauth_access_token_refreshes_and_updates_store_when_expired
     store = TokenStore.new({
-      access_token: 'old-access',
-      refresh_token: 'refresh-1',
-      expires_at: Time.now - 10
-    })
+                             access_token: 'old-access',
+                             refresh_token: 'refresh-1',
+                             expires_at: Time.now - 10
+                           })
     adapter = build_adapter(token_store: store)
 
     response = Struct.new(:status, :body).new(200, JSON.generate({
-      access_token: 'refreshed-access',
-      refresh_token: 'refresh-1',
-      expires_in: 1800,
-      token_type: 'Bearer'
-    }))
+                                                                   access_token: 'refreshed-access',
+                                                                   refresh_token: 'refresh-1',
+                                                                   expires_in: 1800,
+                                                                   token_type: 'Bearer'
+                                                                 }))
 
     fake_client = Class.new do
       define_method(:initialize) { |result| @result = result }

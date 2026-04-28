@@ -72,14 +72,14 @@ class DatabricksAdapterTest < Minitest::Test
       get_responses: {
         '/api/2.0/sql/statements/stmt-1' => [
           res(200, {
-            statement_id: 'stmt-1',
-            status: { state: 'SUCCEEDED' },
-            manifest: {
-              schema: { columns: [{ name: 'id' }] },
-              chunks: [{ chunk_index: 0 }, { chunk_index: 1 }]
-            },
-            result: { data_array: [['1']] }
-          })
+                statement_id: 'stmt-1',
+                status: { state: 'SUCCEEDED' },
+                manifest: {
+                  schema: { columns: [{ name: 'id' }] },
+                  chunks: [{ chunk_index: 0 }, { chunk_index: 1 }]
+                },
+                result: { data_array: [['1']] }
+              })
         ],
         '/api/2.0/sql/statements/stmt-1/result/chunks/1' => [
           res(200, { data_array: [['2']] })
@@ -98,14 +98,14 @@ class DatabricksAdapterTest < Minitest::Test
     conn = FakeConnection.new(
       post_responses: [
         res(200, {
-          statement_id: 'stmt-2',
-          status: { state: 'SUCCEEDED' },
-          manifest: {
-            schema: { columns: [{ name: 'id' }, { name: 'name' }] },
-            chunks: [{ chunk_index: 0 }]
-          },
-          result: { data_array: [['1', 'alpha'], ['2', 'beta']] }
-        })
+              statement_id: 'stmt-2',
+              status: { state: 'SUCCEEDED' },
+              manifest: {
+                schema: { columns: [{ name: 'id' }, { name: 'name' }] },
+                chunks: [{ chunk_index: 0 }]
+              },
+              result: { data_array: [%w[1 alpha], %w[2 beta]] }
+            })
       ]
     )
     stub_connection(conn)
@@ -124,14 +124,14 @@ class DatabricksAdapterTest < Minitest::Test
     conn = FakeConnection.new(
       post_responses: [
         res(200, {
-          statement_id: 'stmt-3',
-          status: { state: 'SUCCEEDED' },
-          manifest: {
-            schema: { columns: [{ name: 'id' }] },
-            chunks: [{ chunk_index: 0 }]
-          },
-          result: { data_array: [['1'], ['2']] }
-        })
+              statement_id: 'stmt-3',
+              status: { state: 'SUCCEEDED' },
+              manifest: {
+                schema: { columns: [{ name: 'id' }] },
+                chunks: [{ chunk_index: 0 }]
+              },
+              result: { data_array: [['1'], ['2']] }
+            })
       ]
     )
     stub_connection(conn)
@@ -190,9 +190,9 @@ class DatabricksAdapterTest < Minitest::Test
 
   def test_oauth_access_token_uses_cached_token_from_store
     store = TokenStore.new({
-      access_token: 'cached-token',
-      expires_at: Time.now + 300
-    })
+                             access_token: 'cached-token',
+                             expires_at: Time.now + 300
+                           })
     adapter = build_adapter(token_store: store)
 
     token = adapter.oauth_access_token
@@ -248,11 +248,11 @@ class DatabricksAdapterTest < Minitest::Test
     adapter = build_adapter(auth_mode: 'oauth_u2m', oauth_redirect_uri: 'http://localhost:8787/callback')
     adapter.instance_variable_set(:@oauth_pkce_code_verifier, 'pkce-verifier')
     oauth_response = FakeResponse.new(200, JSON.generate({
-      access_token: 'u2m-token',
-      refresh_token: 'u2m-refresh',
-      expires_in: 1800,
-      token_type: 'Bearer'
-    }))
+                                                           access_token: 'u2m-token',
+                                                           refresh_token: 'u2m-refresh',
+                                                           expires_in: 1800,
+                                                           token_type: 'Bearer'
+                                                         }))
     fake_client = FakeOAuthClient.new(oauth_response)
 
     adapter.stub(:oauth_http_client, fake_client) do
@@ -271,10 +271,10 @@ class DatabricksAdapterTest < Minitest::Test
     adapter = build_adapter(token_store: store)
 
     oauth_response = FakeResponse.new(200, JSON.generate({
-      access_token: 'minted-token',
-      expires_in: 3600,
-      token_type: 'Bearer'
-    }))
+                                                           access_token: 'minted-token',
+                                                           expires_in: 3600,
+                                                           token_type: 'Bearer'
+                                                         }))
 
     adapter.stub(:oauth_http_client, FakeOAuthClient.new(oauth_response)) do
       token = adapter.oauth_access_token
@@ -289,13 +289,13 @@ class DatabricksAdapterTest < Minitest::Test
   def test_missing_auth_mode_raises_configuration_error
     error = assert_raises(DWH::ConfigError) do
       DWH.create(:databricks, {
-        host: 'workspace.cloud.databricks.com',
-        warehouse: 'warehouse_123',
-        oauth_client_id: 'client-id',
-        oauth_client_secret: 'client-secret',
-        catalog: 'main',
-        schema: 'default'
-      })
+                   host: 'workspace.cloud.databricks.com',
+                   warehouse: 'warehouse_123',
+                   oauth_client_id: 'client-id',
+                   oauth_client_secret: 'client-secret',
+                   catalog: 'main',
+                   schema: 'default'
+                 })
     end
     assert_match(/auth_mode/, error.message)
   end
@@ -316,15 +316,15 @@ class DatabricksAdapterTest < Minitest::Test
 
   def test_oauth_access_token_with_invalid_expiry_falls_back_to_mint
     store = TokenStore.new({
-      access_token: 'bad-cache',
-      expires_at: 'not-a-time'
-    })
+                             access_token: 'bad-cache',
+                             expires_at: 'not-a-time'
+                           })
     adapter = build_adapter(token_store: store)
 
     oauth_response = FakeResponse.new(200, JSON.generate({
-      access_token: 'fresh-token',
-      expires_in: 1800
-    }))
+                                                           access_token: 'fresh-token',
+                                                           expires_in: 1800
+                                                         }))
 
     adapter.stub(:oauth_http_client, FakeOAuthClient.new(oauth_response)) do
       token = adapter.oauth_access_token
@@ -334,15 +334,15 @@ class DatabricksAdapterTest < Minitest::Test
 
   def test_oauth_access_token_with_missing_access_in_store_falls_back_to_mint
     store = TokenStore.new({
-      refresh_token: 'unused',
-      expires_at: Time.now + 500
-    })
+                             refresh_token: 'unused',
+                             expires_at: Time.now + 500
+                           })
     adapter = build_adapter(token_store: store)
 
     oauth_response = FakeResponse.new(200, JSON.generate({
-      access_token: 'fallback-token',
-      expires_in: 1800
-    }))
+                                                           access_token: 'fallback-token',
+                                                           expires_in: 1800
+                                                         }))
 
     adapter.stub(:oauth_http_client, FakeOAuthClient.new(oauth_response)) do
       token = adapter.oauth_access_token
@@ -352,15 +352,15 @@ class DatabricksAdapterTest < Minitest::Test
 
   def test_oauth_access_token_refreshes_before_expiry_leeway
     store = TokenStore.new({
-      access_token: 'near-expiry-token',
-      expires_at: Time.now + 10
-    })
+                             access_token: 'near-expiry-token',
+                             expires_at: Time.now + 10
+                           })
     adapter = build_adapter(token_store: store)
 
     oauth_response = FakeResponse.new(200, JSON.generate({
-      access_token: 'rotated-token',
-      expires_in: 1800
-    }))
+                                                           access_token: 'rotated-token',
+                                                           expires_in: 1800
+                                                         }))
 
     adapter.stub(:oauth_http_client, FakeOAuthClient.new(oauth_response)) do
       token = adapter.oauth_access_token
