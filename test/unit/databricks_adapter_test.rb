@@ -246,7 +246,7 @@ class DatabricksAdapterTest < Minitest::Test
 
   def test_u2m_token_exchange_includes_code_verifier
     adapter = build_adapter(auth_mode: 'oauth_u2m', oauth_redirect_uri: 'http://localhost:8787/callback')
-    adapter.instance_variable_set(:@oauth_pkce_code_verifier, 'pkce-verifier')
+    adapter.instance_variable_set(:@oauth_pkce_code_verifier_for_session, 'pkce-verifier')
     oauth_response = FakeResponse.new(200, JSON.generate({
                                                            access_token: 'u2m-token',
                                                            refresh_token: 'u2m-refresh',

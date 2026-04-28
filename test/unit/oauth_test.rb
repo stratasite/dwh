@@ -255,7 +255,7 @@ class OAuthTest < Minitest::Test
       oauth_client_secret: 'test_secret',
       oauth_redirect_uri: 'https://example.com/callback'
     )
-    adapter.instance_variable_set(:@oauth_pkce_code_verifier, 'pkce-verifier')
+    adapter.instance_variable_set(:@oauth_pkce_code_verifier_for_session, 'pkce-verifier')
 
     response = Struct.new(:status, :body).new(200, JSON.generate({
                                                                    access_token: 'new-token',
