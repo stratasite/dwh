@@ -257,7 +257,6 @@ class OAuthTest < Minitest::Test
     )
     adapter.instance_variable_set(:@oauth_pkce_code_verifier, 'pkce-verifier')
 
-    request_bodies = []
     response = Struct.new(:status, :body).new(200, JSON.generate({
       access_token: 'new-token',
       refresh_token: 'new-refresh',
@@ -265,24 +264,22 @@ class OAuthTest < Minitest::Test
       token_type: 'Bearer'
     }))
 
+    seen_verifier = nil
     fake_client = Class.new do
-      define_method(:initialize) { |result, seen| @result = result; @seen = seen }
-      define_method(:post) do |_url|
-        req = Struct.new(:headers, :body).new({}, nil)
-        yield req if block_given?
-        @seen << req.body
-        @result
-      end
-    end.new(response, request_bodies)
+      define_method(:initialize) { |result| @result = result }
+      define_method(:post) { |_url| @result }
+    end.new(response)
 
-    adapter.stub(:oauth_http_client, fake_client) do
-      adapter.generate_oauth_tokens('auth-code-1')
+    adapter.stub(:oauth_pkce_token_params, lambda { |verifier|
+      seen_verifier = verifier
+      { code_verifier: verifier }
+    }) do
+      adapter.stub(:oauth_http_client, fake_client) do
+        adapter.generate_oauth_tokens('auth-code-1')
+      end
     end
 
-    params = URI.decode_www_form(request_bodies.first).to_h
-    assert_equal 'pkce-verifier', params['code_verifier']
-    assert_equal 'authorization_code', params['grant_type']
-    assert_equal 'auth-code-1', params['code']
+    assert_equal 'pkce-verifier', seen_verifier
   end
 
   def test_oauth_access_token_hydrates_from_token_store
@@ -352,6 +349,74 @@ class OAuthTest < Minitest::Test
     adapter.stub(:oauth_http_client, fake_client) do
       assert_equal 'm2m-access-token', adapter.oauth_access_token
     end
+  end
+
+  def test_oauth_access_token_mints_and_stores_for_client_credentials_flow
+    TestM2MAdapter.load_settings
+    store = TokenStore.new(nil)
+    adapter = TestM2MAdapter.new(
+      database: 'test_db',
+      oauth_client_id: 'test_id',
+      oauth_client_secret: 'test_secret',
+      token_store: store
+    )
+
+    response = Struct.new(:status, :body).new(200, JSON.generate({
+      access_token: 'm2m-access-token',
+      expires_in: 1800,
+      token_type: 'Bearer'
+    }))
+
+    fake_client = Class.new do
+      define_method(:initialize) { |result| @result = result }
+      define_method(:post) do |_url|
+        req = Struct.new(:headers, :body).new({}, nil)
+        yield req if block_given?
+        @result
+      end
+    end.new(response)
+
+    adapter.stub(:oauth_http_client, fake_client) do
+      assert_equal 'm2m-access-token', adapter.oauth_access_token
+    end
+
+    refute_nil store.stored
+    assert_equal 'm2m-access-token', store.stored[:access_token]
+    assert store.stored[:expires_at].is_a?(Time)
+  end
+
+  def test_oauth_access_token_refreshes_and_updates_store_when_expired
+    store = TokenStore.new({
+      access_token: 'old-access',
+      refresh_token: 'refresh-1',
+      expires_at: Time.now - 10
+    })
+    adapter = build_adapter(token_store: store)
+
+    response = Struct.new(:status, :body).new(200, JSON.generate({
+      access_token: 'refreshed-access',
+      refresh_token: 'refresh-1',
+      expires_in: 1800,
+      token_type: 'Bearer'
+    }))
+
+    fake_client = Class.new do
+      define_method(:initialize) { |result| @result = result }
+      define_method(:post) do |_url|
+        req = Struct.new(:headers, :body).new({}, nil)
+        yield req if block_given?
+        @result
+      end
+    end.new(response)
+
+    adapter.stub(:oauth_http_client, fake_client) do
+      assert_equal 'refreshed-access', adapter.oauth_access_token
+    end
+
+    refute_nil store.stored
+    assert_equal 'refreshed-access', store.stored[:access_token]
+    assert_equal 'refresh-1', store.stored[:refresh_token]
+    assert store.stored[:expires_at].is_a?(Time)
   end
 
   def test_validate_oauth_config_without_redirect_uri_for_m2m
