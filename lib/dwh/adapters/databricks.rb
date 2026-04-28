@@ -1,11 +1,14 @@
 require 'csv'
-require 'base64'
+require_relative 'open_authorizable'
 
 module DWH
   module Adapters
     # Databricks adapter for executing SQL queries against Databricks SQL warehouses.
     #
-    # Supports OAuth M2M (service principal) authentication only.
+    # Supports OAuth M2M (service principal) and U2M (authorization code) flows.
+    # The host application must set auth_mode explicitly:
+    # - oauth_m2m: client_credentials flow
+    # - oauth_u2m: authorization_code + PKCE flow
     #
     # @example Connection with OAuth (service principal)
     #   DWH.create(:databricks, {
@@ -17,7 +20,15 @@ module DWH
     #     schema: 'default'
     #   })
     class Databricks < Adapter
+      include OpenAuthorizable
+
+      oauth_with authorize: ->(adapter) { "https://#{adapter.host}/oidc/v1/authorize" },
+                 tokenize: ->(adapter) { "https://#{adapter.host}/oidc/v1/token" },
+                 default_scope: 'all-apis'
+
       config :host, String, required: true, message: 'Databricks workspace host (e.g., adb-xxx.databricks.cloud.com)'
+      config :auth_mode, String, required: true, allowed: %w[oauth_m2m oauth_u2m],
+                                 message: 'Authentication mode: oauth_m2m or oauth_u2m'
       config :oauth_client_id, String, required: true, message: 'OAuth client ID (service principal application ID)'
       config :oauth_client_secret, String, required: true, message: 'OAuth client secret'
       config :client_name, String, required: false, default: 'Ruby DWH Gem', message: 'Client name sent to Databricks'
@@ -33,7 +44,7 @@ module DWH
 
       def initialize(config)
         super
-        validate_auth_config
+        validate_oauth_config
       end
 
       def connection
@@ -44,7 +55,7 @@ module DWH
           url: "https://#{workspace_host}",
           headers: {
             'Content-Type' => 'application/json',
-            'Authorization' => "Bearer #{auth_token}",
+            'Authorization' => "Bearer #{oauth_access_token}",
             'User-Agent' => config[:client_name]
           },
           request: {
@@ -159,37 +170,9 @@ module DWH
 
       private
 
-      def validate_auth_config
-        raise ConfigError, 'oauth_client_id is required' unless config[:oauth_client_id]
-        raise ConfigError, 'oauth_client_secret is required' unless config[:oauth_client_secret]
-      end
-
-      def auth_token
-        return @oauth_access_token if @oauth_access_token && !token_expired?
-
-        request_oauth_access_token!
-        @oauth_access_token
-      end
-
-      def request_oauth_access_token!
-        credentials = Base64.strict_encode64("#{config[:oauth_client_id]}:#{config[:oauth_client_secret]}")
-        response = Faraday.post(
-          "https://#{workspace_host}/oidc/v1/token",
-          'grant_type=client_credentials&scope=all-apis',
-          'Authorization' => "Basic #{credentials}",
-          'Content-Type' => 'application/x-www-form-urlencoded'
-        )
-
-        raise AuthenticationError, "OAuth M2M token request failed (#{response.status}): #{response.body}" unless response.status == 200
-
-        data = JSON.parse(response.body)
-        @oauth_access_token = data['access_token']
-        expires_in = data['expires_in'] || 3600
-        @token_expires_at = Time.now + [expires_in - 60, 60].max
-      end
-
       def reset_connection
         @oauth_access_token = nil
+        @oauth_refresh_token = nil
         @token_expires_at = nil
         close
       end
@@ -321,7 +304,34 @@ module DWH
       end
 
       def workspace_host
-        config[:host].to_s.gsub(%r{\Ahttps?://}, '').gsub(%r{/+\z}, '')
+        config[:host].to_s
+      end
+
+      def oauth_supports_authorization_code_flow?
+        auth_mode == 'oauth_u2m'
+      end
+
+      def oauth_supports_client_credentials_flow?
+        auth_mode == 'oauth_m2m'
+      end
+
+      def oauth_redirect_uri_required?
+        oauth_supports_authorization_code_flow?
+      end
+
+      def oauth_client_credentials_params
+        {
+          grant_type: 'client_credentials',
+          scope: 'all-apis'
+        }
+      end
+
+      def oauth_token_expiry_leeway_seconds
+        30
+      end
+
+      def oauth_uses_pkce?
+        oauth_supports_authorization_code_flow?
       end
     end
   end

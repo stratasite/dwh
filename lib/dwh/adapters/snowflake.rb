@@ -39,7 +39,7 @@ module DWH
     #     account_identifier: 'myorg-myaccount.us-east-1',
     #     oauth_client_id: '<YOUR_CLIENT_ID>',
     #     oauth_client_secret: '<YOUR_CLIENT_SECRET>',
-    #     oauth_redirect_url: 'https://localhost:3030/some/path',
+    #     oauth_redirect_uri: 'https://localhost:3030/some/path',
     #     database: 'ANALYTICS'
     #   })
     #

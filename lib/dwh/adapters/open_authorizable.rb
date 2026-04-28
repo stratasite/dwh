@@ -1,5 +1,7 @@
 require 'base64'
 require 'securerandom'
+require 'digest'
+require_relative 'token_manageable'
 
 module DWH
   module Adapters
@@ -26,7 +28,7 @@ module DWH
     module OpenAuthorizable
       # rubcop:disable Style/DocumentationModule
       module ClassMethods
-        def oauth_with(authorize:, tokenize:, default_scope: 'refresh_token')
+        def oauth_with(authorize: nil, tokenize: nil, default_scope: 'refresh_token')
           @oauth_settings = { authorize: authorize, tokenize: tokenize, default_scope: default_scope }
         end
 
@@ -39,14 +41,18 @@ module DWH
 
       def self.included(base)
         base.extend(ClassMethods)
+        base.include(TokenManageable)
         base.config :oauth_client_id, String, required: false, message: 'OAuth client_id'
         base.config :oauth_client_secret, String, required: false, message: 'OAuth client_secret'
         base.config :oauth_redirect_uri, String, required: false, message: 'OAuth redirect_uri'
-        base.config :oauth_scope, String, required: false, message: 'OAuth redirect_url'
+        base.config :oauth_scope, String, required: false, message: 'OAuth scope'
       end
 
       # Generate authorization URL for user to visit
       def authorization_url(state: SecureRandom.hex(16), scope: nil)
+        raise UnsupportedCapability, "#{adapter_name} does not support authorization-code OAuth flow" unless oauth_supports_authorization_code_flow?
+
+        code_verifier = oauth_pkce_code_verifier_for_session
         params = {
           'response_type' => 'code',
           'client_id' => oauth_client_id,
@@ -54,6 +60,7 @@ module DWH
           'state' => state,
           'scope' => scope || oauth_scope || oauth_settings[:default_scope]
         }.compact
+        params.merge!(oauth_pkce_authorization_params(code_verifier))
 
         uri = URI(oauth_settings[:authorize])
         uri.query = URI.encode_www_form(params)
@@ -66,7 +73,7 @@ module DWH
       #
       # param access_token [String] the access token
       # @param refresh_token [String] optional refresh token
-      def apply_oauth_tokens(access_token:, refresh_token: nil, expires_at: nil)
+      def apply_oauth_tokens(access_token: nil, refresh_token: nil, expires_at: nil)
         @oauth_access_token = access_token
         @oauth_refresh_token = refresh_token
         @token_expires_at = expires_at
@@ -77,11 +84,15 @@ module DWH
       # @param authorization_code [String] this code should come from
       #   the redirect that is captured from the #authorization_url
       def generate_oauth_tokens(authorization_code)
+        raise UnsupportedCapability, "#{adapter_name} does not support authorization-code OAuth flow" unless oauth_supports_authorization_code_flow?
+
+        code_verifier = oauth_pkce_code_verifier_for_session
         params = {
           grant_type: 'authorization_code',
           code: authorization_code,
           redirect_uri: oauth_redirect_uri
         }
+        params.merge!(oauth_pkce_token_params(code_verifier))
 
         response = oauth_http_client.post(oauth_tokenization_url) do |req|
           req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -95,14 +106,23 @@ module DWH
       def refresh_access_token
         raise AuthenticationError, 'No refresh token available' unless @oauth_refresh_token
 
-        params = {
-          grant_type: 'refresh_token',
-          refresh_token: @oauth_refresh_token
-        }
-
+        params = oauth_refresh_token_params
         response = oauth_http_client.post(oauth_tokenization_url) do |req|
           req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-          req.headers['Authorization'] = basic_auth_header
+          req.headers['Authorization'] = oauth_token_request_auth_header
+          req.body = URI.encode_www_form(params)
+        end
+
+        oauth_token_response(response)
+      end
+
+      def mint_access_token
+        raise UnsupportedCapability, "#{adapter_name} does not support client-credentials OAuth flow" unless oauth_supports_client_credentials_flow?
+
+        params = oauth_client_credentials_params
+        response = oauth_http_client.post(oauth_tokenization_url) do |req|
+          req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+          req.headers['Authorization'] = oauth_token_request_auth_header
           req.body = URI.encode_www_form(params)
         end
 
@@ -116,22 +136,22 @@ module DWH
       # @return [String] access token
       # @raise [AuthenticationError]
       def oauth_access_token
-        if token_expired? && @oauth_refresh_token
-          refresh_access_token
+        load_oauth_tokens_from_store! unless @oauth_access_token || @oauth_refresh_token
+        return @oauth_access_token if oauth_token_usable?
 
-          # return token unless exception was raised
-          @oauth_access_token
-        elsif @oauth_access_token
-          @oauth_access_token
-        else
-          raise AuthenticationError,
-                'Access token was never set. Either run the auth flow or set the tokens via apply_oauth_tokens method.'
-        end
+        refresh_access_token if oauth_refresh_token_usable?
+        return @oauth_access_token if oauth_token_usable?
+
+        mint_access_token if oauth_supports_client_credentials_flow?
+        return @oauth_access_token if oauth_token_usable?
+
+        raise AuthenticationError,
+              'Access token was never set. Either run the auth flow, mint via client credentials, or set tokens via apply_oauth_tokens.'
       end
 
       # Check if we have a valid access token
       def oauth_authenticated?
-        @oauth_access_token && !token_expired?
+        @oauth_access_token && oauth_token_usable?
       end
 
       # Get current state of tokens
@@ -140,7 +160,7 @@ module DWH
           access_token: @oauth_access_token,
           refresh_token: @oauth_refresh_token,
           expires_at: @token_expires_at,
-          expired: token_expired?,
+          expired: !oauth_token_usable?,
           authenticated: oauth_authenticated?
         }
       end
@@ -148,9 +168,11 @@ module DWH
       def validate_oauth_config
         raise ConfigError, 'Missing config: oauth_client_id. Required for OAuth.' unless config[:oauth_client_id]
         raise ConfigError, 'Missing config: oauth_client_secret. Required for OAuth.' unless config[:oauth_client_secret]
-        raise ConfigError, 'Missing config: oauth_redirect_url. Required for OAuth.' unless config[:oauth_redirect_uri]
 
-        oauth_settings
+        raise ConfigError, 'Missing config: oauth_redirect_uri. Required for OAuth.' if oauth_redirect_uri_required? && !config[:oauth_redirect_uri]
+
+        oauth_settings if oauth_supports_authorization_code_flow?
+        true
       end
 
       def oauth_settings
@@ -168,6 +190,75 @@ module DWH
       def basic_auth_header
         credentials = Base64.strict_encode64("#{config[:oauth_client_id]}:#{config[:oauth_client_secret]}")
         "Basic #{credentials}"
+      end
+
+      def oauth_token_request_auth_header
+        basic_auth_header
+      end
+
+      def oauth_refresh_token_params
+        {
+          grant_type: 'refresh_token',
+          refresh_token: @oauth_refresh_token
+        }
+      end
+
+      def oauth_client_credentials_params
+        {
+          grant_type: 'client_credentials',
+          scope: oauth_scope || oauth_settings[:default_scope]
+        }.compact
+      end
+
+      def oauth_supports_authorization_code_flow?
+        true
+      end
+
+      def oauth_supports_client_credentials_flow?
+        false
+      end
+
+      def oauth_redirect_uri_required?
+        oauth_supports_authorization_code_flow?
+      end
+
+      def oauth_token_expiry_leeway_seconds
+        0
+      end
+
+      # PKCE is optional and disabled by default
+      def oauth_uses_pkce?
+        false
+      end
+
+      def oauth_pkce_code_challenge_method
+        'S256'
+      end
+
+      def oauth_pkce_code_verifier_for_session
+        return nil unless oauth_uses_pkce?
+
+        @oauth_pkce_code_verifier_for_session ||= oauth_pkce_code_verifier
+      end
+
+      def oauth_pkce_code_verifier
+        SecureRandom.urlsafe_base64(64).delete('=')
+      end
+
+      def oauth_token_usable?
+        return false unless @oauth_access_token
+
+        !token_expiring_soon?
+      end
+
+      def oauth_refresh_token_usable?
+        @oauth_refresh_token && token_expired?
+      end
+
+      def token_expiring_soon?(seconds = oauth_token_expiry_leeway_seconds)
+        return true if @token_expires_at.nil?
+
+        (Time.now + seconds) >= @token_expires_at
       end
 
       def oauth_http_client
@@ -191,11 +282,20 @@ module DWH
           # Calculate expiration time
           expires_in = data['expires_in'] || 3600
           @token_expires_at = Time.now + expires_in
+          store_tokens_in_store(
+            access_token: @oauth_access_token,
+            refresh_token: @oauth_refresh_token,
+            expires_at: @token_expires_at,
+            token_type: data['token_type'],
+            scope: data['scope'],
+            raw: data
+          )
 
           { success: true, data: data }
         else
           error_data = parse_error_response(response)
           if error_data['error'] == 'invalid_grant' && @oauth_refresh_token
+            delete_tokens_from_store
             raise TokenExpiredError, "Potentially expired refresh token. #{error_data['message']}"
           end
 
@@ -205,10 +305,47 @@ module DWH
 
       private
 
+      def load_oauth_tokens_from_store!
+        payload = load_tokens_from_store
+        return unless payload
+
+        apply_oauth_tokens(
+          access_token: payload[:access_token],
+          refresh_token: payload[:refresh_token],
+          expires_at: payload[:expires_at]
+        )
+      end
+
       def parse_error_response(response)
         JSON.parse(response.body)
       rescue JSON::ParserError
         { 'error' => 'unknown', 'message' => response.body }
+      end
+
+      def oauth_pkce_authorization_params(code_verifier)
+        return {} unless oauth_uses_pkce?
+
+        {
+          'code_challenge' => oauth_pkce_code_challenge(code_verifier),
+          'code_challenge_method' => oauth_pkce_code_challenge_method
+        }
+      end
+
+      def oauth_pkce_token_params(code_verifier)
+        return {} unless oauth_uses_pkce?
+
+        { code_verifier: code_verifier }
+      end
+
+      def oauth_pkce_code_challenge(code_verifier)
+        case oauth_pkce_code_challenge_method
+        when 'S256'
+          Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
+        when 'plain'
+          code_verifier
+        else
+          raise ConfigError, "Unsupported PKCE code challenge method: #{oauth_pkce_code_challenge_method}"
+        end
       end
     end
   end

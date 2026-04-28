@@ -363,6 +363,49 @@ end
 
 ## Advanced Features
 
+### Identity-Bound Token Store Integration
+
+Adapters that use OAuth/M2M token exchange can support host-managed persistence by
+accepting `token_store` in adapter config and using base helpers from `Adapter`.
+
+`token_store` should be identity-bound by the host app (for example datasource-bound
+for service accounts, user+datasource-bound for per-user OAuth). The adapter should
+not parse or infer identity keys.
+
+```ruby
+class MyOAuthAdapter < Adapter
+  config :token_store, Object, required: false, default: nil
+
+  def access_token
+    payload = load_tokens_from_store
+    apply_token_payload(payload) if payload
+    return @access_token if @access_token && !token_expired?
+
+    token = request_new_token!
+    store_tokens_in_store(
+      access_token: token[:access_token],
+      refresh_token: token[:refresh_token],
+      expires_at: token[:expires_at]
+    )
+    @access_token
+  end
+end
+```
+
+Expected token-store methods:
+
+- `load` -> returns `nil` or hash with `access_token`, optional `refresh_token`, and `expires_at`
+- `store(token_hash)` -> persists latest token payload
+- `delete` -> optional revoke/cleanup hook for terminal auth failures
+
+For OAuth adapters, keep token persistence centralized and only override provider hooks:
+
+- `oauth_supports_authorization_code_flow?` -> `true` for U2M flows
+- `oauth_supports_client_credentials_flow?` -> `true` for M2M flows
+- `oauth_client_credentials_params` -> provider-specific client-credentials form body
+- `oauth_tokenization_url` -> provider token endpoint
+- `oauth_token_expiry_leeway_seconds` -> eager refresh buffer (for near-expiry tokens)
+
 ### Error Handling
 
 ```ruby

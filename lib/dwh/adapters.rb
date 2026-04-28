@@ -79,6 +79,13 @@ module DWH
       # @return [Hash] the actual instance configuration
       attr_reader :config
 
+      # Optional host-implemented token store for OAuth token reuse.
+      # That should implement the following methods:
+      #   - load -> Hash|nil
+      #   - store(token_hash)
+      #   - delete
+      config :token_store, Object, required: false, default: nil, message: 'Token store instance implementing load/store/delete'
+
       def initialize(config)
         @config = config.transform_keys(&:to_sym)
         # Per instance customization of general settings
