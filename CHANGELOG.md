@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+## [0.4.1] - 2026-04-29
+
+### Added
+
+- Databricks `execute_stream` support for `EXTERNAL_LINKS` result delivery using CSV downloads
+
+### Changed
+
+- Databricks now uses method-specific result delivery defaults: `execute` uses `INLINE` + `JSON_ARRAY`, and `execute_stream` uses `EXTERNAL_LINKS` + `CSV`.
+
 ## [0.4.0] - 2026-04-28
 
 ### Added
