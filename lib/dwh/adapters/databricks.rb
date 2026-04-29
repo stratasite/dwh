@@ -78,7 +78,7 @@ module DWH
       def execute(sql, format: :array, retries: 0)
         result = with_retry(retries + 1) do
           with_debug(sql) do
-            response = submit_query(sql)
+            response = submit_query_for_execute(sql)
             fetch_data(handle_query_response(response))
           end
         end
@@ -89,7 +89,7 @@ module DWH
       def execute_stream(sql, io, stats: nil, retries: 0)
         with_retry(retries) do
           with_debug(sql) do
-            response = submit_query(sql)
+            response = submit_query_for_execute_stream(sql)
             fetch_data(handle_query_response(response), io: io, stats: stats)
           end
         end
@@ -103,7 +103,7 @@ module DWH
       # @yield [chunk] yields each chunk of data as it's processed
       def stream(sql, &block)
         with_debug(sql) do
-          response = submit_query(sql)
+          response = submit_query_for_execute(sql)
           fetch_data(handle_query_response(response), proc: block)
         end
       end
@@ -177,7 +177,7 @@ module DWH
         close
       end
 
-      def submit_query(sql)
+      def submit_query(sql, disposition: 'INLINE', format: 'JSON_ARRAY')
         connection.post(STATEMENTS_API) do |req|
           req.body = {
             statement: sql,
@@ -186,10 +186,18 @@ module DWH
             schema: config[:schema],
             wait_timeout: '30s',
             on_wait_timeout: 'CONTINUE',
-            format: 'JSON_ARRAY',
-            disposition: 'INLINE'
+            format:,
+            disposition:
           }.compact.merge(extra_query_params).to_json
         end
+      end
+
+      def submit_query_for_execute(sql)
+        submit_query(sql, disposition: 'INLINE', format: 'JSON_ARRAY')
+      end
+
+      def submit_query_for_execute_stream(sql)
+        submit_query(sql, disposition: 'EXTERNAL_LINKS', format: 'CSV')
       end
 
       def handle_query_response(response)
@@ -233,6 +241,8 @@ module DWH
       end
 
       def fetch_data(result, io: nil, stats: nil, proc: nil)
+        return fetch_external_links_data(result, io:, stats:, proc:) if result.dig('result', 'external_links')
+
         columns = result.dig('manifest', 'schema', 'columns')&.map { |col| col['name'] } || []
         chunks = result.dig('manifest', 'chunks') || []
         collector = {
@@ -260,6 +270,60 @@ module DWH
         end
 
         collector
+      end
+
+      def fetch_external_links_data(result, io:, proc:, stats: nil)
+        if io.nil?
+          raise UnsupportedCapability,
+                "Databricks EXTERNAL_LINKS is supported only for execute_stream. Use result_format: 'CSV' with execute_stream."
+        end
+        raise UnsupportedCapability, 'Databricks EXTERNAL_LINKS does not support stream/yield. Use execute_stream.' if proc
+
+        csv_buffer = +''
+        header_skipped = false
+        current = result
+        loop do
+          links = current.dig('result', 'external_links') || []
+          links.each do |link|
+            url = link['external_link']
+            raise ExecutionError, 'Databricks external link missing external_link URL' if url.to_s.strip.empty?
+
+            response = external_link_http_client.get(url)
+            raise ExecutionError, "Failed to download Databricks external link: #{response.status}" unless response.status == 200
+
+            body = response.body.to_s
+            io << body
+            header_skipped = append_csv_stats(stats, body, csv_buffer, header_skipped:) if stats
+          end
+
+          next_chunk_internal_link = links.first&.dig('next_chunk_internal_link')
+          break if next_chunk_internal_link.to_s.strip.empty?
+
+          current = JSON.parse(connection.get(next_chunk_internal_link).body)
+        end
+
+        io.rewind
+        { columns: [], data: [], io: io, stats: stats, wrote_header: true }
+      end
+
+      def append_csv_stats(stats, chunk, csv_buffer, header_skipped:)
+        return if stats.nil?
+
+        csv_buffer << chunk
+        rows = CSV.parse(csv_buffer, skip_blanks: true)
+        rows.each_with_index do |row, index|
+          if !header_skipped && index.zero?
+            header_skipped = true
+            next
+          end
+
+          stats << row
+        end
+        csv_buffer.clear
+        header_skipped
+      rescue CSV::MalformedCSVError
+        logger.debug("Unparseable:\n #{chunk}")
+        header_skipped
       end
 
       def write_data(data, collector, io = nil, stats = nil, proc = nil)
@@ -305,6 +369,10 @@ module DWH
 
       def workspace_host
         config[:host].to_s
+      end
+
+      def external_link_http_client
+        @external_link_http_client ||= Faraday.new
       end
 
       def oauth_supports_authorization_code_flow?

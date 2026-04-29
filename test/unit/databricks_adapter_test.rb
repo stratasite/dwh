@@ -60,6 +60,17 @@ class DatabricksAdapterTest < Minitest::Test
     end
   end
 
+  class FakeExternalLinkClient
+    def initialize(get_responses: {})
+      @get_responses = get_responses.transform_values(&:dup)
+    end
+
+    def get(url)
+      responses = @get_responses[url] || []
+      responses.shift || raise("No fake external-link GET response left for #{url}")
+    end
+  end
+
   def setup
     @adapter = build_adapter
   end
@@ -89,9 +100,140 @@ class DatabricksAdapterTest < Minitest::Test
     stub_connection(conn)
 
     result = @adapter.execute('select 1', format: :array)
+    payload = JSON.parse(conn.last_post_body)
 
     assert_equal [['1'], ['2']], result
     assert_equal '/api/2.0/sql/statements', conn.last_post_path
+    assert_equal 'INLINE', payload['disposition']
+    assert_equal 'JSON_ARRAY', payload['format']
+  end
+
+  def test_execute_stream_handles_external_links_csv
+    conn = external_links_csv_connection
+    adapter = build_adapter(result_disposition: 'EXTERNAL_LINKS', result_format: 'CSV')
+    adapter.define_singleton_method(:connection) { conn }
+    external_client = external_links_csv_client
+
+    adapter.stub(:external_link_http_client, external_client) do
+      io = StringIO.new
+      stats = DWH::StreamingStats.new
+      adapter.execute_stream('select * from things', io, stats: stats)
+      assert_external_links_csv_result(conn, io, stats)
+    end
+  end
+
+  def test_execute_ignores_result_delivery_overrides_and_uses_inline_json_array
+    conn = FakeConnection.new(
+      post_responses: [
+        res(200, {
+              statement_id: 'stmt-override-1',
+              status: { state: 'SUCCEEDED' },
+              manifest: {
+                schema: { columns: [{ name: 'id' }] },
+                chunks: [{ chunk_index: 0 }]
+              },
+              result: { data_array: [['1']] }
+            })
+      ]
+    )
+    adapter = build_adapter(result_disposition: 'EXTERNAL_LINKS', result_format: 'CSV')
+    adapter.define_singleton_method(:connection) { conn }
+
+    assert_equal [['1']], adapter.execute('select 1', format: :array)
+    payload = JSON.parse(conn.last_post_body)
+    assert_equal 'INLINE', payload['disposition']
+    assert_equal 'JSON_ARRAY', payload['format']
+  end
+
+  def test_execute_stream_ignores_result_delivery_overrides_and_uses_external_links_csv
+    conn = FakeConnection.new(
+      post_responses: [
+        res(200, {
+              statement_id: 'stmt-override-2',
+              status: { state: 'SUCCEEDED' },
+              result: {
+                external_links: [{
+                  chunk_index: 0,
+                  external_link: 'https://external.example/chunk-0'
+                }]
+              }
+            })
+      ]
+    )
+    adapter = build_adapter(result_disposition: 'INLINE', result_format: 'JSON_ARRAY')
+    adapter.define_singleton_method(:connection) { conn }
+    external_client = FakeExternalLinkClient.new(
+      get_responses: {
+        'https://external.example/chunk-0' => [FakeResponse.new(200, "id,name\n1,alpha\n")]
+      }
+    )
+
+    adapter.stub(:external_link_http_client, external_client) do
+      io = StringIO.new
+      stats = DWH::StreamingStats.new
+      adapter.execute_stream('select * from things', io, stats: stats)
+      payload = JSON.parse(conn.last_post_body)
+      assert_equal "id,name\n1,alpha\n", io.string
+      assert_equal 'EXTERNAL_LINKS', payload['disposition']
+      assert_equal 'CSV', payload['format']
+      assert_equal 1, stats.total_rows
+    end
+  end
+
+  def test_execute_stream_external_links_does_not_count_header_row
+    conn = FakeConnection.new(
+      post_responses: [
+        res(200, {
+              statement_id: 'stmt-ext-3',
+              status: { state: 'SUCCEEDED' },
+              result: {
+                external_links: [{
+                  chunk_index: 0,
+                  external_link: 'https://external.example/chunk-0'
+                }]
+              }
+            })
+      ]
+    )
+    adapter = build_adapter
+    adapter.define_singleton_method(:connection) { conn }
+    external_client = FakeExternalLinkClient.new(
+      get_responses: {
+        'https://external.example/chunk-0' => [FakeResponse.new(200, "id,name\n")]
+      }
+    )
+
+    adapter.stub(:external_link_http_client, external_client) do
+      io = StringIO.new
+      stats = DWH::StreamingStats.new
+      adapter.execute_stream('select * from things', io, stats: stats)
+      assert_equal 0, stats.total_rows
+    end
+  end
+
+  def test_execute_raises_when_external_links_used_without_stream_io
+    conn = FakeConnection.new(
+      post_responses: [
+        res(200, {
+              statement_id: 'stmt-ext-2',
+              status: { state: 'SUCCEEDED' },
+              result: {
+                external_links: [{
+                  chunk_index: 0,
+                  external_link: 'https://external.example/chunk-0'
+                }]
+              }
+            })
+      ]
+    )
+    adapter = build_adapter(result_disposition: 'EXTERNAL_LINKS', result_format: 'CSV')
+    adapter.define_singleton_method(:connection) { conn }
+
+    error = assert_raises(DWH::UnsupportedCapability) do
+      adapter.execute('select * from things', format: :array)
+    end
+
+    assert_match(/execute_stream/, error.message)
   end
 
   def test_execute_stream_writes_csv_and_stats
@@ -391,5 +533,58 @@ class DatabricksAdapterTest < Minitest::Test
 
   def res(status, body)
     FakeResponse.new(status, JSON.generate(body))
+  end
+
+  def external_links_csv_connection
+    FakeConnection.new(
+      post_responses: [
+        res(200, {
+              statement_id: 'stmt-ext-1',
+              status: { state: 'SUCCEEDED' },
+              manifest: {
+                format: 'CSV',
+                chunks: [{ chunk_index: 0 }]
+              },
+              result: {
+                external_links: [{
+                  chunk_index: 0,
+                  external_link: 'https://external.example/chunk-0',
+                  next_chunk_internal_link: '/api/2.0/sql/statements/stmt-ext-1/result/chunks/1'
+                }]
+              }
+            })
+      ],
+      get_responses: {
+        '/api/2.0/sql/statements/stmt-ext-1/result/chunks/1' => [
+          res(200, {
+                statement_id: 'stmt-ext-1',
+                manifest: { format: 'CSV' },
+                result: {
+                  external_links: [{
+                    chunk_index: 1,
+                    external_link: 'https://external.example/chunk-1'
+                  }]
+                }
+              })
+        ]
+      }
+    )
+  end
+
+  def external_links_csv_client
+    FakeExternalLinkClient.new(
+      get_responses: {
+        'https://external.example/chunk-0' => [FakeResponse.new(200, "id,name\n1,alpha\n")],
+        'https://external.example/chunk-1' => [FakeResponse.new(200, "2,beta\n")]
+      }
+    )
+  end
+
+  def assert_external_links_csv_result(conn, io, stats)
+    payload = JSON.parse(conn.last_post_body)
+    assert_equal "id,name\n1,alpha\n2,beta\n", io.string
+    assert_equal 'EXTERNAL_LINKS', payload['disposition']
+    assert_equal 'CSV', payload['format']
+    assert_equal 2, stats.total_rows
   end
 end
