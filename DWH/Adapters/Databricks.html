@@ -773,7 +773,7 @@ The host application must set auth_mode explicitly:</p>
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:array</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_with_retry'>with_retry</span><span class='lparen'>(</span><span class='id identifier rubyid_retries'>retries</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span> <span class='kw'>do</span>
     <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
-      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_submit_query'>submit_query</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_submit_query_for_execute'>submit_query_for_execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_fetch_data'>fetch_data</span><span class='lparen'>(</span><span class='id identifier rubyid_handle_query_response'>handle_query_response</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
@@ -818,7 +818,7 @@ The host application must set auth_mode explicitly:</p>
 <span class='kw'>def</span> <span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='id identifier rubyid_io'>io</span><span class='comma'>,</span> <span class='label'>stats:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_retry'>with_retry</span><span class='lparen'>(</span><span class='id identifier rubyid_retries'>retries</span><span class='rparen'>)</span> <span class='kw'>do</span>
     <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
-      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_submit_query'>submit_query</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_submit_query_for_execute_stream'>submit_query_for_execute_stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_fetch_data'>fetch_data</span><span class='lparen'>(</span><span class='id identifier rubyid_handle_query_response'>handle_query_response</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>io:</span> <span class='id identifier rubyid_io'>io</span><span class='comma'>,</span> <span class='label'>stats:</span> <span class='id identifier rubyid_stats'>stats</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
@@ -1064,7 +1064,7 @@ The host application must set auth_mode explicitly:</p>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stream'>stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_submit_query'>submit_query</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_submit_query_for_execute'>submit_query_for_execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_fetch_data'>fetch_data</span><span class='lparen'>(</span><span class='id identifier rubyid_handle_query_response'>handle_query_response</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>proc:</span> <span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -1190,7 +1190,7 @@ The host application must set auth_mode explicitly:</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Apr 28 11:32:59 2026 by
+  Generated on Wed Apr 29 18:00:19 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

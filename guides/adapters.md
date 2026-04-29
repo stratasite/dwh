@@ -268,6 +268,33 @@ Set `auth_mode: 'oauth_u2m'` and provide `oauth_redirect_uri` in config, then ru
 
 When U2M is active, PKCE is applied automatically by the adapter.
 
+### Large result sets (>25MiB)
+
+Databricks `INLINE` result disposition is limited for large payloads. The adapter uses
+method-driven defaults:
+
+- `execute` uses `INLINE` + `JSON_ARRAY` (in-memory/object style results)
+- `execute_stream` uses `EXTERNAL_LINKS` + `CSV` (large export path)
+
+```ruby
+adapter = DWH.create(:databricks, {
+  host: 'workspace.cloud.databricks.com',
+  auth_mode: 'oauth_m2m',
+  warehouse: 'warehouse_id',
+  oauth_client_id: '<CLIENT_ID>',
+  oauth_client_secret: '<CLIENT_SECRET>'
+})
+
+File.open('export.csv', 'w') do |io|
+  adapter.execute_stream('SELECT * FROM big_table', io)
+end
+```
+
+For low-memory exports, prefer `File`/`Tempfile`/pipes as the IO target. Avoid `StringIO`
+for very large result sets, because it keeps output bytes in memory.
+When using `execute_stream` with EXTERNAL_LINKS CSV, streaming stats/row counts are tracked
+consistently with other adapters (data rows only, header excluded).
+
 ### Migration note
 
 Databricks now requires explicit `auth_mode`.

@@ -332,6 +332,34 @@ Set <code>auth_mode</code> explicitly to select the flow.</p>
 
 <p>When U2M is active, PKCE is applied automatically by the adapter.</p>
 
+<h3 id="large-result-sets-25mib">Large result sets (&gt;25MiB)</h3>
+
+<p>Databricks <code>INLINE</code> result disposition is limited for large payloads. The adapter uses
+method-driven defaults:</p>
+
+<ul>
+<li><code>execute</code> uses <code>INLINE</code> + <code>JSON_ARRAY</code> (in-memory/object style results)</li>
+<li><code>execute_stream</code> uses <code>EXTERNAL_LINKS</code> + <code>CSV</code> (large export path)</li>
+</ul>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_adapter'>adapter</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:databricks</span><span class='comma'>,</span> <span class='lbrace'>{</span>
+  <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>workspace.cloud.databricks.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>auth_mode:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>oauth_m2m</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>warehouse:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>warehouse_id</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>oauth_client_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>&lt;CLIENT_ID&gt;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>oauth_client_secret:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>&lt;CLIENT_SECRET&gt;</span><span class='tstring_end'>&#39;</span></span>
+<span class='rbrace'>}</span><span class='rparen'>)</span>
+
+<span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>export.csv</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>w</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_io'>io</span><span class='op'>|</span>
+  <span class='id identifier rubyid_adapter'>adapter</span><span class='period'>.</span><span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SELECT * FROM big_table</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_io'>io</span><span class='rparen'>)</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>For low-memory exports, prefer <code>File</code>/<code>Tempfile</code>/pipes as the IO target. Avoid <code>StringIO</code>
+for very large result sets, because it keeps output bytes in memory.
+When using <code>execute_stream</code> with EXTERNAL_LINKS CSV, streaming stats/row counts are tracked
+consistently with other adapters (data rows only, header excluded).</p>
+
 <h3 id="migration-note">Migration note</h3>
 
 <p>Databricks now requires explicit <code>auth_mode</code>.</p>
@@ -730,7 +758,7 @@ Set <code>auth_mode</code> explicitly to select the flow.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Apr 28 11:32:57 2026 by
+  Generated on Wed Apr 29 18:00:17 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
