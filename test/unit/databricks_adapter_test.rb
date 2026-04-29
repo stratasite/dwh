@@ -109,59 +109,16 @@ class DatabricksAdapterTest < Minitest::Test
   end
 
   def test_execute_stream_handles_external_links_csv
-    conn = FakeConnection.new(
-      post_responses: [
-        res(200, {
-              statement_id: 'stmt-ext-1',
-              status: { state: 'SUCCEEDED' },
-              manifest: {
-                format: 'CSV',
-                chunks: [{ chunk_index: 0 }]
-              },
-              result: {
-                external_links: [{
-                  chunk_index: 0,
-                  external_link: 'https://external.example/chunk-0',
-                  next_chunk_internal_link: '/api/2.0/sql/statements/stmt-ext-1/result/chunks/1'
-                }]
-              }
-            })
-      ],
-      get_responses: {
-        '/api/2.0/sql/statements/stmt-ext-1/result/chunks/1' => [
-          res(200, {
-                statement_id: 'stmt-ext-1',
-                manifest: {
-                  format: 'CSV'
-                },
-                result: {
-                  external_links: [{
-                    chunk_index: 1,
-                    external_link: 'https://external.example/chunk-1'
-                  }]
-                }
-              })
-        ]
-      }
-    )
+    conn = external_links_csv_connection
     adapter = build_adapter(result_disposition: 'EXTERNAL_LINKS', result_format: 'CSV')
     adapter.define_singleton_method(:connection) { conn }
-    external_client = FakeExternalLinkClient.new(
-      get_responses: {
-        'https://external.example/chunk-0' => [FakeResponse.new(200, "id,name\n1,alpha\n")],
-        'https://external.example/chunk-1' => [FakeResponse.new(200, "2,beta\n")]
-      }
-    )
+    external_client = external_links_csv_client
 
     adapter.stub(:external_link_http_client, external_client) do
       io = StringIO.new
       stats = DWH::StreamingStats.new
       adapter.execute_stream('select * from things', io, stats: stats)
-      payload = JSON.parse(conn.last_post_body)
-      assert_equal "id,name\n1,alpha\n2,beta\n", io.string
-      assert_equal 'EXTERNAL_LINKS', payload['disposition']
-      assert_equal 'CSV', payload['format']
-      assert_equal 2, stats.total_rows
+      assert_external_links_csv_result(conn, io, stats)
     end
   end
 
@@ -576,5 +533,58 @@ class DatabricksAdapterTest < Minitest::Test
 
   def res(status, body)
     FakeResponse.new(status, JSON.generate(body))
+  end
+
+  def external_links_csv_connection
+    FakeConnection.new(
+      post_responses: [
+        res(200, {
+              statement_id: 'stmt-ext-1',
+              status: { state: 'SUCCEEDED' },
+              manifest: {
+                format: 'CSV',
+                chunks: [{ chunk_index: 0 }]
+              },
+              result: {
+                external_links: [{
+                  chunk_index: 0,
+                  external_link: 'https://external.example/chunk-0',
+                  next_chunk_internal_link: '/api/2.0/sql/statements/stmt-ext-1/result/chunks/1'
+                }]
+              }
+            })
+      ],
+      get_responses: {
+        '/api/2.0/sql/statements/stmt-ext-1/result/chunks/1' => [
+          res(200, {
+                statement_id: 'stmt-ext-1',
+                manifest: { format: 'CSV' },
+                result: {
+                  external_links: [{
+                    chunk_index: 1,
+                    external_link: 'https://external.example/chunk-1'
+                  }]
+                }
+              })
+        ]
+      }
+    )
+  end
+
+  def external_links_csv_client
+    FakeExternalLinkClient.new(
+      get_responses: {
+        'https://external.example/chunk-0' => [FakeResponse.new(200, "id,name\n1,alpha\n")],
+        'https://external.example/chunk-1' => [FakeResponse.new(200, "2,beta\n")]
+      }
+    )
+  end
+
+  def assert_external_links_csv_result(conn, io, stats)
+    payload = JSON.parse(conn.last_post_body)
+    assert_equal "id,name\n1,alpha\n2,beta\n", io.string
+    assert_equal 'EXTERNAL_LINKS', payload['disposition']
+    assert_equal 'CSV', payload['format']
+    assert_equal 2, stats.total_rows
   end
 end
