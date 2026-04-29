@@ -272,8 +272,11 @@ module DWH
         collector
       end
 
-      def fetch_external_links_data(result, io:, stats: nil, proc:)
-        raise UnsupportedCapability, "Databricks EXTERNAL_LINKS is supported only for execute_stream. Use result_format: 'CSV' with execute_stream." if io.nil?
+      def fetch_external_links_data(result, io:, proc:, stats: nil)
+        if io.nil?
+          raise UnsupportedCapability,
+                "Databricks EXTERNAL_LINKS is supported only for execute_stream. Use result_format: 'CSV' with execute_stream."
+        end
         raise UnsupportedCapability, 'Databricks EXTERNAL_LINKS does not support stream/yield. Use execute_stream.' if proc
 
         csv_buffer = +''
