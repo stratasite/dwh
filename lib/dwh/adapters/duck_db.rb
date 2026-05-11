@@ -32,7 +32,7 @@ module DWH
               ducked_config[key.to_s] = val
             end
           end
-          @db = DuckDB::Database.open(config[:file], ducked_config)
+          @db = DuckDB::Database.open(config[:file], config: ducked_config)
           self.class.databases[config[:file]] = @db
         end
 
