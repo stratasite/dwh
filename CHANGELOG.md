@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.4.2] - 2026-05-22
+
+### Fixed
+
+- **DuckDB adapter**: Pass connection options with `config:` when opening a database so initialization uses the correct DuckDB API parameter.
+
 ## [0.4.1] - 2026-04-29
 
 ### Added
