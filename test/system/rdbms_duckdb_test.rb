@@ -13,6 +13,15 @@ class RdbmsDuckDbTest < Minitest::Test
     end
   end
 
+  def test_connection_with_duck_config
+    # Regression: verifies the duck_config path (DuckDB::Database.open with config: keyword)
+    # works end-to-end. Requires duckdb gem >= 1.5.0.
+    db_file = File.join(__dir__, '..', 'support', 'duckdb', 'test_db.duckdb')
+    configured = DWH.create(:duckdb, { file: db_file, duck_config: { threads: '1' } })
+    assert configured.connect?, "Connection with duck_config should succeed"
+    assert configured.table?('users')
+  end
+
   def test_get_tables
     res = adapter.tables
     assert_equal 2, res.size
