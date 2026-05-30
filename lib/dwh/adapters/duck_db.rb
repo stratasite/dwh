@@ -85,19 +85,19 @@ module DWH
       # (see Adapter#tables)
       def tables(**qualifiers)
         catalog, schema = qualifiers.values_at(:catalog, :schema)
-        sql = 'SELECT table_name FROM duckdb_tables'
+        schema_filter = schema || config[:schema]
 
-        where = []
+        where = ["schema_name = '#{schema_filter}'"]
         where << "database_name = '#{catalog}'" if catalog
+        condition = where.join(' AND ')
 
-        where << if schema
-                   "schema_name = '#{schema}'"
-                 else
-                   "schema_name = '#{config[:schema]}'"
-                 end
+        sql = <<~SQL
+          SELECT table_name FROM duckdb_tables WHERE #{condition}
+          UNION ALL
+          SELECT view_name  FROM duckdb_views  WHERE #{condition}
+        SQL
 
-        res = execute("#{sql} WHERE #{where.join(' AND ')}")
-        res.flatten
+        execute(sql).flatten
       end
 
       # (see Adapter#stats)

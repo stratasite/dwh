@@ -24,9 +24,10 @@ class RdbmsDuckDbTest < Minitest::Test
 
   def test_get_tables
     res = adapter.tables
-    assert_equal 2, res.size
+    assert_equal 3, res.size  # users, posts (tables) + active_users (view)
 
     assert adapter.table?('users')
+    assert adapter.table?('active_users')
     refute adapter.table?('notinthedb')
   end
 
@@ -49,8 +50,9 @@ class RdbmsDuckDbTest < Minitest::Test
 
   def test_get_tables_for_another_schema
     tbls = adapter.tables(schema: 'alt')
-    assert_equal 1, tbls.size
+    assert_equal 2, tbls.size  # users2 (table) + recent_posts (view)
     assert(tbls.any? { it == 'users2' })
+    assert(tbls.any? { it == 'recent_posts' })
   end
 
   def test_get_md_other_schema_table
