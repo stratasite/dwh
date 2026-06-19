@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+## [0.5.0] - 2026-06-19
+
+### Added
+
+- ClickHouse adapter with dedicated settings and test coverage for system and adapter behavior.
+
+### Changed
+
+- Added dialect-specific reserved keywords and aggregate functions for ClickHouse, Snowflake, and Databricks expression parsing.
+
 ## [0.4.2] - 2026-05-22
 
 ### Fixed

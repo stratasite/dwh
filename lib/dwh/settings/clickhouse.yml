@@ -1,0 +1,129 @@
+# ClickHouse adapter settings
+# Only overrides that differ from base.yml are listed here.
+
+# ClickHouse uses backticks for identifier quoting (same as MySQL).
+quote: "`@exp`"
+
+# Date literals
+date_literal: "toDate('@val')"
+date_time_literal: "toDateTime('@val')"
+
+# ClickHouse date arithmetic uses interval syntax compatible with SQL standard.
+date_add: "(@exp + INTERVAL @val @unit)"
+# dateDiff(unit, start, end) — note the argument order (start before end)
+date_diff: "dateDiff('@unit', @start_exp, @end_exp)"
+
+# DATE_TRUNC is supported in modern ClickHouse (v22+) as date_trunc.
+truncate_date: "date_trunc('@unit', @exp)"
+
+# ClickHouse date format function
+date_format_sql: "formatDateTime(@exp, '@format')"
+
+# ClickHouse date-part extraction
+extract_year:         'toYear(@exp)'
+extract_month:        'toMonth(@exp)'
+extract_quarter:      'toQuarter(@exp)'
+extract_day_of_year:  'toDayOfYear(@exp)'
+extract_day_of_month: 'toDayOfMonth(@exp)'
+extract_day_of_week:  'toDayOfWeek(@exp)'
+extract_week_of_year: 'toWeek(@exp)'
+extract_hour:         'toHour(@exp)'
+extract_minute:       'toMinute(@exp)'
+extract_year_month:   'CAST((toString(toYear(@exp)) || lpad(toString(toMonth(@exp)), 2, ''0'')) AS Int32)'
+
+# ClickHouse week-start helpers
+sunday_week_start_day: "toMonday((@exp + INTERVAL 1 DAY)) - INTERVAL 1 DAY"
+monday_week_start_day: "toMonday(@exp)"
+
+# Current time functions
+current_date:      "today()"
+current_timestamp: "now()"
+# current_time is less commonly used; now() returns a DateTime.
+current_time:      "now()"
+
+# Null handling — ClickHouse-native forms
+if_null:     "ifNull(@exp, @when_null)"
+null_if:     "nullIf(@exp, @target)"
+null_if_zero: "nullIf(@exp, 0)"
+
+# Array operations — ClickHouse uses hasAny / NOT hasAny
+array_in_list:     "hasAny(@exp, [@list])"
+array_exclude_list: "NOT hasAny(@exp, [@list])"
+array_unnest_join:  "ARRAY JOIN @exp AS @alias"
+
+# Capabilities
+# ClickHouse supports CTEs (WITH clause) but not CREATE TEMPORARY TABLE.
+supports_temp_tables: false
+temp_table_type: "cte"
+# Window functions supported since v21.x
+supports_window_functions: true
+supports_array_functions: true
+supports_common_table_expressions: true
+supports_full_join: true
+
+# ClickHouse-specific reserved keywords not in the standard baseline.
+extra_reserved_keywords:
+  - prewhere
+  - final
+  - sample
+  - totals
+  - rollup
+  - cube
+  - tuple
+  - array
+  - fixedstring
+  - lowcardinality
+  - nullable
+  - enum
+  - uuid
+  - ipv4
+  - ipv6
+
+# ClickHouse-specific aggregate functions not in the standard baseline.
+extra_aggregate_functions:
+  - uniq
+  - uniqexact
+  - uniqhll12
+  - uniqcombined
+  - uniqthetasketch
+  - quantile
+  - quantileexact
+  - quantileexactweighted
+  - quantiles
+  - quantilestdigest
+  - quantiletiming
+  - quantilebfloat16
+  - argmax
+  - argmin
+  - sumif
+  - countif
+  - avgif
+  - maxif
+  - minif
+  - anyif
+  - anylazyif
+  - sumarray
+  - grouparray
+  - grouparrayinsertat
+  - grouparraysample
+  - groupuniqarray
+  - skewpop
+  - skewsamp
+  - kurtpop
+  - kurtsamp
+  - entropy
+  - simplelinearregression
+  - stochasticlinearregression
+  - stochasticlogisticregression
+  - categoricaldistancefunctions
+  - any
+  - anylast
+  - anyheavy
+  - first_value
+  - last_value
+  - topk
+  - topkweighted
+  - singlevalueorempty
+  - deltasum
+  - deltasumtimestamp
+  - exponentialmovingaverage
