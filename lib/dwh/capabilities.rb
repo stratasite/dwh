@@ -4,6 +4,26 @@ module DWH
   # all ANSI SQL features.  This minimal at this point and focused
   # on analytical Query use cases for Strata [https://www.strata.site]
   module Capabilities
+    # Returns the full reserved-keyword set for this adapter instance.
+    def reserved_keywords
+      self.class.reserved_keywords
+    end
+
+    # Returns the full aggregate-function set for this adapter instance.
+    def aggregate_functions
+      self.class.aggregate_functions
+    end
+
+    # Is the given identifier a reserved keyword for this adapter?
+    def reserved?(name)
+      reserved_keywords.include?(name.to_s.downcase)
+    end
+
+    # Is the given function name an aggregate for this adapter?
+    def aggregate_function?(name)
+      aggregate_functions.include?(name.to_s.downcase)
+    end
+
     def supports_table_join?
       settings[:supports_table_join]
     end

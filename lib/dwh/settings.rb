@@ -79,5 +79,23 @@ module DWH
     def using_base_settings?
       @using_base
     end
+
+    # Returns the full reserved-keyword list for this adapter class
+    # (baseline from base.yml merged with any extra_reserved_keywords from the
+    # adapter's own settings file). Safe to call at class level without an instance.
+    def reserved_keywords
+      base  = Array(adapter_settings[:reserved_keywords])
+      extra = Array(adapter_settings[:extra_reserved_keywords])
+      (base + extra).map { |k| k.to_s.downcase }.uniq.freeze
+    end
+
+    # Returns the full aggregate-function list for this adapter class
+    # (baseline from base.yml merged with any extra_aggregate_functions from the
+    # adapter's own settings file). Safe to call at class level without an instance.
+    def aggregate_functions
+      base  = Array(adapter_settings[:aggregate_functions])
+      extra = Array(adapter_settings[:extra_aggregate_functions])
+      (base + extra).map { |k| k.to_s.downcase }.uniq.freeze
+    end
   end
 end
