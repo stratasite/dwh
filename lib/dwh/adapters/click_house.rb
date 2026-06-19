@@ -57,14 +57,14 @@ module DWH
         false
       end
 
-      def tables(catalog: nil, schema: nil)
-        db = schema || database
+      def tables(**qualifiers)
+        db = qualifiers[:schema] || database
         sql = "SELECT name FROM system.tables WHERE database = '#{db}' AND engine NOT IN ('View', 'MaterializedView')"
         execute_raw(sql)['data'].flatten
       end
 
-      def metadata(table, catalog: nil, schema: nil)
-        db = schema || database
+      def metadata(table, **qualifiers)
+        db = qualifiers[:schema] || database
         full_table = db ? "#{db}.#{table}" : table
         # DESCRIBE returns: name, type, default_type, default_expression, comment, codec_expression, ttl_expression
         res = execute_raw("DESCRIBE TABLE #{full_table}")
@@ -75,8 +75,8 @@ module DWH
         db_table
       end
 
-      def stats(table, date_column: nil, catalog: nil, schema: nil)
-        db = schema || database
+      def stats(table, date_column: nil, **qualifiers)
+        db = qualifiers[:schema] || database
         full_table = db ? "#{db}.#{table}" : table
         sql = +"SELECT count() AS row_count"
         sql << ", min(#{date_column}) AS date_start, max(#{date_column}) AS date_end" if date_column

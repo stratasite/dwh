@@ -97,5 +97,13 @@ module DWH
       extra = Array(adapter_settings[:extra_aggregate_functions])
       (base + extra).map { |k| k.to_s.downcase }.uniq.freeze
     end
+
+    def reserved?(name)
+      reserved_keywords.include?(name.to_s.downcase)
+    end
+
+    def aggregate_function?(name)
+      aggregate_functions.include?(name.to_s.downcase)
+    end
   end
 end
