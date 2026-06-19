@@ -33,11 +33,11 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 - **PostgreSQL** - Full-featured RDBMS with advanced SQL support
 - **MySQL** - Popular open-source database
 - **SQL Server** - Microsoft's enterprise database
+- **ClickHouse** - High performance analytical database
+- **Databricks** - Lakehouse SQL warehouse
 
 ## Integrations Coming Soon
 
-- **ClickHouse** - High performance analytical db
-- **Databricks** - Big data compute engine
 - **MotherDuck** - Hosted DuckDB service
 
 ## Quick Start
@@ -137,4 +137,4 @@ This project is available as open source under the terms of the MIT License.
 
 ## Version
 
-Current version: 0.1.0
+Current version: 0.5.0
