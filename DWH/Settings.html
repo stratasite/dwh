@@ -215,6 +215,51 @@ with its own yaml files.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#aggregate_function%3F-instance_method" title="#aggregate_function? (instance method)">#<strong>aggregate_function?</strong>(name)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#aggregate_functions-instance_method" title="#aggregate_functions (instance method)">#<strong>aggregate_functions</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Returns the full aggregate-function list for this adapter class (baseline from base.yml merged with any extra_aggregate_functions from the adapter&#39;s own settings file).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#load_settings-instance_method" title="#load_settings (instance method)">#<strong>load_settings</strong>  &#x21d2; Object </a>
     
 
@@ -230,6 +275,51 @@ with its own yaml files.</p>
 
   
     <span class="summary_desc"><div class='inline'><p>This will load adapter level settings.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reserved%3F-instance_method" title="#reserved? (instance method)">#<strong>reserved?</strong>(name)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reserved_keywords-instance_method" title="#reserved_keywords (instance method)">#<strong>reserved_keywords</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Returns the full reserved-keyword list for this adapter class (baseline from base.yml merged with any extra_reserved_keywords from the adapter&#39;s own settings file).</p>
 </div></span>
   
 </li>
@@ -402,6 +492,104 @@ load_settings hasn&#39;t been called.</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="aggregate_function?-instance_method">
+  
+    #<strong>aggregate_function?</strong>(name)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+105
+106
+107</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/settings.rb', line 105</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_aggregate_function?'>aggregate_function?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_aggregate_functions'>aggregate_functions</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="aggregate_functions-instance_method">
+  
+    #<strong>aggregate_functions</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns the full aggregate-function list for this adapter class
+(baseline from base.yml merged with any extra_aggregate_functions from the
+adapter&#39;s own settings file). Safe to call at class level without an instance.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+95
+96
+97
+98
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/settings.rb', line 95</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_aggregate_functions'>aggregate_functions</span>
+  <span class='id identifier rubyid_base'>base</span>  <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_settings'>adapter_settings</span><span class='lbracket'>[</span><span class='symbol'>:aggregate_functions</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_extra'>extra</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_settings'>adapter_settings</span><span class='lbracket'>[</span><span class='symbol'>:extra_aggregate_functions</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span> <span class='op'>+</span> <span class='id identifier rubyid_extra'>extra</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='op'>|</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="load_settings-instance_method">
   
     #<strong>load_settings</strong>  &#x21d2; <tt>Object</tt> 
@@ -475,6 +663,104 @@ an adapter is initialized.</p>
   <span class='kw'>rescue</span> <span class='const'>StandardError</span>
     <span class='id identifier rubyid_key'>key</span>
   <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reserved?-instance_method">
+  
+    #<strong>reserved?</strong>(name)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+101
+102
+103</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/settings.rb', line 101</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reserved?'>reserved?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_reserved_keywords'>reserved_keywords</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reserved_keywords-instance_method">
+  
+    #<strong>reserved_keywords</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns the full reserved-keyword list for this adapter class
+(baseline from base.yml merged with any extra_reserved_keywords from the
+adapter&#39;s own settings file). Safe to call at class level without an instance.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+86
+87
+88
+89
+90</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/settings.rb', line 86</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reserved_keywords'>reserved_keywords</span>
+  <span class='id identifier rubyid_base'>base</span>  <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_settings'>adapter_settings</span><span class='lbracket'>[</span><span class='symbol'>:reserved_keywords</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_extra'>extra</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_settings'>adapter_settings</span><span class='lbracket'>[</span><span class='symbol'>:extra_reserved_keywords</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span> <span class='op'>+</span> <span class='id identifier rubyid_extra'>extra</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='op'>|</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -653,7 +939,7 @@ been loaded.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri May 22 17:46:52 2026 by
+  Generated on Fri Jun 19 13:16:46 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

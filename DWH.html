@@ -84,7 +84,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/dwh.rb<span class="defines">,<br />
-  lib/dwh/table.rb,<br /> lib/dwh/column.rb,<br /> lib/dwh/errors.rb,<br /> lib/dwh/logger.rb,<br /> lib/dwh/factory.rb,<br /> lib/dwh/version.rb,<br /> lib/dwh/adapters.rb,<br /> lib/dwh/settings.rb,<br /> lib/dwh/behaviors.rb,<br /> lib/dwh/functions.rb,<br /> lib/dwh/table_stats.rb,<br /> lib/dwh/token_store.rb,<br /> lib/dwh/capabilities.rb,<br /> lib/dwh/adapters/druid.rb,<br /> lib/dwh/adapters/trino.rb,<br /> lib/dwh/adapters/athena.rb,<br /> lib/dwh/adapters/my_sql.rb,<br /> lib/dwh/adapters/sqlite.rb,<br /> lib/dwh/functions/dates.rb,<br /> lib/dwh/functions/nulls.rb,<br /> lib/dwh/streaming_stats.rb,<br /> lib/dwh/adapters/duck_db.rb,<br /> lib/dwh/functions/arrays.rb,<br /> lib/dwh/adapters/postgres.rb,<br /> lib/dwh/adapters/redshift.rb,<br /> lib/dwh/adapters/snowflake.rb,<br /> lib/dwh/adapters/databricks.rb,<br /> lib/dwh/adapters/sql_server.rb,<br /> lib/dwh/adapters/token_manageable.rb,<br /> lib/dwh/adapters/open_authorizable.rb,<br /> lib/dwh/functions/extract_date_part.rb</span>
+  lib/dwh/table.rb,<br /> lib/dwh/column.rb,<br /> lib/dwh/errors.rb,<br /> lib/dwh/logger.rb,<br /> lib/dwh/factory.rb,<br /> lib/dwh/version.rb,<br /> lib/dwh/adapters.rb,<br /> lib/dwh/settings.rb,<br /> lib/dwh/behaviors.rb,<br /> lib/dwh/functions.rb,<br /> lib/dwh/table_stats.rb,<br /> lib/dwh/token_store.rb,<br /> lib/dwh/capabilities.rb,<br /> lib/dwh/adapters/druid.rb,<br /> lib/dwh/adapters/trino.rb,<br /> lib/dwh/adapters/athena.rb,<br /> lib/dwh/adapters/my_sql.rb,<br /> lib/dwh/adapters/sqlite.rb,<br /> lib/dwh/functions/dates.rb,<br /> lib/dwh/functions/nulls.rb,<br /> lib/dwh/streaming_stats.rb,<br /> lib/dwh/adapters/duck_db.rb,<br /> lib/dwh/functions/arrays.rb,<br /> lib/dwh/adapters/postgres.rb,<br /> lib/dwh/adapters/redshift.rb,<br /> lib/dwh/adapters/snowflake.rb,<br /> lib/dwh/adapters/databricks.rb,<br /> lib/dwh/adapters/sql_server.rb,<br /> lib/dwh/adapters/click_house.rb,<br /> lib/dwh/adapters/token_manageable.rb,<br /> lib/dwh/adapters/open_authorizable.rb,<br /> lib/dwh/functions/extract_date_part.rb</span>
 </dd>
   </dl>
   
@@ -172,7 +172,7 @@
         <dt id="VERSION-constant" class="">VERSION =
           
         </dt>
-        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0.4.2</span><span class='tstring_end'>&#39;</span></span></pre></dd>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0.5.0</span><span class='tstring_end'>&#39;</span></span></pre></dd>
       
     </dl>
   
@@ -183,6 +183,86 @@
 
 
 
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#aggregate_functions-class_method" title="aggregate_functions (class method)">.<strong>aggregate_functions</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Baseline aggregate functions shared by all adapters (from base.yml).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#base_settings-class_method" title="base_settings (class method)">.<strong>base_settings</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The raw base.yml settings, loaded once.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reserved_keywords-class_method" title="reserved_keywords (class method)">.<strong>reserved_keywords</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Baseline reserved keywords shared by all adapters (from base.yml).</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
 
   
   
@@ -190,7 +270,7 @@
   
   
   
-  <h2>Method Summary</h2>
+  
   
   <h3 class="inherited">Methods included from <span class='object_link'><a href="DWH/Factory.html" title="DWH::Factory (module)">Factory</a></span></h3>
   <p class="inherited"><span class='object_link'><a href="DWH/Factory.html#adapter%3F-instance_method" title="DWH::Factory#adapter? (method)">adapter?</a></span>, <span class='object_link'><a href="DWH/Factory.html#adapters-instance_method" title="DWH::Factory#adapters (method)">adapters</a></span>, <span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span>, <span class='object_link'><a href="DWH/Factory.html#get_adapter-instance_method" title="DWH::Factory#get_adapter (method)">get_adapter</a></span>, <span class='object_link'><a href="DWH/Factory.html#pool-instance_method" title="DWH::Factory#pool (method)">pool</a></span>, <span class='object_link'><a href="DWH/Factory.html#pools-instance_method" title="DWH::Factory#pools (method)">pools</a></span>, <span class='object_link'><a href="DWH/Factory.html#register-instance_method" title="DWH::Factory#register (method)">register</a></span>, <span class='object_link'><a href="DWH/Factory.html#shutdown-instance_method" title="DWH::Factory#shutdown (method)">shutdown</a></span>, <span class='object_link'><a href="DWH/Factory.html#start_reaper-instance_method" title="DWH::Factory#start_reaper (method)">start_reaper</a></span>, <span class='object_link'><a href="DWH/Factory.html#unregister-instance_method" title="DWH::Factory#unregister (method)">unregister</a></span></p>
@@ -207,10 +287,139 @@
   <p class="inherited"><span class='object_link'><a href="DWH/Logger.html#logger-instance_method" title="DWH::Logger#logger (method)">#logger</a></span>, <span class='object_link'><a href="DWH/Logger.html#logger-class_method" title="DWH::Logger.logger (method)">logger</a></span></p>
 
 
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="aggregate_functions-class_method">
+  
+    .<strong>aggregate_functions</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Baseline aggregate functions shared by all adapters (from base.yml).
+Per-adapter sets (adapter.aggregate_functions) extend this.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+72
+73
+74</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh.rb', line 72</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_aggregate_functions'>aggregate_functions</span>
+  <span class='ivar'>@aggregate_functions</span> <span class='op'>||=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_base_settings'>base_settings</span><span class='lbracket'>[</span><span class='symbol'>:aggregate_functions</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='op'>|</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="base_settings-class_method">
+  
+    .<strong>base_settings</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The raw base.yml settings, loaded once. This is the single source of
+truth for the standard, warehouse-agnostic dialect baseline.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+60
+61
+62</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh.rb', line 60</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_base_settings'>base_settings</span>
+  <span class='ivar'>@base_settings</span> <span class='op'>||=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="DWH/Settings.html" title="DWH::Settings (module)">Settings</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DWH/Settings.html#BASE_SETTINGS_FILE-constant" title="DWH::Settings::BASE_SETTINGS_FILE (constant)">BASE_SETTINGS_FILE</a></span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_transform_keys'>transform_keys</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_sym</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reserved_keywords-class_method">
+  
+    .<strong>reserved_keywords</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Baseline reserved keywords shared by all adapters (from base.yml).
+Per-adapter sets (adapter.reserved_keywords) extend this.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+66
+67
+68</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh.rb', line 66</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_reserved_keywords'>reserved_keywords</span>
+  <span class='ivar'>@reserved_keywords</span> <span class='op'>||=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_base_settings'>base_settings</span><span class='lbracket'>[</span><span class='symbol'>:reserved_keywords</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='op'>|</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
 </div>
 
       <div id="footer">
-  Generated on Fri May 22 17:46:52 2026 by
+  Generated on Fri Jun 19 13:16:46 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
