@@ -31,23 +31,32 @@ module DWH
     end
 
     def normalized_data_type
-      case data_type
+      # Strip ClickHouse type wrappers (Nullable(T), LowCardinality(T), Array(T))
+      # so the inner type is matched by the rules below.
+      inner = unwrap_type(data_type)
+
+      case inner
       when /binary/, 'image'
         'binary'
-      when /varchar/, 'string', /text/, /char/
+      when /varchar/, 'string', /text/, /char/, /fixedstring/
         'string'
-      when 'date'
+      when 'date', 'date32'
         'date'
       when /date_time/, /datetime/, 'time', /timestamp/
         'date_time'
-      when 'int', 'integer', 'smallint', 'tinyint'
+      when 'int', 'integer', 'smallint', 'tinyint', /^int8$/, /^int16$/, /^int32$/,
+           /^uint8$/, /^uint16$/, /^uint32$/
         'integer'
-      when 'bigint', 'bit_int', 'big_integer'
+      when 'bigint', 'bit_int', 'big_integer', /^int64$/, /^int128$/, /^int256$/,
+           /^uint64$/, /^uint128$/, /^uint256$/
         'bigint'
-      when 'decimal', 'double', 'float', 'real', 'dec', 'numeric', 'money'
+      when 'decimal', 'double', 'float', 'real', 'dec', 'numeric', 'money',
+           /^float32$/, /^float64$/, /^decimal/
         'decimal'
-      when 'boolean', 'bit'
+      when 'boolean', 'bit', 'bool'
         'boolean'
+      when 'uuid'
+        'string'
       when 'number'
         if precision >= 38 && scale.zero?
           'bigint'
@@ -74,6 +83,17 @@ module DWH
 
     def to_s
       "<Column:#{name}:#{data_type}>"
+    end
+
+    # Strips ClickHouse parameterized wrappers like Nullable(T), LowCardinality(T),
+    # Array(T) so the inner type can be normalised by the standard rules above.
+    # Safe to call on any type string; returns the input unchanged if no wrapper matches.
+    def unwrap_type(type)
+      inner = type.to_s.downcase
+      inner = inner.sub(/\Anullable\((.+)\)\z/, '\1')
+      inner = inner.sub(/\Alowcardinality\((.+)\)\z/, '\1')
+      inner = inner.sub(/\Aarray\((.+)\)\z/, '\1')
+      inner
     end
 
     def titleize(name)

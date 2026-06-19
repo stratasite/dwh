@@ -20,6 +20,7 @@ require_relative 'dwh/adapters/sqlite'
 require_relative 'dwh/adapters/athena'
 require_relative 'dwh/adapters/redshift'
 require_relative 'dwh/adapters/databricks'
+require_relative 'dwh/adapters/click_house'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -52,6 +53,25 @@ module DWH
   register(:athena, Adapters::Athena)
   register(:redshift, Adapters::Redshift)
   register(:databricks, Adapters::Databricks)
+  register(:clickhouse, Adapters::ClickHouse)
+
+  # The raw base.yml settings, loaded once. This is the single source of
+  # truth for the standard, warehouse-agnostic dialect baseline.
+  def self.base_settings
+    @base_settings ||= YAML.load_file(Settings::BASE_SETTINGS_FILE).transform_keys(&:to_sym)
+  end
+
+  # Baseline reserved keywords shared by all adapters (from base.yml).
+  # Per-adapter sets (adapter.reserved_keywords) extend this.
+  def self.reserved_keywords
+    @reserved_keywords ||= Array(base_settings[:reserved_keywords]).map { |k| k.to_s.downcase }.uniq.freeze
+  end
+
+  # Baseline aggregate functions shared by all adapters (from base.yml).
+  # Per-adapter sets (adapter.aggregate_functions) extend this.
+  def self.aggregate_functions
+    @aggregate_functions ||= Array(base_settings[:aggregate_functions]).map { |k| k.to_s.downcase }.uniq.freeze
+  end
 
   # start_reaper
 end
