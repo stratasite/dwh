@@ -43,3 +43,18 @@ array_unnest_join: "LATERAL FLATTEN(INPUT => @exp) @alias"
 # null handling
 if_null: "NVL(@exp, @when_null)"
 null_if_zero: "NULLIFZERO(@exp)"
+
+# Snowflake-specific reserved keywords not in the standard baseline.
+extra_reserved_keywords:
+  - qualify
+  - pivot
+  - unpivot
+  - iff
+  - nvl
+  - decode
+
+# Snowflake-specific aggregate functions not in the standard baseline.
+extra_aggregate_functions:
+  - boolor_agg
+  - booland_agg
+  - approx_percentile

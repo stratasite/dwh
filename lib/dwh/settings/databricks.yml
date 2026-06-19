@@ -48,3 +48,14 @@ array_in_list: "EXISTS(@exp, x -> x IN (@list))"
 array_exclude_list: "NOT EXISTS(@exp, x -> x IN (@list))"
 array_unnest_join: "LATERAL VIEW EXPLODE(@exp) AS @alias"
 
+# Databricks-specific reserved keywords not in the standard baseline.
+extra_reserved_keywords:
+  - qualify
+
+# Databricks-specific aggregate functions not in the standard baseline.
+extra_aggregate_functions:
+  - collect_list
+  - collect_set
+  - percentile_approx
+  - approx_percentile
+
