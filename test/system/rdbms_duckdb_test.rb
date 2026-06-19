@@ -18,13 +18,13 @@ class RdbmsDuckDbTest < Minitest::Test
     # works end-to-end. Requires duckdb gem >= 1.5.0.
     db_file = File.join(__dir__, '..', 'support', 'duckdb', 'test_db.duckdb')
     configured = DWH.create(:duckdb, { file: db_file, duck_config: { threads: '1' } })
-    assert configured.connect?, "Connection with duck_config should succeed"
+    assert configured.connect?, 'Connection with duck_config should succeed'
     assert configured.table?('users')
   end
 
   def test_get_tables
     res = adapter.tables
-    assert_equal 3, res.size  # users, posts (tables) + active_users (view)
+    assert_equal 3, res.size # users, posts (tables) + active_users (view)
 
     assert adapter.table?('users')
     assert adapter.table?('active_users')
@@ -50,7 +50,7 @@ class RdbmsDuckDbTest < Minitest::Test
 
   def test_get_tables_for_another_schema
     tbls = adapter.tables(schema: 'alt')
-    assert_equal 2, tbls.size  # users2 (table) + recent_posts (view)
+    assert_equal 2, tbls.size # users2 (table) + recent_posts (view)
     assert(tbls.any? { it == 'users2' })
     assert(tbls.any? { it == 'recent_posts' })
   end

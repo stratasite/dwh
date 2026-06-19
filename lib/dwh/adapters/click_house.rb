@@ -49,11 +49,13 @@ module DWH
         res = connection.get('/ping')
         unless res.success? && res.body.strip == 'Ok.'
           raise ConnectionError, "ClickHouse ping returned: #{res.body}" if raise_exception
+
           return false
         end
         true
       rescue Faraday::ConnectionFailed => e
         raise ConnectionError, e.message if raise_exception
+
         false
       end
 
@@ -78,7 +80,7 @@ module DWH
       def stats(table, date_column: nil, **qualifiers)
         db = qualifiers[:schema] || database
         full_table = db ? "#{db}.#{table}" : table
-        sql = +"SELECT count() AS row_count"
+        sql = +'SELECT count() AS row_count'
         sql << ", min(#{date_column}) AS date_start, max(#{date_column}) AS date_end" if date_column
         sql << " FROM #{full_table}"
 
@@ -86,7 +88,7 @@ module DWH
         TableStats.new(
           row_count: row[0].to_i,
           date_start: date_column ? safe_parse_date(row[1]) : nil,
-          date_end:   date_column ? safe_parse_date(row[2]) : nil
+          date_end: date_column ? safe_parse_date(row[2]) : nil
         )
       end
 
@@ -95,7 +97,7 @@ module DWH
         format_result(raw, format)
       rescue ExecutionError
         raise
-      rescue => e
+      rescue StandardError => e
         raise ExecutionError, e.message
       end
 
@@ -115,7 +117,7 @@ module DWH
         io
       rescue ExecutionError
         raise
-      rescue => e
+      rescue StandardError => e
         raise ExecutionError, e.message
       end
 
@@ -133,6 +135,7 @@ module DWH
           req.body = "#{sql} FORMAT #{QUERY_FORMAT}"
         end
         raise ExecutionError, "ClickHouse error: #{resp.body}" unless resp.success?
+
         JSON.parse(resp.body)
       rescue Faraday::Error => e
         raise ExecutionError, e.message
@@ -159,6 +162,7 @@ module DWH
 
       def safe_parse_date(val)
         return nil if val.nil? || val.to_s.empty?
+
         Date.parse(val.to_s)
       rescue Date::Error
         nil

@@ -92,8 +92,7 @@ module DWH
       inner = type.to_s.downcase
       inner = inner.sub(/\Anullable\((.+)\)\z/, '\1')
       inner = inner.sub(/\Alowcardinality\((.+)\)\z/, '\1')
-      inner = inner.sub(/\Aarray\((.+)\)\z/, '\1')
-      inner
+      inner.sub(/\Aarray\((.+)\)\z/, '\1')
     end
 
     def titleize(name)

@@ -6,10 +6,10 @@ require 'test_helper'
 class ClickHouseSystemTest < Minitest::Test
   def adapter
     @adapter ||= DWH.create(:clickhouse, {
-      host: 'localhost',
-      port: 8123,
-      database: 'test_db'
-    })
+                              host: 'localhost',
+                              port: 8123,
+                              database: 'test_db'
+                            })
   end
 
   def test_ping
