@@ -69,12 +69,13 @@ module DWH
     # Create a pool of connections for a given name and adapter.
     # Returns existing pool if it was already created.
     #
-    # @param name [String] custom name for your pool
+    # @param name [String, Symbol] custom name for your pool (stored as String)
     # @param adapter_name [String, Symbol]
     # @param config [Hash] connection options
     # @param timeout [Integer] pool checkout time out
     # @param size [Integer] size of the pool
     def pool(name, adapter_name, config, timeout: 5, size: 10)
+      name = name.to_s
       pool_mutex.synchronize do
         if pools.key?(name)
           pools[name]
@@ -90,19 +91,26 @@ module DWH
     # @param pool [String, Symbol, ConnectionPool, nil] pool or name of pool
     #   or nil to shut everything down
     def shutdown(pool = nil)
-      case pool
-      when String, Symbol
-        # Delete first so a raising close cannot leave a dead pool in the map.
-        pools.delete(pool.to_s)&.shutdown { it.close }
-      when ConnectionPool
-        key = pools.key(pool)
-        pools.delete(key) if key
-        pool.shutdown { it.close }
-      else
-        to_close = pools.values
-        @pools = {}
-        to_close.each { |p| p.shutdown { it.close } }
+      # Mutate the map under the same mutex as pool creation so a concurrent
+      # create cannot be orphaned by @pools = {} / delete racing it.
+      # Close outside the lock — ConnectionPool#shutdown can wait on check-in.
+      to_close = pool_mutex.synchronize do
+        case pool
+        when String, Symbol
+          # Delete first so a raising close cannot leave a dead pool in the map.
+          removed = pools.delete(pool.to_s)
+          removed ? [removed] : []
+        when ConnectionPool
+          key = pools.key(pool)
+          pools.delete(key) if key
+          [pool]
+        else
+          closing = pools.values
+          @pools = {}
+          closing
+        end
       end
+      to_close.each { |p| p.shutdown { it.close } }
     end
 
     # Start reaper that will periodically clean up

@@ -78,6 +78,28 @@ class FactoryPoolTest < Minitest::Test
     assert conn.closed
   end
 
+  def test_pool_stores_symbol_name_as_string_and_shutdown_finds_it
+    # pool used to store the key as given; shutdown looked up to_s — Symbol entries survived.
+    pool = DWH.pool(:sym_key, 'fake_adapter', {}, timeout: 1, size: 2)
+    conn = pool.with { |c| c }
+
+    assert DWH.pools.key?('sym_key'), 'pool name must be normalized to String'
+    refute DWH.pools.key?(:sym_key)
+
+    DWH.shutdown(:sym_key)
+
+    refute DWH.pools.key?('sym_key')
+    assert conn.closed
+  end
+
+  def test_pool_symbol_and_string_names_share_the_same_pool
+    a = DWH.pool(:shared, 'fake_adapter', {}, timeout: 1, size: 2)
+    b = DWH.pool('shared', 'fake_adapter', {}, timeout: 1, size: 2)
+
+    assert a.equal?(b)
+    assert_equal 1, DWH.pools.size
+  end
+
   def test_shutdown_by_pool_object_removes_pool_and_closes_live_connection
     pool = make_pool('by-object')
     conn = pool.with { |c| c }
