@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+## [0.5.1] - 2026-08-03
+
+### Fixed
+
+- **Factory#shutdown**: `case pool.class` never matched (every call fell into `else`); undefined `c` NameError when closing live connections; symbol branch called `delete` on the pool instead of the map. Shutdown now matches on the argument, removes the map entry before closing, and tolerates unknown names.
+- **Factory#pool**: check-then-set race could orphan a pool under concurrent first-use; creation is now mutex-guarded.
+- **Factory#start_reaper**: no longer checks out a connection just to log stats (which created connections and reset idle clocks); Idle/Available labels use `pool.idle` / `pool.available`; iterates a snapshot; rescues `PoolShuttingDownError` per pool so a retired pool cannot kill the reaper thread.
+- **DuckDb#close**: use `@connection&.disconnect` so closing an already-closed adapter does not open a new connection.
+- **DuckDb.close_all**: close then clear instead of deleting while iterating (which could skip entries).
+
 ## [0.5.0] - 2026-06-19
 
 ### Added

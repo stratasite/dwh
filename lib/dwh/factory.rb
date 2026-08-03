@@ -46,6 +46,11 @@ module DWH
       @pools ||= {}
     end
 
+    # Mutex guarding pool creation / map mutation.
+    def pool_mutex
+      @pool_mutex ||= Mutex.new
+    end
+
     # The canonical way of creating an adapter instance
     # in DWH.
     # @param adapter_name [String, Symbol]
@@ -70,55 +75,65 @@ module DWH
     # @param timeout [Integer] pool checkout time out
     # @param size [Integer] size of the pool
     def pool(name, adapter_name, config, timeout: 5, size: 10)
-      if pools.key?(name)
-        pools[name]
-      else
-        pools[name] = ConnectionPool.new(size: size, timeout: timeout) do
-          create(adapter_name, config)
+      pool_mutex.synchronize do
+        if pools.key?(name)
+          pools[name]
+        else
+          pools[name] = ConnectionPool.new(size: size, timeout: timeout) do
+            create(adapter_name, config)
+          end
         end
       end
     end
 
     # Shutdown a specific pool or all pools
-    # @param pool [String, ConnectionPool, nil] pool or name of pool
+    # @param pool [String, Symbol, ConnectionPool, nil] pool or name of pool
     #   or nil to shut everything down
     def shutdown(pool = nil)
-      case pool.class
-      when String
-        pools[pool].shutdown { it.close }
-        pools.delete(pool)
-      when Symbol
-        pools[pool.to_s].shutdown { it.close }
-        pools[pool.to_s].delete
+      case pool
+      when String, Symbol
+        # Delete first so a raising close cannot leave a dead pool in the map.
+        pools.delete(pool.to_s)&.shutdown { it.close }
       when ConnectionPool
+        key = pools.key(pool)
+        pools.delete(key) if key
         pool.shutdown { it.close }
-        pools.delete(pools.key(pool))
       else
-        pools.each_value do |val|
-          val.shutdown { c.close }
-        end
+        to_close = pools.values
         @pools = {}
+        to_close.each { |p| p.shutdown { it.close } }
       end
     end
 
     # Start reaper that will periodically clean up
     # unused or idle connections.
     # @param frequency [Integer] defaults to 300 seconds
+    # @return [Thread] the reaper thread
     def start_reaper(frequency = 300)
       logger.info 'Starting DB Adapter reaper process'
       Thread.new do
         loop do
-          pools.each do |name, pool|
-            logger.info "DB POOL FOR #{name} STATS:"
-            pool.with do
-              logger.info "\tSize:      #{pool.size}"
-              logger.info "\tIdle:      #{pool.available}"
-              logger.info "\tAvailable: #{pool.available}"
-            end
-            pool.reap(frequency) { it.close }
-          end
+          reaper_tick(frequency)
           sleep frequency
         end
+      end
+    end
+
+    # One reaper cycle: log pool stats (without checking out) and reap idle connections.
+    # Safe to call from tests; rescues per-pool so a shut-down pool cannot kill the loop.
+    # @param frequency [Integer] idle threshold passed to ConnectionPool#reap
+    def reaper_tick(frequency = 300)
+      # Snapshot so concurrent shutdown deletions do not mutate while we iterate.
+      pools.to_a.each do |name, pool|
+        logger.info "DB POOL FOR #{name} STATS:"
+        logger.info "\tSize:      #{pool.size}"
+        logger.info "\tIdle:      #{pool.idle}"
+        logger.info "\tAvailable: #{pool.available}"
+        pool.reap(frequency) { it.close }
+      rescue ConnectionPool::PoolShuttingDownError => e
+        logger.info "Skipping reaper for pool #{name}: #{e.class}"
+      rescue StandardError => e
+        logger.error "Reaper error for pool #{name}: #{e.class}: #{e.message}"
       end
     end
   end

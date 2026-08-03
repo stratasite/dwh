@@ -56,10 +56,9 @@ module DWH
       # we open one instance but many connections. Use this
       # method to close them all.
       def self.close_all
-        databases.each do |key, db|
-          db.close
-          databases.delete(key)
-        end
+        # Iterate values then clear — mutating the hash while each-ing skips entries.
+        databases.each_value(&:close)
+        databases.clear
       end
 
       # This disconnects the current connection but
@@ -68,7 +67,9 @@ module DWH
       #
       # (see Adapter#close)
       def close
-        connection.disconnect
+        # Use @connection directly: #connection opens a new handle when nil,
+        # which would re-open just to close.
+        @connection&.disconnect
         @connection = nil
       end
 
