@@ -657,17 +657,15 @@ method to close them all.</p>
 59
 60
 61
-62
-63</pre>
+62</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_close_all'>close_all</span>
-  <span class='id identifier rubyid_databases'>databases</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_db'>db</span><span class='op'>|</span>
-    <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
-    <span class='id identifier rubyid_databases'>databases</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
+  <span class='comment'># Iterate values then clear — mutating the hash while each-ing skips entries.
+</span>  <span class='id identifier rubyid_databases'>databases</span><span class='period'>.</span><span class='id identifier rubyid_each_value'>each_value</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:close</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_databases'>databases</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -769,16 +767,20 @@ to.</p>
       <pre class="lines">
 
 
+69
 70
 71
 72
-73</pre>
+73
+74</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 70</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 69</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_close'>close</span>
-  <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_disconnect'>disconnect</span>
+  <span class='comment'># Use @connection directly: #connection opens a new handle when nil,
+</span>  <span class='comment'># which would re-open just to close.
+</span>  <span class='ivar'>@connection</span><span class='op'>&amp;.</span><span class='id identifier rubyid_disconnect'>disconnect</span>
   <span class='ivar'>@connection</span> <span class='op'>=</span> <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -981,7 +983,6 @@ connection object or self</p>
       <pre class="lines">
 
 
-157
 158
 159
 160
@@ -1001,10 +1002,11 @@ connection object or self</p>
 174
 175
 176
-177</pre>
+177
+178</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 157</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 158</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:array</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -1152,7 +1154,6 @@ to the provided IO object.</p>
       <pre class="lines">
 
 
-180
 181
 182
 183
@@ -1168,10 +1169,11 @@ to the provided IO object.</p>
 193
 194
 195
-196</pre>
+196
+197</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 180</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 181</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='id identifier rubyid_io'>io</span><span class='comma'>,</span> <span class='label'>stats:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -1312,7 +1314,6 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-124
 125
 126
 127
@@ -1337,10 +1338,11 @@ will be ignored if the adapter doesn&#39;t support</p>
 146
 147
 148
-149</pre>
+149
+150</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 124</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 125</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_db_table'>db_table</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">Table</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Table.html#initialize-instance_method" title="DWH::Table#initialize (method)">new</a></span></span> <span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span>
@@ -1411,12 +1413,12 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-152
 153
-154</pre>
+154
+155</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 152</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 153</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_schema?'>schema?</span>
   <span class='op'>!</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span><span class='op'>&amp;.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1578,7 +1580,6 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-104
 105
 106
 107
@@ -1595,10 +1596,11 @@ will be ignored if the adapter doesn&#39;t support</p>
 118
 119
 120
-121</pre>
+121
+122</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 104</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 105</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>date_column:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span>
@@ -1699,17 +1701,17 @@ might vary depending on the target db and settings</p>
       <pre class="lines">
 
 
-199
 200
 201
 202
 203
 204
 205
-206</pre>
+206
+207</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 199</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 200</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stream'>stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -1818,7 +1820,6 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-86
 87
 88
 89
@@ -1833,10 +1834,11 @@ will be ignored if the adapter doesn&#39;t support</p>
 98
 99
 100
-101</pre>
+101
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 87</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_catalog'>catalog</span><span class='comma'>,</span> <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_values_at'>values_at</span><span class='lparen'>(</span><span class='symbol'>:catalog</span><span class='comma'>,</span> <span class='symbol'>:schema</span><span class='rparen'>)</span>
@@ -1916,17 +1918,17 @@ connection object or self</p>
       <pre class="lines">
 
 
-76
 77
 78
 79
 80
 81
 82
-83</pre>
+83
+84</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 76</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_test_connection'>test_connection</span><span class='lparen'>(</span><span class='label'>raise_exception:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_connection'>connection</span>
@@ -1978,7 +1980,6 @@ connection object or self</p>
       <pre class="lines">
 
 
-208
 209
 210
 211
@@ -1989,10 +1990,11 @@ connection object or self</p>
 216
 217
 218
-219</pre>
+219
+220</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 208</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/duck_db.rb', line 209</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_valid_config?'>valid_config?</span>
   <span class='kw'>super</span>
@@ -2016,7 +2018,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jun 19 13:19:29 2026 by
+  Generated on Tue Aug  4 00:14:50 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

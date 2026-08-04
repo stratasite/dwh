@@ -237,6 +237,29 @@ are created, loaded, and pooled.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#pool_mutex-instance_method" title="#pool_mutex (instance method)">#<strong>pool_mutex</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Mutex guarding pool creation / map mutation.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#pools-instance_method" title="#pools (instance method)">#<strong>pools</strong>  &#x21d2; Object </a>
     
 
@@ -252,6 +275,29 @@ are created, loaded, and pooled.</p>
 
   
     <span class="summary_desc"><div class='inline'><p>Current active pools.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reaper_tick-instance_method" title="#reaper_tick (instance method)">#<strong>reaper_tick</strong>(frequency = 300)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>One reaper cycle: log pool stats (without checking out) and reap idle connections.</p>
 </div></span>
   
 </li>
@@ -306,7 +352,7 @@ are created, loaded, and pooled.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#start_reaper-instance_method" title="#start_reaper (instance method)">#<strong>start_reaper</strong>(frequency = 300)  &#x21d2; Object </a>
+      <a href="#start_reaper-instance_method" title="#start_reaper (instance method)">#<strong>start_reaper</strong>(frequency = 300)  &#x21d2; Thread </a>
     
 
     
@@ -556,12 +602,12 @@ in DWH.</p>
       <pre class="lines">
 
 
-60
-61
-62</pre>
+65
+66
+67</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 60</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 65</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_name'>adapter_name</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_get_adapter'>get_adapter</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_name'>adapter_name</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span>
@@ -656,12 +702,12 @@ Returns existing pool if it was already created.</p>
         <span class='name'>name</span>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>custom name for your pool</p>
+        <div class='inline'><p>custom name for your pool (stored as String)</p>
 </div>
       
     </li>
@@ -735,27 +781,73 @@ Returns existing pool if it was already created.</p>
       <pre class="lines">
 
 
-72
-73
-74
-75
-76
 77
 78
 79
-80</pre>
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 72</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pool'>pool</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_adapter_name'>adapter_name</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='int'>5</span><span class='comma'>,</span> <span class='label'>size:</span> <span class='int'>10</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span>
-  <span class='kw'>else</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>ConnectionPool</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>size:</span> <span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='id identifier rubyid_timeout'>timeout</span><span class='rparen'>)</span> <span class='kw'>do</span>
-      <span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_name'>adapter_name</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_pool_mutex'>pool_mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_pools'>pools</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_pools'>pools</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>ConnectionPool</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>size:</span> <span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='id identifier rubyid_timeout'>timeout</span><span class='rparen'>)</span> <span class='kw'>do</span>
+        <span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_adapter_name'>adapter_name</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="pool_mutex-instance_method">
+  
+    #<strong>pool_mutex</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Mutex guarding pool creation / map mutation.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+50
+51
+52</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 50</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_pool_mutex'>pool_mutex</span>
+  <span class='ivar'>@pool_mutex</span> <span class='op'>||=</span> <span class='const'>Mutex</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -796,6 +888,90 @@ Returns existing pool if it was already created.</p>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pools'>pools</span>
   <span class='ivar'>@pools</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reaper_tick-instance_method">
+  
+    #<strong>reaper_tick</strong>(frequency = 300)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>One reaper cycle: log pool stats (without checking out) and reap idle connections.
+Safe to call from tests; rescues per-pool so a shut-down pool cannot kill the loop.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>frequency</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>300</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>idle threshold passed to ConnectionPool#reap</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 133</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reaper_tick'>reaper_tick</span><span class='lparen'>(</span><span class='id identifier rubyid_frequency'>frequency</span> <span class='op'>=</span> <span class='int'>300</span><span class='rparen'>)</span>
+  <span class='comment'># Snapshot so concurrent shutdown deletions do not mutate while we iterate.
+</span>  <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_pool'>pool</span><span class='op'>|</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>DB POOL FOR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> STATS:</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\tSize:      </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\tIdle:      </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_idle'>idle</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\tAvailable: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_available'>available</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_reap'>reap</span><span class='lparen'>(</span><span class='id identifier rubyid_frequency'>frequency</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span>
+  <span class='kw'>rescue</span> <span class='const'>ConnectionPool</span><span class='op'>::</span><span class='const'>PoolShuttingDownError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Skipping reaper for pool </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Reaper error for pool </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -921,7 +1097,7 @@ the class name.</p>
         <span class='name'>pool</span>
       
       
-        <span class='type'>(<tt>String</tt>, <tt>ConnectionPool</tt>, <tt>nil</tt>)</span>
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>ConnectionPool</tt>, <tt>nil</tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -943,14 +1119,6 @@ or nil to shut everything down</p>
       <pre class="lines">
 
 
-85
-86
-87
-88
-89
-90
-91
-92
 93
 94
 95
@@ -960,28 +1128,44 @@ or nil to shut everything down</p>
 99
 100
 101
-102</pre>
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 85</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 93</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_shutdown'>shutdown</span><span class='lparen'>(</span><span class='id identifier rubyid_pool'>pool</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='kw'>case</span> <span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span>
-  <span class='kw'>when</span> <span class='const'>String</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='lbracket'>[</span><span class='id identifier rubyid_pool'>pool</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_shutdown'>shutdown</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_pool'>pool</span><span class='rparen'>)</span>
-  <span class='kw'>when</span> <span class='const'>Symbol</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='lbracket'>[</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_shutdown'>shutdown</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='lbracket'>[</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span>
-  <span class='kw'>when</span> <span class='const'>ConnectionPool</span>
-    <span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_shutdown'>shutdown</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_key'>key</span><span class='lparen'>(</span><span class='id identifier rubyid_pool'>pool</span><span class='rparen'>)</span><span class='rparen'>)</span>
-  <span class='kw'>else</span>
-    <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_each_value'>each_value</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_val'>val</span><span class='op'>|</span>
-      <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_shutdown'>shutdown</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span>
+  <span class='comment'># Mutate the map under the same mutex as pool creation so a concurrent
+</span>  <span class='comment'># create cannot be orphaned by @pools = {} / delete racing it.
+</span>  <span class='comment'># Close outside the lock — ConnectionPool#shutdown can wait on check-in.
+</span>  <span class='id identifier rubyid_to_close'>to_close</span> <span class='op'>=</span> <span class='id identifier rubyid_pool_mutex'>pool_mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='kw'>case</span> <span class='id identifier rubyid_pool'>pool</span>
+    <span class='kw'>when</span> <span class='const'>String</span><span class='comma'>,</span> <span class='const'>Symbol</span>
+      <span class='comment'># Delete first so a raising close cannot leave a dead pool in the map.
+</span>      <span class='id identifier rubyid_removed'>removed</span> <span class='op'>=</span> <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_removed'>removed</span> <span class='op'>?</span> <span class='lbracket'>[</span><span class='id identifier rubyid_removed'>removed</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+    <span class='kw'>when</span> <span class='const'>ConnectionPool</span>
+      <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_key'>key</span><span class='lparen'>(</span><span class='id identifier rubyid_pool'>pool</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_key'>key</span>
+      <span class='lbracket'>[</span><span class='id identifier rubyid_pool'>pool</span><span class='rbracket'>]</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_closing'>closing</span> <span class='op'>=</span> <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_values'>values</span>
+      <span class='ivar'>@pools</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+      <span class='id identifier rubyid_closing'>closing</span>
     <span class='kw'>end</span>
-    <span class='ivar'>@pools</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
   <span class='kw'>end</span>
+  <span class='id identifier rubyid_to_close'>to_close</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_shutdown'>shutdown</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -991,7 +1175,7 @@ or nil to shut everything down</p>
       <div class="method_details ">
   <h3 class="signature " id="start_reaper-instance_method">
   
-    #<strong>start_reaper</strong>(frequency = 300)  &#x21d2; <tt>Object</tt> 
+    #<strong>start_reaper</strong>(frequency = 300)  &#x21d2; <tt>Thread</tt> 
   
 
   
@@ -1028,6 +1212,23 @@ unused or idle connections.</p>
   
 </ul>
 
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Thread</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the reaper thread</p>
+</div>
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -1035,40 +1236,24 @@ unused or idle connections.</p>
       <pre class="lines">
 
 
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
 120
 121
 122
-123</pre>
+123
+124
+125
+126
+127
+128</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 107</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/factory.rb', line 120</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_reaper'>start_reaper</span><span class='lparen'>(</span><span class='id identifier rubyid_frequency'>frequency</span> <span class='op'>=</span> <span class='int'>300</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Starting DB Adapter reaper process</span><span class='tstring_end'>&#39;</span></span>
   <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span>
     <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
-      <span class='id identifier rubyid_pools'>pools</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_pool'>pool</span><span class='op'>|</span>
-        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>DB POOL FOR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> STATS:</span><span class='tstring_end'>&quot;</span></span>
-        <span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_with'>with</span> <span class='kw'>do</span>
-          <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\tSize:      </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-          <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\tIdle:      </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_available'>available</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-          <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\tAvailable: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_available'>available</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-        <span class='kw'>end</span>
-        <span class='id identifier rubyid_pool'>pool</span><span class='period'>.</span><span class='id identifier rubyid_reap'>reap</span><span class='lparen'>(</span><span class='id identifier rubyid_frequency'>frequency</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_it'>it</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span> <span class='rbrace'>}</span>
-      <span class='kw'>end</span>
+      <span class='id identifier rubyid_reaper_tick'>reaper_tick</span><span class='lparen'>(</span><span class='id identifier rubyid_frequency'>frequency</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_sleep'>sleep</span> <span class='id identifier rubyid_frequency'>frequency</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
@@ -1123,7 +1308,7 @@ unused or idle connections.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jun 19 13:19:28 2026 by
+  Generated on Tue Aug  4 00:14:49 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
