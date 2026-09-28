@@ -184,6 +184,40 @@
 <pre class="code bash"><code class="bash">bundle exec rake test:system:druid 
 </code></pre>
 
+<p>Cloud warehouse tests (<code>test/system/cloud_*_test.rb</code>) run against real accounts and skip
+unless configured through environment variables, so no credentials live in the repo:</p>
+
+<table><thead>
+<tr>
+<th>Adapter</th>
+<th>Variables</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Athena</td>
+<td><code>ATHENA_S3_OUTPUT</code>, optional <code>ATHENA_REGION</code>, <code>ATHENA_DATABASE</code>; AWS credentials from the environment</td>
+</tr>
+<tr>
+<td>BigQuery</td>
+<td><code>BIGQUERY_PROJECT</code>, optional <code>BIGQUERY_DATASET</code>; <code>GOOGLE_APPLICATION_CREDENTIALS</code> or gcloud ADC. Creates its own fixture tables</td>
+</tr>
+<tr>
+<td>Databricks</td>
+<td><code>DATABRICKS_HOST</code>, <code>DATABRICKS_WAREHOUSE</code>, <code>DATABRICKS_CLIENT_ID</code>, <code>DATABRICKS_CLIENT_SECRET</code></td>
+</tr>
+<tr>
+<td>Redshift</td>
+<td><code>REDSHIFT_HOST</code>, <code>REDSHIFT_PASSWORD</code>, optional <code>REDSHIFT_USER</code>, <code>REDSHIFT_DATABASE</code>, <code>REDSHIFT_PORT</code></td>
+</tr>
+<tr>
+<td>Snowflake</td>
+<td><code>SNOWFLAKE_ACCOUNT</code>, <code>SNOWFLAKE_PAT</code>, optional <code>SNOWFLAKE_DATABASE</code>; key-pair test needs <code>SNOWFLAKE_USER</code>, <code>SNOWFLAKE_PRIVATE_KEY</code></td>
+</tr>
+</tbody></table>
+
+<pre class="code bash"><code class="bash">BIGQUERY_PROJECT=my-project BUNDLE_WITH=development bundle exec ruby -Itest test/system/cloud_bigquery_test.rb
+</code></pre>
+
 <h2 id="development">Development</h2>
 
 <p>After checking out the repo, run <code>bin/setup</code> to install dependencies. Then, run <code>rake test</code> to run the tests. You can also run <code>bin/console</code> for an interactive prompt.</p>
@@ -204,7 +238,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Tue Aug  4 00:14:48 2026 by
+  Generated on Mon Sep 28 12:12:13 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
