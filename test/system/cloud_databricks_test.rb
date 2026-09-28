@@ -1,25 +1,28 @@
 require 'test_helper'
 
+# Live Databricks tests. Skipped unless DATABRICKS_HOST, DATABRICKS_WAREHOUSE,
+# DATABRICKS_CLIENT_ID and DATABRICKS_CLIENT_SECRET are set. Runs against the
+# built-in samples.tpcds_sf1 catalog (override with DATABRICKS_CATALOG/SCHEMA).
 class CloudDatabricksTest < Minitest::Test
   TPCDS_TABLE = 'customer'.freeze
   TPCDS_KEY_COLUMN = 'c_customer_sk'.freeze
   TPCDS_STATS_TABLE = 'store_sales'.freeze
   STREAM_LIMIT = 10
-  SCHEMA = 'tpcds_sf1'.freeze
-  CATALOG = 'samples'.freeze
-  HOST = 'workspace.cloud.databricks.com'.freeze
-  WAREHOUSE = 'warehouse_id'.freeze
-  OAUTH_CLIENT_ID = ''.freeze
-  OAUTH_CLIENT_SECRET = ''.freeze
+  SCHEMA = ENV.fetch('DATABRICKS_SCHEMA', 'tpcds_sf1')
+  CATALOG = ENV.fetch('DATABRICKS_CATALOG', 'samples')
+
+  def setup
+    skip 'Set DATABRICKS_HOST, DATABRICKS_WAREHOUSE, DATABRICKS_CLIENT_ID and DATABRICKS_CLIENT_SECRET to run' unless ENV['DATABRICKS_CLIENT_SECRET']
+  end
 
   def adapter
     @adapter ||=
       DWH.create(:databricks,
                  {
-                   host: HOST,
-                   warehouse: WAREHOUSE,
-                   oauth_client_id: OAUTH_CLIENT_ID,
-                   oauth_client_secret: OAUTH_CLIENT_SECRET,
+                   host: ENV.fetch('DATABRICKS_HOST'),
+                   warehouse: ENV.fetch('DATABRICKS_WAREHOUSE'),
+                   oauth_client_id: ENV.fetch('DATABRICKS_CLIENT_ID'),
+                   oauth_client_secret: ENV.fetch('DATABRICKS_CLIENT_SECRET'),
                    catalog: CATALOG,
                    schema: SCHEMA
                  })

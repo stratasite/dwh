@@ -1,12 +1,19 @@
 require 'test_helper'
 
+# Live Snowflake tests. Skipped unless SNOWFLAKE_ACCOUNT and SNOWFLAKE_PAT are
+# set. SNOWFLAKE_DATABASE defaults to TEST_DB; test_key_pair_auth also needs
+# SNOWFLAKE_USER and SNOWFLAKE_PRIVATE_KEY (path to the .p8 file).
 class CloudSnowflakeTest < Minitest::Test
+  def setup
+    skip 'Set SNOWFLAKE_ACCOUNT and SNOWFLAKE_PAT to run' unless ENV['SNOWFLAKE_PAT']
+  end
+
   def adapter
     @adapter ||=
       DWH.create(:snowflake,
-                 { database: 'TEST_DB', auth_mode: 'pat',
-                   account_identifier: 'MYACCOUNT',
-                   personal_access_token: '' })
+                 { database: ENV.fetch('SNOWFLAKE_DATABASE', 'TEST_DB'), auth_mode: 'pat',
+                   account_identifier: ENV.fetch('SNOWFLAKE_ACCOUNT'),
+                   personal_access_token: ENV.fetch('SNOWFLAKE_PAT') })
   end
 
   def test_basic_connection
@@ -193,13 +200,15 @@ class CloudSnowflakeTest < Minitest::Test
   end
 
   def test_key_pair_auth
+    skip 'Set SNOWFLAKE_USER and SNOWFLAKE_PRIVATE_KEY to run' unless ENV['SNOWFLAKE_PRIVATE_KEY']
+
     adapter = DWH.create(:snowflake, {
                            auth_mode: 'kp',
-                           account_identifier: 'MYACCOUNT',
-                           username: 'test_user',
-                           warehouse: 'COMPUTE_WH',
-                           private_key: File.join(__dir__, '..', '..', 'snow_rsa_key.p8'),
-                           database: 'TEST_DB'
+                           account_identifier: ENV.fetch('SNOWFLAKE_ACCOUNT'),
+                           username: ENV.fetch('SNOWFLAKE_USER'),
+                           warehouse: ENV.fetch('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
+                           private_key: ENV.fetch('SNOWFLAKE_PRIVATE_KEY'),
+                           database: ENV.fetch('SNOWFLAKE_DATABASE', 'TEST_DB')
                          })
     assert adapter.connect?
     assert_equal 2, adapter.tables(schema: 'public').size
