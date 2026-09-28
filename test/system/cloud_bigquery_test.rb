@@ -1,30 +1,48 @@
 require 'test_helper'
 
-# Live BigQuery tests. Uses Application Default Credentials, either from
-# `gcloud auth application-default login` or a service-account keyfile via
-# GOOGLE_APPLICATION_CREDENTIALS, and expects a fixture dataset:
+# Live BigQuery tests. Skipped unless BIGQUERY_PROJECT is set. Credentials come
+# from Application Default Credentials: `gcloud auth application-default login`
+# or a service-account keyfile via GOOGLE_APPLICATION_CREDENTIALS. The fixture
+# dataset (BIGQUERY_DATASET, default strata_test) is created and its two tables
+# rebuilt on the first test, so any project the credentials can write to works.
 #
 #   GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json BIGQUERY_PROJECT=my-project \
 #     BUNDLE_WITH=development bundle exec ruby -Itest test/system/cloud_bigquery_test.rb
-#
-#   CREATE TABLE `strata_test.users` (id INT64, name STRING, email STRING, created_at DATE);
-#   INSERT INTO `strata_test.users` VALUES
-#     (1, 'John Doe', 'john@example.com', DATE '2024-01-15'),
-#     (2, 'Jane Smith', 'jane@example.com', DATE '2024-01-16'),
-#     (3, 'Bob Johnson', 'bob@example.com', DATE '2024-01-17');
-#   CREATE TABLE `strata_test.posts` (id INT64, user_id INT64, title STRING, body STRING,
-#                                      published BOOL, views INT64, created_at DATE);
-#   INSERT INTO `strata_test.posts` VALUES
-#     (1, 1, 'First Post', 'Hello', true, 10, DATE '2024-01-15'),
-#     (2, 1, 'Second Post', 'World', false, 0, DATE '2024-01-16'),
-#     (3, 2, 'Jane Post', 'Hi', true, 5, DATE '2024-01-17'),
-#     (4, 3, 'Bob Post', 'Yo', true, 2, DATE '2024-01-18');
 class CloudBigQueryTest < Minitest::Test
+  DATASET = ENV.fetch('BIGQUERY_DATASET', 'strata_test')
+
+  FIXTURES = [
+    <<~SQL,
+      CREATE OR REPLACE TABLE `#{DATASET}.users` AS SELECT * FROM UNNEST([
+        STRUCT(1 AS id, 'John Doe' AS name, 'john@example.com' AS email, DATE '2024-01-15' AS created_at),
+        STRUCT(2, 'Jane Smith', 'jane@example.com', DATE '2024-01-16'),
+        STRUCT(3, 'Bob Johnson', 'bob@example.com', DATE '2024-01-17')])
+    SQL
+    <<~SQL
+      CREATE OR REPLACE TABLE `#{DATASET}.posts` AS SELECT * FROM UNNEST([
+        STRUCT(1 AS id, 1 AS user_id, 'First Post' AS title, 'Hello' AS body, TRUE AS published, 10 AS views, DATE '2024-01-15' AS created_at),
+        STRUCT(2, 1, 'Second Post', 'World', FALSE, 0, DATE '2024-01-16'),
+        STRUCT(3, 2, 'Jane Post', 'Hi', TRUE, 5, DATE '2024-01-17'),
+        STRUCT(4, 3, 'Bob Post', 'Yo', TRUE, 2, DATE '2024-01-18')])
+    SQL
+  ].freeze
+
+  def self.provision!(adapter)
+    return if @provisioned
+
+    bq = adapter.connection
+    bq.dataset(DATASET) || bq.create_dataset(DATASET, location: 'US')
+    FIXTURES.each { |sql| adapter.execute(sql) }
+    @provisioned = true
+  end
+
+  def setup
+    skip 'Set BIGQUERY_PROJECT (and GOOGLE_APPLICATION_CREDENTIALS or gcloud ADC) to run' unless ENV['BIGQUERY_PROJECT']
+    self.class.provision!(adapter)
+  end
+
   def adapter
-    @adapter ||= DWH.create(:bigquery, {
-                              project_id: ENV.fetch('BIGQUERY_PROJECT'),
-                              dataset: ENV.fetch('BIGQUERY_DATASET', 'strata_test')
-                            })
+    @adapter ||= DWH.create(:bigquery, project_id: ENV.fetch('BIGQUERY_PROJECT'), dataset: DATASET)
   end
 
   def test_connection
