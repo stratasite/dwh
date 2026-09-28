@@ -36,7 +36,7 @@ module DWH
       inner = unwrap_type(data_type)
 
       case inner
-      when /binary/, 'image'
+      when /binary/, 'image', 'bytes'
         'binary'
       when /varchar/, 'string', /text/, /char/, /fixedstring/
         'string'
@@ -50,7 +50,7 @@ module DWH
       when 'bigint', 'bit_int', 'big_integer', /^int64$/, /^int128$/, /^int256$/,
            /^uint64$/, /^uint128$/, /^uint256$/
         'bigint'
-      when 'decimal', 'double', 'float', 'real', 'dec', 'numeric', 'money',
+      when 'decimal', 'double', 'float', 'real', 'dec', 'numeric', 'bignumeric', 'money',
            /^float32$/, /^float64$/, /^decimal/
         'decimal'
       when 'boolean', 'bit', 'bool'

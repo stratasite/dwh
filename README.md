@@ -35,6 +35,7 @@ The adapter only has 5 core methods (6 including the connection method).  A YAML
 - **SQL Server** - Microsoft's enterprise database
 - **ClickHouse** - High performance analytical database
 - **Databricks** - Lakehouse SQL warehouse
+- **Google BigQuery** - Google Cloud serverless warehouse
 
 ## Integrations Coming Soon
 
@@ -152,4 +153,4 @@ This project is available as open source under the terms of the MIT License.
 
 ## Version
 
-Current version: 0.5.0
+Current version: 0.6.0

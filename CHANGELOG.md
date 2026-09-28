@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-28
+
+### Added
+
+- Google BigQuery adapter (`:bigquery`) with dedicated settings and unit/system test coverage. Authenticates with a service-account keyfile or Application Default Credentials; requires the `google-cloud-bigquery` gem.
+
 ## [0.5.1] - 2026-08-03
 
 ### Fixed
