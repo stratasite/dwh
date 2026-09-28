@@ -121,6 +121,21 @@ Run tests on  druid:
 bundle exec rake test:system:druid 
 ```
 
+Cloud warehouse tests (`test/system/cloud_*_test.rb`) run against real accounts and skip
+unless configured through environment variables, so no credentials live in the repo:
+
+| Adapter | Variables |
+|---|---|
+| Athena | `ATHENA_S3_OUTPUT`, optional `ATHENA_REGION`, `ATHENA_DATABASE`; AWS credentials from the environment |
+| BigQuery | `BIGQUERY_PROJECT`, optional `BIGQUERY_DATASET`; `GOOGLE_APPLICATION_CREDENTIALS` or gcloud ADC. Creates its own fixture tables |
+| Databricks | `DATABRICKS_HOST`, `DATABRICKS_WAREHOUSE`, `DATABRICKS_CLIENT_ID`, `DATABRICKS_CLIENT_SECRET` |
+| Redshift | `REDSHIFT_HOST`, `REDSHIFT_PASSWORD`, optional `REDSHIFT_USER`, `REDSHIFT_DATABASE`, `REDSHIFT_PORT` |
+| Snowflake | `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_PAT`, optional `SNOWFLAKE_DATABASE`; key-pair test needs `SNOWFLAKE_USER`, `SNOWFLAKE_PRIVATE_KEY` |
+
+```bash
+BIGQUERY_PROJECT=my-project BUNDLE_WITH=development bundle exec ruby -Itest test/system/cloud_bigquery_test.rb
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt.

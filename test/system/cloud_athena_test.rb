@@ -1,11 +1,17 @@
 require 'test_helper'
 
-class CloudTest < Minitest::Test
+# Live Athena tests. Skipped unless ATHENA_S3_OUTPUT is set. AWS credentials
+# come from the environment or ~/.aws (ATHENA_REGION defaults to us-east-1).
+class CloudAthenaTest < Minitest::Test
+  def setup
+    skip 'Set ATHENA_S3_OUTPUT (and AWS credentials) to run' unless ENV['ATHENA_S3_OUTPUT']
+  end
+
   def adapter
     @adapter ||= DWH.create(:athena, {
-                              region: 'us-east-1',
-                              database: 'default',
-                              s3_output_location: 's3://strata-athena/test_db/queries/'
+                              region: ENV.fetch('ATHENA_REGION', 'us-east-1'),
+                              database: ENV.fetch('ATHENA_DATABASE', 'default'),
+                              s3_output_location: ENV.fetch('ATHENA_S3_OUTPUT')
                             })
   end
 

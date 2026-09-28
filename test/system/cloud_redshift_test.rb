@@ -1,13 +1,19 @@
 require 'test_helper'
 
+# Live Redshift tests. Skipped unless REDSHIFT_HOST and REDSHIFT_PASSWORD are
+# set. REDSHIFT_USER defaults to awsuser, REDSHIFT_DATABASE to test_db.
 class CloudRedshiftTest < Minitest::Test
+  def setup
+    skip 'Set REDSHIFT_HOST and REDSHIFT_PASSWORD to run' unless ENV['REDSHIFT_PASSWORD']
+  end
+
   def adapter
     @adapter ||= DWH.create(:redshift, {
-                              host: 'redshift-cluster-1.co8turkdsbzq.us-east-1.redshift.amazonaws.com',
-                              port: 5439,
-                              username: 'awsuser',
-                              password: 'MRVJKytxde910)!',
-                              database: 'test_db'
+                              host: ENV.fetch('REDSHIFT_HOST'),
+                              port: ENV.fetch('REDSHIFT_PORT', 5439).to_i,
+                              username: ENV.fetch('REDSHIFT_USER', 'awsuser'),
+                              password: ENV.fetch('REDSHIFT_PASSWORD'),
+                              database: ENV.fetch('REDSHIFT_DATABASE', 'test_db')
                             })
   end
 
