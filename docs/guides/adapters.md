@@ -697,6 +697,22 @@ athena = DWH.create(:athena, {
 
 See full list of config options here: [athena-api](https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/Athena/Client.html#initialize-instance_method)
 
+## Google BigQuery Adapter
+
+Requires the `google-cloud-bigquery` gem (`gem install google-cloud-bigquery`, pure Ruby).
+
+```ruby
+bq = DWH.create(:bigquery, {
+    project_id: 'my-gcp-project',
+    dataset: 'analytics',                        # default dataset for unqualified table names
+    keyfile: '/path/to/service-account.json',   # optional; omit to use Application Default Credentials
+    query_timeout: 300                           # optional, seconds
+})
+```
+
+Without `keyfile`, credentials resolve via `GOOGLE_APPLICATION_CREDENTIALS` or `gcloud auth application-default login`.
+Extra client options can be passed with `extra_connection_params` (see `Google::Cloud::Bigquery.new`).
+
 ## Configuration Validation
 
 DWH validates configuration parameters at creation time:

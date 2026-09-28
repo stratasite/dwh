@@ -19,6 +19,9 @@ group :development do
 
   # aws Athena
   gem 'aws-sdk-athena'
+
+  # Google BigQuery
+  gem 'google-cloud-bigquery', '~> 1.40'
 end
 
 group :test do

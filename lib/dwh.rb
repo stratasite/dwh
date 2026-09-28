@@ -21,6 +21,7 @@ require_relative 'dwh/adapters/athena'
 require_relative 'dwh/adapters/redshift'
 require_relative 'dwh/adapters/databricks'
 require_relative 'dwh/adapters/click_house'
+require_relative 'dwh/adapters/big_query'
 
 # DWH encapsulates the full functionality of this gem.
 #
@@ -54,6 +55,7 @@ module DWH
   register(:redshift, Adapters::Redshift)
   register(:databricks, Adapters::Databricks)
   register(:clickhouse, Adapters::ClickHouse)
+  register(:bigquery, Adapters::BigQuery)
 
   # The raw base.yml settings, loaded once. This is the single source of
   # truth for the standard, warehouse-agnostic dialect baseline.

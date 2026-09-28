@@ -1,0 +1,92 @@
+# Google BigQuery adapter settings
+# Only overrides that differ from base.yml are listed here.
+
+# BigQuery uses backticks for identifier quoting.
+quote: "`@exp`"
+
+# FORMAT_DATE uses strftime elements. base.yml's %W/%M mean
+# week-number/minute in BigQuery, so use the standard name codes.
+day_name_format: "%A"
+abbreviated_day_name_format: "%a"
+month_name_format: "%B"
+abbreviated_month_name_format: "%b"
+
+# Current time functions require parentheses.
+current_date:      "CURRENT_DATE()"
+current_time:      "CURRENT_TIME()"
+current_timestamp: "CURRENT_TIMESTAMP()"
+
+# Date literals
+date_literal:      "DATE '@val'"
+date_time_literal: "TIMESTAMP '@val'"
+
+# BigQuery puts the expression first and takes the unit as a bare keyword.
+truncate_date:   "DATE_TRUNC(@exp, @unit)"
+date_add:        "DATE_ADD(@exp, INTERVAL @val @unit)"
+date_diff:       "DATE_DIFF(@end_exp, @start_exp, @unit)"
+date_format_sql: "FORMAT_DATE('@format', @exp)"
+
+extract_year:         "EXTRACT(YEAR FROM @exp)"
+extract_month:        "EXTRACT(MONTH FROM @exp)"
+extract_quarter:      "EXTRACT(QUARTER FROM @exp)"
+extract_day_of_year:  "EXTRACT(DAYOFYEAR FROM @exp)"
+extract_day_of_month: "EXTRACT(DAY FROM @exp)"
+extract_day_of_week:  "EXTRACT(DAYOFWEEK FROM @exp)"
+extract_week_of_year: "EXTRACT(WEEK FROM @exp)"
+extract_hour:         "EXTRACT(HOUR FROM @exp)"
+extract_minute:       "EXTRACT(MINUTE FROM @exp)"
+extract_year_month:   "CAST(FORMAT_DATE('%Y%m', @exp) AS INT64)"
+
+# DATE_TRUNC(x, WEEK) is Sunday-based in BigQuery; the explicit forms
+# below are used whenever the requested week_start_day differs.
+default_week_start_day: "sunday"
+sunday_week_start_day:  "DATE_TRUNC(@exp, WEEK(SUNDAY))"
+monday_week_start_day:  "DATE_TRUNC(@exp, WEEK(MONDAY))"
+
+# Null handling
+if_null: "IFNULL(@exp, @when_null)"
+
+# Array operations via UNNEST
+array_in_list:      "EXISTS(SELECT 1 FROM UNNEST(@exp) AS x WHERE x IN (@list))"
+array_exclude_list: "NOT EXISTS(SELECT 1 FROM UNNEST(@exp) AS x WHERE x IN (@list))"
+array_unnest_join:  "CROSS JOIN UNNEST(@exp) AS @alias"
+
+# Capabilities
+# Temp tables only live inside a script/session; use CTEs instead.
+supports_temp_tables: false
+temp_table_type: "cte"
+
+# BigQuery-specific reserved keywords not in the standard baseline.
+extra_reserved_keywords:
+  - struct
+  - unnest
+  - qualify
+  - tablesample
+  - window
+  - ignore
+  - respect
+  - int64
+  - float64
+  - bytes
+  - bignumeric
+  - bool
+  - datetime
+  - geography
+  - dayofweek
+  - dayofyear
+  - isoweek
+  - isoyear
+
+# BigQuery-specific aggregate functions not in the standard baseline.
+extra_aggregate_functions:
+  - any_value
+  - countif
+  - logical_and
+  - logical_or
+  - array_concat_agg
+  - approx_quantiles
+  - approx_top_count
+  - approx_top_sum
+  - bit_xor
+  - max_by
+  - min_by
