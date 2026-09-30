@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.6.1] - 2026-09-30
+
+### Fixed
+
+- **BigQuery**: `quote` replaces characters BigQuery rejects in column names (parentheses and similar) so planner-generated aliases such as `Month(Post Date)` execute.
+
 ## [0.6.0] - 2026-09-28
 
 ### Added

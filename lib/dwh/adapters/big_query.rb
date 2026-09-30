@@ -26,6 +26,17 @@ module DWH
       # normalized type would otherwise be wrong (INTEGER is 64-bit in BigQuery).
       TYPE_ALIASES = { 'INTEGER' => 'INT64', 'FLOAT' => 'FLOAT64', 'BOOLEAN' => 'BOOL', 'RECORD' => 'STRUCT' }.freeze
 
+      # BigQuery column names, and therefore SELECT aliases, may not contain these
+      # characters (https://cloud.google.com/bigquery/docs/schemas#column_names).
+      # Dots are left alone so backtick-quoted `dataset.table` paths still work.
+      INVALID_NAME_CHARS = %r{[!"$()*,/;?@\[\\\]^{}~]}
+
+      # (see Functions#quote) Replaces characters BigQuery rejects in a column
+      # name so planner-generated aliases like "Month(Post Date)" execute.
+      def quote(exp)
+        super(exp.to_s.gsub(INVALID_NAME_CHARS, '_'))
+      end
+
       # (see Adapter#connection)
       def connection
         return @connection if @connection
