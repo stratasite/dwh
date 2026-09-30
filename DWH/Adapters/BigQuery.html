@@ -228,6 +228,29 @@ Dots are left alone so backtick-quoted <code>dataset.table</code> paths still wo
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#close-instance_method" title="#close (instance method)">#<strong>close</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Close the connection if it was created.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#connection-instance_method" title="#connection (instance method)">#<strong>connection</strong>  &#x21d2; Object </a>
     
 
@@ -445,7 +468,7 @@ Dots are left alone so backtick-quoted <code>dataset.table</code> paths still wo
   
   
   <h3 class="inherited">Methods inherited from <span class='object_link'><a href="Adapter.html" title="DWH::Adapters::Adapter (class)">Adapter</a></span></h3>
-  <p class="inherited"><span class='object_link'><a href="Adapter.html#adapter_name-instance_method" title="DWH::Adapters::Adapter#adapter_name (method)">#adapter_name</a></span>, <span class='object_link'><a href="Adapter.html#alter_settings-instance_method" title="DWH::Adapters::Adapter#alter_settings (method)">#alter_settings</a></span>, <span class='object_link'><a href="Adapter.html#close-instance_method" title="DWH::Adapters::Adapter#close (method)">#close</a></span>, <span class='object_link'><a href="Adapter.html#config-class_method" title="DWH::Adapters::Adapter.config (method)">config</a></span>, <span class='object_link'><a href="Adapter.html#configuration-class_method" title="DWH::Adapters::Adapter.configuration (method)">configuration</a></span>, <span class='object_link'><a href="Adapter.html#connect!-instance_method" title="DWH::Adapters::Adapter#connect! (method)">#connect!</a></span>, <span class='object_link'><a href="Adapter.html#connect%3F-instance_method" title="DWH::Adapters::Adapter#connect? (method)">#connect?</a></span>, <span class='object_link'><a href="Adapter.html#extra_connection_params-instance_method" title="DWH::Adapters::Adapter#extra_connection_params (method)">#extra_connection_params</a></span>, <span class='object_link'><a href="Adapter.html#extra_query_params-instance_method" title="DWH::Adapters::Adapter#extra_query_params (method)">#extra_query_params</a></span>, <span class='object_link'><a href="Adapter.html#initialize-instance_method" title="DWH::Adapters::Adapter#initialize (method)">#initialize</a></span>, <span class='object_link'><a href="Adapter.html#reset_settings-instance_method" title="DWH::Adapters::Adapter#reset_settings (method)">#reset_settings</a></span>, <span class='object_link'><a href="Adapter.html#table%3F-instance_method" title="DWH::Adapters::Adapter#table? (method)">#table?</a></span>, <span class='object_link'><a href="Adapter.html#token_expired%3F-instance_method" title="DWH::Adapters::Adapter#token_expired? (method)">#token_expired?</a></span>, <span class='object_link'><a href="Adapter.html#with_debug-instance_method" title="DWH::Adapters::Adapter#with_debug (method)">#with_debug</a></span>, <span class='object_link'><a href="Adapter.html#with_retry-instance_method" title="DWH::Adapters::Adapter#with_retry (method)">#with_retry</a></span></p>
+  <p class="inherited"><span class='object_link'><a href="Adapter.html#adapter_name-instance_method" title="DWH::Adapters::Adapter#adapter_name (method)">#adapter_name</a></span>, <span class='object_link'><a href="Adapter.html#alter_settings-instance_method" title="DWH::Adapters::Adapter#alter_settings (method)">#alter_settings</a></span>, <span class='object_link'><a href="Adapter.html#config-class_method" title="DWH::Adapters::Adapter.config (method)">config</a></span>, <span class='object_link'><a href="Adapter.html#configuration-class_method" title="DWH::Adapters::Adapter.configuration (method)">configuration</a></span>, <span class='object_link'><a href="Adapter.html#connect!-instance_method" title="DWH::Adapters::Adapter#connect! (method)">#connect!</a></span>, <span class='object_link'><a href="Adapter.html#connect%3F-instance_method" title="DWH::Adapters::Adapter#connect? (method)">#connect?</a></span>, <span class='object_link'><a href="Adapter.html#extra_connection_params-instance_method" title="DWH::Adapters::Adapter#extra_connection_params (method)">#extra_connection_params</a></span>, <span class='object_link'><a href="Adapter.html#extra_query_params-instance_method" title="DWH::Adapters::Adapter#extra_query_params (method)">#extra_query_params</a></span>, <span class='object_link'><a href="Adapter.html#initialize-instance_method" title="DWH::Adapters::Adapter#initialize (method)">#initialize</a></span>, <span class='object_link'><a href="Adapter.html#reset_settings-instance_method" title="DWH::Adapters::Adapter#reset_settings (method)">#reset_settings</a></span>, <span class='object_link'><a href="Adapter.html#table%3F-instance_method" title="DWH::Adapters::Adapter#table? (method)">#table?</a></span>, <span class='object_link'><a href="Adapter.html#token_expired%3F-instance_method" title="DWH::Adapters::Adapter#token_expired? (method)">#token_expired?</a></span>, <span class='object_link'><a href="Adapter.html#with_debug-instance_method" title="DWH::Adapters::Adapter#with_debug (method)">#with_debug</a></span>, <span class='object_link'><a href="Adapter.html#with_retry-instance_method" title="DWH::Adapters::Adapter#with_retry (method)">#with_retry</a></span></p>
 
   
   
@@ -558,7 +581,49 @@ Dots are left alone so backtick-quoted <code>dataset.table</code> paths still wo
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="connection-instance_method">
+  <h3 class="signature first" id="close-instance_method">
+  
+    #<strong>close</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Close the connection if it was created.
+The Google client holds no persistent connection,
+so there is nothing to close; just drop the reference.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+75
+76
+77</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 75</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_close'>close</span>
+  <span class='ivar'>@connection</span> <span class='op'>=</span> <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="connection-instance_method">
   
     #<strong>connection</strong>  &#x21d2; <tt>Object</tt> 
   
@@ -746,21 +811,21 @@ connection object or self</p>
       <pre class="lines">
 
 
-120
-121
-122
-123
-124
-125
 126
 127
 128
 129
 130
-131</pre>
+131
+132
+133
+134
+135
+136
+137</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 120</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 126</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:array</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_with_retry'>with_retry</span><span class='lparen'>(</span><span class='id identifier rubyid_retries'>retries</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_run_query'>run_query</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span>
@@ -899,12 +964,6 @@ to the provided IO object.</p>
       <pre class="lines">
 
 
-134
-135
-136
-137
-138
-139
 140
 141
 142
@@ -914,10 +973,16 @@ to the provided IO object.</p>
 146
 147
 148
-149</pre>
+149
+150
+151
+152
+153
+154
+155</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 134</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 140</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='id identifier rubyid_io'>io</span><span class='comma'>,</span> <span class='label'>stats:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -1073,12 +1138,6 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-101
-102
-103
-104
-105
-106
 107
 108
 109
@@ -1089,10 +1148,16 @@ will be ignored if the adapter doesn&#39;t support</p>
 114
 115
 116
-117</pre>
+117
+118
+119
+120
+121
+122
+123</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 101</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 107</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_db_table'>db_table</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">Table</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Table.html#initialize-instance_method" title="DWH::Table#initialize (method)">new</a></span></span> <span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>schema:</span> <span class='id identifier rubyid_dataset_name'>dataset_name</span><span class='lparen'>(</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
@@ -1334,16 +1399,16 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-90
-91
-92
-93
-94
-95
-96</pre>
+96
+97
+98
+99
+100
+101
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 90</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>date_column:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_sql'>sql</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SELECT COUNT(*) AS row_count</span><span class='tstring_end'>&#39;</span></span>
@@ -1433,12 +1498,12 @@ might vary depending on the target db and settings</p>
       <pre class="lines">
 
 
-152
-153
-154</pre>
+158
+159
+160</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 152</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 158</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stream'>stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_query_data'>query_data</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_row'>row</span><span class='op'>|</span> <span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_row'>row</span><span class='period'>.</span><span class='id identifier rubyid_values'>values</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span>
@@ -1542,12 +1607,12 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-85
-86
-87</pre>
+91
+92
+93</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 85</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 91</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_dataset_for'>dataset_for</span><span class='lparen'>(</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_tables'>tables</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:table_id</span><span class='rparen'>)</span>
@@ -1614,18 +1679,18 @@ connection object or self</p>
       <pre class="lines">
 
 
-74
-75
-76
-77
-78
-79
 80
 81
-82</pre>
+82
+83
+84
+85
+86
+87
+88</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 74</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 80</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_test_connection'>test_connection</span><span class='lparen'>(</span><span class='label'>raise_exception:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Dataset &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:dataset</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; not found</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_dataset'>dataset</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:dataset</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -1646,7 +1711,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Sep 30 10:06:24 2026 by
+  Generated on Wed Sep 30 11:24:27 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
