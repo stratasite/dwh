@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'json'
 
 # Live BigQuery tests. Skipped unless BIGQUERY_PROJECT is set. Credentials come
 # from Application Default Credentials: `gcloud auth application-default login`
@@ -47,6 +48,18 @@ class CloudBigQueryTest < Minitest::Test
 
   def test_connection
     assert adapter.connect?
+  end
+
+  # Proves the inline client_email/private_key path against the real API by
+  # reading those two fields out of the keyfile the env var points at.
+  def test_connects_with_inline_service_account_credentials
+    skip 'Set GOOGLE_APPLICATION_CREDENTIALS to a service-account keyfile to run' unless ENV['GOOGLE_APPLICATION_CREDENTIALS']
+
+    key = JSON.parse(File.read(ENV.fetch('GOOGLE_APPLICATION_CREDENTIALS')))
+    inline = DWH.create(:bigquery, project_id: ENV.fetch('BIGQUERY_PROJECT'), dataset: DATASET,
+                                   client_email: key['client_email'], private_key: key['private_key'])
+    assert inline.connect?
+    assert_equal %w[posts users], inline.tables.sort
   end
 
   def test_tables

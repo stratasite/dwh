@@ -153,4 +153,4 @@ This project is available as open source under the terms of the MIT License.
 
 ## Version
 
-Current version: 0.6.1
+Current version: 0.6.2

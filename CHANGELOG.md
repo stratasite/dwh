@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.6.2] - 2026-09-30
+
+### Added
+
+- **BigQuery**: `client_email` and `private_key` config accept the service-account keyfile's fields inline, so a server can connect without the JSON file on disk. `keyfile` and Application Default Credentials keep working.
+
 ## [0.6.1] - 2026-09-30
 
 ### Fixed

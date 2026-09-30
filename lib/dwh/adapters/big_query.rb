@@ -13,6 +13,14 @@ module DWH
     #     keyfile: '/path/to/service-account.json'
     #   })
     #
+    # @example Inline service-account credentials (the keyfile's client_email and private_key)
+    #   DWH.create(:bigquery, {
+    #     project_id: 'my-gcp-project',
+    #     dataset: 'analytics',
+    #     client_email: 'svc@my-gcp-project.iam.gserviceaccount.com',
+    #     private_key: "-----BEGIN PRIVATE KEY-----\n..."
+    #   })
+    #
     # @example Application Default Credentials (gcloud auth application-default login)
     #   DWH.create(:bigquery, { project_id: 'my-gcp-project', dataset: 'analytics' })
     class BigQuery < Adapter
@@ -20,6 +28,10 @@ module DWH
       config :dataset, String, required: true, message: 'default dataset for unqualified table names'
       config :keyfile, String, required: false, default: nil,
                                message: 'path to service-account JSON; omit to use Application Default Credentials'
+      config :client_email, String, required: false, default: nil,
+                                    message: 'service-account email from the keyfile; use with private_key instead of keyfile'
+      config :private_key, String, required: false, default: nil,
+                                   message: 'service-account private key (PEM) from the keyfile; use with client_email'
       config :query_timeout, Integer, required: false, default: 300, message: 'query timeout in seconds'
 
       # The schema API reports legacy type names; map the ones whose
@@ -43,7 +55,8 @@ module DWH
 
         require 'google/cloud/bigquery'
         opts = { project_id: config[:project_id] }
-        opts[:credentials] = config[:keyfile] unless config[:keyfile].to_s.empty?
+        creds = google_credentials
+        opts[:credentials] = creds if creds
         @connection = Google::Cloud::Bigquery.new(**opts, **extra_connection_params)
       rescue LoadError
         raise ConfigError, <<~MSG
@@ -141,6 +154,17 @@ module DWH
       end
 
       private
+
+      # Inline service-account fields win over a keyfile path. Neither present
+      # means Application Default Credentials.
+      def google_credentials
+        if config[:client_email].to_s != '' && config[:private_key].to_s != ''
+          { 'type' => 'service_account', 'project_id' => config[:project_id],
+            'client_email' => config[:client_email], 'private_key' => config[:private_key] }
+        elsif config[:keyfile].to_s != ''
+          config[:keyfile]
+        end
+      end
 
       def dataset_name(qualifiers)
         qualifiers[:dataset] || qualifiers[:schema] || config[:dataset]
