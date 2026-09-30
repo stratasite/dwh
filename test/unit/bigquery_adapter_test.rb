@@ -45,6 +45,13 @@ class BigQueryAdapterTest < Minitest::Test
     assert_nil adapter.send(:google_credentials)
   end
 
+  def test_close_drops_the_client_without_calling_close_on_it
+    a = DWH.create(:bigquery, project_id: 'p', dataset: 'd')
+    a.instance_variable_set(:@connection, Object.new) # Google::Cloud::Bigquery::Project has no #close
+    a.close
+    assert_nil a.instance_variable_get(:@connection)
+  end
+
   # --- Identifier quoting ---
 
   def test_quote_uses_backticks

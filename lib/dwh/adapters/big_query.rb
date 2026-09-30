@@ -70,6 +70,12 @@ module DWH
         raise ConfigError, "Failed to connect to BigQuery: #{e.message}"
       end
 
+      # (see Adapter#close) The Google client holds no persistent connection,
+      # so there is nothing to close; just drop the reference.
+      def close
+        @connection = nil
+      end
+
       # (see Adapter#test_connection)
       def test_connection(raise_exception: false)
         raise ConnectionError, "Dataset '#{config[:dataset]}' not found" unless connection.dataset(config[:dataset])
