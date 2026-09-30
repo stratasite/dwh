@@ -26,6 +26,25 @@ class BigQueryAdapterTest < Minitest::Test
     assert_equal 300, adapter.query_timeout
   end
 
+  def test_inline_service_account_credentials_build_a_hash
+    a = DWH.create(:bigquery, project_id: 'p', dataset: 'd', keyfile: '/ignored.json',
+                              client_email: 'svc@p.iam.gserviceaccount.com', private_key: "-----BEGIN PRIVATE KEY-----\nabc")
+    creds = a.send(:google_credentials)
+    assert_equal 'service_account', creds['type']
+    assert_equal 'p', creds['project_id']
+    assert_equal 'svc@p.iam.gserviceaccount.com', creds['client_email']
+    assert_match(/BEGIN PRIVATE KEY/, creds['private_key'])
+  end
+
+  def test_keyfile_path_used_when_no_inline_credentials
+    a = DWH.create(:bigquery, project_id: 'p', dataset: 'd', keyfile: '/path/key.json')
+    assert_equal '/path/key.json', a.send(:google_credentials)
+  end
+
+  def test_no_credentials_means_application_default
+    assert_nil adapter.send(:google_credentials)
+  end
+
   # --- Identifier quoting ---
 
   def test_quote_uses_backticks

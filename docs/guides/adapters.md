@@ -705,12 +705,14 @@ Requires the `google-cloud-bigquery` gem (`gem install google-cloud-bigquery`, p
 bq = DWH.create(:bigquery, {
     project_id: 'my-gcp-project',
     dataset: 'analytics',                        # default dataset for unqualified table names
-    keyfile: '/path/to/service-account.json',   # optional; omit to use Application Default Credentials
+    keyfile: '/path/to/service-account.json',   # optional; or pass the keyfile's fields inline:
+    # client_email: 'svc@my-gcp-project.iam.gserviceaccount.com',
+    # private_key: "-----BEGIN PRIVATE KEY-----\n...",
     query_timeout: 300                           # optional, seconds
 })
 ```
 
-Without `keyfile`, credentials resolve via `GOOGLE_APPLICATION_CREDENTIALS` or `gcloud auth application-default login`.
+`client_email` + `private_key` (the two fields the keyfile holds) let a server connect without the file on disk and take precedence over `keyfile`. Without either, credentials resolve via `GOOGLE_APPLICATION_CREDENTIALS` or `gcloud auth application-default login`.
 Extra client options can be passed with `extra_connection_params` (see `Google::Cloud::Bigquery.new`).
 
 ## Configuration Validation
