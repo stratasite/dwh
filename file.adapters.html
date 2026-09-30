@@ -750,12 +750,14 @@ consistently with other adapters (data rows only, header excluded).</p>
 <pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bq'>bq</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="DWH.html" title="DWH (module)">DWH</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="DWH/Factory.html#create-instance_method" title="DWH::Factory#create (method)">create</a></span></span><span class='lparen'>(</span><span class='symbol'>:bigquery</span><span class='comma'>,</span> <span class='lbrace'>{</span>
     <span class='label'>project_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my-gcp-project</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
     <span class='label'>dataset:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>analytics</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>                        <span class='comment'># default dataset for unqualified table names
-</span>    <span class='label'>keyfile:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/service-account.json</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>   <span class='comment'># optional; omit to use Application Default Credentials
+</span>    <span class='label'>keyfile:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/path/to/service-account.json</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>   <span class='comment'># optional; or pass the keyfile&#39;s fields inline:
+</span>    <span class='comment'># client_email: &#39;svc@my-gcp-project.iam.gserviceaccount.com&#39;,
+</span>    <span class='comment'># private_key: &quot;-----BEGIN PRIVATE KEY-----\n...&quot;,
 </span>    <span class='label'>query_timeout:</span> <span class='int'>300</span>                           <span class='comment'># optional, seconds
 </span><span class='rbrace'>}</span><span class='rparen'>)</span>
 </code></pre>
 
-<p>Without <code>keyfile</code>, credentials resolve via <code>GOOGLE_APPLICATION_CREDENTIALS</code> or <code>gcloud auth application-default login</code>.
+<p><code>client_email</code> + <code>private_key</code> (the two fields the keyfile holds) let a server connect without the file on disk and take precedence over <code>keyfile</code>. Without either, credentials resolve via <code>GOOGLE_APPLICATION_CREDENTIALS</code> or <code>gcloud auth application-default login</code>.
 Extra client options can be passed with <code>extra_connection_params</code> (see <code>Google::Cloud::Bigquery.new</code>).</p>
 
 <h2 id="configuration-validation">Configuration Validation</h2>
@@ -773,7 +775,7 @@ Extra client options can be passed with <code>extra_connection_params</code> (se
 </div></div>
 
       <div id="footer">
-  Generated on Wed Sep 30 07:52:08 2026 by
+  Generated on Wed Sep 30 10:06:23 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
