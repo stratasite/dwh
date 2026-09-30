@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.6.3] - 2026-09-30
+
+### Fixed
+
+- **BigQuery**: `close` no longer calls `close` on the Google client, which has none. Pool shutdown (for example when a datasource config changes) raised `undefined method close`.
+
 ## [0.6.2] - 2026-09-30
 
 ### Added
