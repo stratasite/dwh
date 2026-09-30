@@ -32,6 +32,12 @@ class BigQueryAdapterTest < Minitest::Test
     assert_equal '`my_col`', adapter.quote('my_col')
   end
 
+  def test_quote_replaces_characters_bigquery_rejects
+    assert_equal '`Month_Post Date_`', adapter.quote('Month(Post Date)')
+    assert_equal '`Ratio % - A:B`', adapter.quote('Ratio % - A:B')
+    assert_equal '`strata_test.posts`', adapter.quote('strata_test.posts')
+  end
+
   # --- Date functions ---
 
   def test_date_literal
