@@ -158,6 +158,23 @@ normalized type would otherwise be wrong (INTEGER is 64-bit in BigQuery).</p>
         </dt>
         <dd><pre class="code"><span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>INTEGER</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>INT64</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>FLOAT</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>FLOAT64</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BOOLEAN</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BOOL</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>RECORD</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>STRUCT</span><span class='tstring_end'>&#39;</span></span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
+        <dt id="INVALID_NAME_CHARS-constant" class="">INVALID_NAME_CHARS =
+          <div class="docstring">
+  <div class="discussion">
+    <p>BigQuery column names, and therefore SELECT aliases, may not contain these
+characters (<a href="https://cloud.google.com/bigquery/docs/schemas#column_names">https://cloud.google.com/bigquery/docs/schemas#column_names</a>).
+Dots are left alone so backtick-quoted <code>dataset.table</code> paths still work.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>[!&quot;$()*,/;?@\[\\\]^{}~]</span><span class='regexp_end'>}</span></span></pre></dd>
+      
     </dl>
   
 
@@ -284,6 +301,29 @@ normalized type would otherwise be wrong (INTEGER is 64-bit in BigQuery).</p>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the schema structure of a given a given table_name.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#quote-instance_method" title="#quote (instance method)">#<strong>quote</strong>(exp)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Applies adapter specific quotes around the given expression.</p>
 </div></span>
   
 </li>
@@ -438,7 +478,7 @@ normalized type would otherwise be wrong (INTEGER is 64-bit in BigQuery).</p>
   
   
   <h3 class="inherited">Methods included from <span class='object_link'><a href="../Functions.html" title="DWH::Functions (module)">Functions</a></span></h3>
-  <p class="inherited"><span class='object_link'><a href="../Functions.html#cast-instance_method" title="DWH::Functions#cast (method)">#cast</a></span>, <span class='object_link'><a href="../Functions.html#cross_join-instance_method" title="DWH::Functions#cross_join (method)">#cross_join</a></span>, <span class='object_link'><a href="../Functions.html#gsk-instance_method" title="DWH::Functions#gsk (method)">#gsk</a></span>, <span class='object_link'><a href="../Functions.html#lower_case-instance_method" title="DWH::Functions#lower_case (method)">#lower_case</a></span>, <span class='object_link'><a href="../Functions.html#quote-instance_method" title="DWH::Functions#quote (method)">#quote</a></span>, <span class='object_link'><a href="../Functions.html#string_lit-instance_method" title="DWH::Functions#string_lit (method)">#string_lit</a></span>, <span class='object_link'><a href="../Functions.html#trim-instance_method" title="DWH::Functions#trim (method)">#trim</a></span>, <span class='object_link'><a href="../Functions.html#upper_case-instance_method" title="DWH::Functions#upper_case (method)">#upper_case</a></span></p>
+  <p class="inherited"><span class='object_link'><a href="../Functions.html#cast-instance_method" title="DWH::Functions#cast (method)">#cast</a></span>, <span class='object_link'><a href="../Functions.html#cross_join-instance_method" title="DWH::Functions#cross_join (method)">#cross_join</a></span>, <span class='object_link'><a href="../Functions.html#gsk-instance_method" title="DWH::Functions#gsk (method)">#gsk</a></span>, <span class='object_link'><a href="../Functions.html#lower_case-instance_method" title="DWH::Functions#lower_case (method)">#lower_case</a></span>, <span class='object_link'><a href="../Functions.html#string_lit-instance_method" title="DWH::Functions#string_lit (method)">#string_lit</a></span>, <span class='object_link'><a href="../Functions.html#trim-instance_method" title="DWH::Functions#trim (method)">#trim</a></span>, <span class='object_link'><a href="../Functions.html#upper_case-instance_method" title="DWH::Functions#upper_case (method)">#upper_case</a></span></p>
 
   
   
@@ -532,27 +572,27 @@ connection object or self</p>
       <pre class="lines">
 
 
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
 41
 42
 43
 44
 45
 46
-47</pre>
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 30</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_connection'>connection</span>
   <span class='kw'>return</span> <span class='ivar'>@connection</span> <span class='kw'>if</span> <span class='ivar'>@connection</span>
@@ -693,21 +733,21 @@ connection object or self</p>
       <pre class="lines">
 
 
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107</pre>
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 96</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 107</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='label'>format:</span> <span class='symbol'>:array</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_with_retry'>with_retry</span><span class='lparen'>(</span><span class='id identifier rubyid_retries'>retries</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_run_query'>run_query</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span>
@@ -846,25 +886,25 @@ to the provided IO object.</p>
       <pre class="lines">
 
 
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
 121
 122
 123
 124
-125</pre>
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 110</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 121</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute_stream'>execute_stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='id identifier rubyid_io'>io</span><span class='comma'>,</span> <span class='label'>stats:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>retries:</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='kw'>do</span>
@@ -1020,26 +1060,26 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
 88
 89
 90
 91
 92
-93</pre>
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 77</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 88</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_db_table'>db_table</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">Table</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Table.html#initialize-instance_method" title="DWH::Table#initialize (method)">new</a></span></span> <span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>schema:</span> <span class='id identifier rubyid_dataset_name'>dataset_name</span><span class='lparen'>(</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
@@ -1057,6 +1097,72 @@ will be ignored if the adapter doesn&#39;t support</p>
   <span class='kw'>end</span>
 
   <span class='id identifier rubyid_db_table'>db_table</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="quote-instance_method">
+  
+    #<strong>quote</strong>(exp)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Applies adapter specific quotes around the given
+expression. The expression is usually a column name, alias,
+or table alias.</p>
+
+<p>Replaces characters BigQuery rejects in a column
+name so planner-generated aliases like &quot;Month(Post Date)&quot; execute.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>exp</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><ul>
+<li>column, alias, table name</li>
+</ul>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_quote'>quote</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='rparen'>)</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#INVALID_NAME_CHARS-constant" title="DWH::Adapters::BigQuery::INVALID_NAME_CHARS (constant)">INVALID_NAME_CHARS</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>_</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1215,16 +1321,16 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-66
-67
-68
-69
-70
-71
-72</pre>
+77
+78
+79
+80
+81
+82
+83</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 66</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>date_column:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_sql'>sql</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SELECT COUNT(*) AS row_count</span><span class='tstring_end'>&#39;</span></span>
@@ -1314,12 +1420,12 @@ might vary depending on the target db and settings</p>
       <pre class="lines">
 
 
-128
-129
-130</pre>
+139
+140
+141</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 128</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 139</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stream'>stream</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_query_data'>query_data</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_row'>row</span><span class='op'>|</span> <span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_row'>row</span><span class='period'>.</span><span class='id identifier rubyid_values'>values</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span>
@@ -1423,12 +1529,12 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-61
-62
-63</pre>
+72
+73
+74</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 61</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 72</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_dataset_for'>dataset_for</span><span class='lparen'>(</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_tables'>tables</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:table_id</span><span class='rparen'>)</span>
@@ -1495,18 +1601,18 @@ connection object or self</p>
       <pre class="lines">
 
 
-50
-51
-52
-53
-54
-55
-56
-57
-58</pre>
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 50</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/big_query.rb', line 61</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_test_connection'>test_connection</span><span class='lparen'>(</span><span class='label'>raise_exception:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../ConnectionError.html" title="DWH::ConnectionError (class)">ConnectionError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Dataset &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:dataset</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; not found</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_dataset'>dataset</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:dataset</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -1527,7 +1633,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Sep 28 12:28:00 2026 by
+  Generated on Wed Sep 30 07:52:10 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
