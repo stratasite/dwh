@@ -1,6 +1,9 @@
 
 # quotes and string lit
 quote: "\"@exp\""
+# Case this warehouse folds an UNQUOTED identifier to: preserve, upper or lower.
+# Only consulted for names Strata invents, never for names the warehouse owns.
+identifier_case: preserve
 string_literal: "'@exp'"
 
 # Date Literal Formats

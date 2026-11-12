@@ -34,6 +34,19 @@ class AdapterTest < Minitest::Test
     end
   end
 
+  def test_quote_identifier_folds_only_where_the_warehouse_folds
+    # MyDB has no settings file, so it carries the base default.
+    assert_equal '"dim30d09b7"', @adapter.quote_identifier('dim30d09b7')
+    assert_equal '"dim30d09b7"', @adapter.quote('dim30d09b7')
+
+    snowflake = DWH::Adapters::Snowflake.allocate
+    snowflake.instance_variable_set(:@settings, DWH::Adapters::Snowflake.adapter_settings)
+    assert_equal '"DIM30D09B7"', snowflake.quote_identifier('dim30d09b7'),
+                 'Snowflake folds an unquoted reference to upper case, so the alias must match'
+    assert_equal '"Item Category"', snowflake.quote('Item Category'),
+                 'quote is for names we must not touch, and stays verbatim'
+  end
+
   def test_table_exists_regardless_of_the_case_the_warehouse_reports
     assert @adapter.table?('item'), 'a lower case name should find an upper case listing'
     assert @adapter.table?('ITEM'), 'the name as listed should keep working'
