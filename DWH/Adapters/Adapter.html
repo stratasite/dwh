@@ -1359,12 +1359,12 @@ connect and query target database.</p>
       <pre class="lines">
 
 
-309
-310
-311</pre>
+312
+313
+314</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 309</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 312</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_adapter_name'>adapter_name</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>::</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
@@ -1962,12 +1962,12 @@ object, this will return it.</p>
       <pre class="lines">
 
 
-317
-318
-319</pre>
+320
+321
+322</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 317</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 320</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extra_connection_params'>extra_connection_params</span>
   <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:extra_connection_params</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -2020,12 +2020,12 @@ from the config to the executor.</p>
       <pre class="lines">
 
 
-325
-326
-327</pre>
+328
+329
+330</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 325</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 328</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extra_query_params'>extra_query_params</span>
   <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:extra_query_params</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -2165,12 +2165,12 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-260
-261
-262</pre>
+263
+264
+265</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 260</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 263</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'> has not implemented method &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid___method__'>__method__</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span>
@@ -2509,6 +2509,9 @@ might vary depending on the target db and settings</p>
   <div class="discussion">
     <p>Check if table exists in remote db.</p>
 
+<p>Matched without case: an unquoted name is case insensitive to every
+supported warehouse, but Snowflake lists ITEM for a table written item.</p>
+
 
   </div>
 </div>
@@ -2590,15 +2593,15 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-242
-243
-244</pre>
+245
+246
+247</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 242</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 245</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_table?'>table?</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_t'>t</span><span class='op'>|</span> <span class='id identifier rubyid_t'>t</span><span class='period'>.</span><span class='id identifier rubyid_casecmp?'>casecmp?</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2839,12 +2842,12 @@ expired</p>
       <pre class="lines">
 
 
-332
-333
-334</pre>
+335
+336
+337</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 332</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 335</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_token_expired?'>token_expired?</span>
   <span class='ivar'>@token_expires_at</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='op'>&gt;=</span> <span class='ivar'>@token_expires_at</span>
@@ -2916,9 +2919,6 @@ It sill include execution time.</p>
       <pre class="lines">
 
 
-293
-294
-295
 296
 297
 298
@@ -2928,10 +2928,13 @@ It sill include execution time.</p>
 302
 303
 304
-305</pre>
+305
+306
+307
+308</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 293</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 296</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_with_debug'>with_debug</span><span class='lparen'>(</span><span class='id identifier rubyid_sql'>sql</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_starting'>starting</span> <span class='op'>=</span> <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_clock_gettime'>clock_gettime</span><span class='lparen'>(</span><span class='const'>Process</span><span class='op'>::</span><span class='const'>CLOCK_MONOTONIC</span><span class='rparen'>)</span>
@@ -2999,9 +3002,6 @@ will just return the block.call</p>
       <pre class="lines">
 
 
-269
-270
-271
 272
 273
 274
@@ -3016,10 +3016,13 @@ will just return the block.call</p>
 283
 284
 285
-286</pre>
+286
+287
+288
+289</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 269</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters.rb', line 272</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_with_retry'>with_retry</span><span class='lparen'>(</span><span class='id identifier rubyid_max_attempts'>max_attempts</span> <span class='op'>=</span> <span class='int'>2</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span> <span class='kw'>if</span> <span class='id identifier rubyid_max_attempts'>max_attempts</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span>
@@ -3049,7 +3052,7 @@ will just return the block.call</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Sep 30 11:24:26 2026 by
+  Generated on Thu Nov 12 11:11:01 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

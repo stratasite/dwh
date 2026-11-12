@@ -354,7 +354,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>A new instance of Column.</p>
+    <span class="summary_desc"><div class='inline'><p>Name is kept as the warehouse reported it: a quoted identifier is matched exactly, so Snowflake&#39;s I_CATEGORY cannot be queried as &quot;i_category&quot;.</p>
 </div></span>
   
 </li>
@@ -532,7 +532,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns a new instance of Column.</p>
+    <p>Name is kept as the warehouse reported it: a quoted identifier is matched
+exactly, so Snowflake&#39;s I_CATEGORY cannot be queried as &quot;i_category&quot;.</p>
 
 
   </div>
@@ -546,20 +547,20 @@
       <pre class="lines">
 
 
-6
-7
 8
 9
 10
 11
 12
-13</pre>
+13
+14
+15</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 6</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 8</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>name:</span><span class='comma'>,</span> <span class='label'>data_type:</span><span class='comma'>,</span> <span class='label'>precision:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>scale:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>schema_type:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>max_char_length:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
+  <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span>
   <span class='ivar'>@precision</span> <span class='op'>=</span> <span class='id identifier rubyid_precision'>precision</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_precision'>precision</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='op'>:</span> <span class='id identifier rubyid_precision'>precision</span>
   <span class='ivar'>@scale</span> <span class='op'>=</span> <span class='id identifier rubyid_scale'>scale</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_scale'>scale</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='op'>:</span> <span class='id identifier rubyid_scale'>scale</span>
   <span class='ivar'>@data_type</span> <span class='op'>=</span> <span class='id identifier rubyid_data_type'>data_type</span><span class='op'>&amp;.</span><span class='id identifier rubyid_downcase'>downcase</span>
@@ -872,12 +873,12 @@
       <pre class="lines">
 
 
-15
-16
-17</pre>
+17
+18
+19</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 15</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 17</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_dim?'>dim?</span>
   <span class='id identifier rubyid_schema_type'>schema_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>dimension</span><span class='tstring_end'>&#39;</span></span>
@@ -924,12 +925,12 @@
       <pre class="lines">
 
 
-19
-20
-21</pre>
+21
+22
+23</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 19</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 21</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_measure?'>measure?</span>
   <span class='id identifier rubyid_schema_type'>schema_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>measure</span><span class='tstring_end'>&#39;</span></span>
@@ -954,17 +955,17 @@
       <pre class="lines">
 
 
-24
-25
 26
 27
 28
 29
 30
-31</pre>
+31
+32
+33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 24</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 26</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_namify'>namify</span><span class='lparen'>(</span><span class='id identifier rubyid_rules'>rules</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="#DEFAULT_RULES-constant" title="DWH::Column::DEFAULT_RULES (constant)">DEFAULT_RULES</a></span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_named'>named</span> <span class='op'>=</span> <span class='id identifier rubyid_titleize'>titleize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
@@ -994,8 +995,6 @@
       <pre class="lines">
 
 
-33
-34
 35
 36
 37
@@ -1032,10 +1031,12 @@
 68
 69
 70
-71</pre>
+71
+72
+73</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 35</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalized_data_type'>normalized_data_type</span>
   <span class='comment'># Strip ClickHouse type wrappers (Nullable(T), LowCardinality(T), Array(T))
@@ -1096,8 +1097,6 @@
       <pre class="lines">
 
 
-98
-99
 100
 101
 102
@@ -1105,10 +1104,12 @@
 104
 105
 106
-107</pre>
+107
+108
+109</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 98</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 100</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_titleize'>titleize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='comment'># Handle underscores, dashes, and multiple spaces
@@ -1140,8 +1141,6 @@
       <pre class="lines">
 
 
-73
-74
 75
 76
 77
@@ -1149,10 +1148,12 @@
 79
 80
 81
-82</pre>
+82
+83
+84</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 73</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 75</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_h'>to_h</span>
   <span class='lbrace'>{</span>
@@ -1184,12 +1185,12 @@
       <pre class="lines">
 
 
-84
-85
-86</pre>
+86
+87
+88</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 84</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 86</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&lt;Column:</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_data_type'>data_type</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
@@ -1226,15 +1227,15 @@ Safe to call on any type string; returns the input unchanged if no wrapper match
       <pre class="lines">
 
 
-91
-92
 93
 94
 95
-96</pre>
+96
+97
+98</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 91</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/column.rb', line 93</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_unwrap_type'>unwrap_type</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_inner'>inner</span> <span class='op'>=</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
@@ -1252,7 +1253,7 @@ Safe to call on any type string; returns the input unchanged if no wrapper match
 </div>
 
       <div id="footer">
-  Generated on Wed Sep 30 11:24:26 2026 by
+  Generated on Thu Nov 12 11:11:01 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
