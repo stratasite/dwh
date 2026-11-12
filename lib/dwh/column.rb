@@ -3,8 +3,10 @@ module DWH
   class Column
     attr_reader :schema_type, :data_type, :name, :precision, :scale, :max_char_length
 
+    # Name is kept as the warehouse reported it: a quoted identifier is matched
+    # exactly, so Snowflake's I_CATEGORY cannot be queried as "i_category".
     def initialize(name:, data_type:, precision: 0, scale: 0, schema_type: nil, max_char_length: nil)
-      @name = name.downcase
+      @name = name
       @precision = precision.is_a?(String) ? precision.to_i : precision
       @scale = scale.is_a?(String) ? scale.to_i : scale
       @data_type = data_type&.downcase

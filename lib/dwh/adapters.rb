@@ -234,13 +234,16 @@ module DWH
 
       # Check if table exists in remote db.
       #
+      # Matched without case: an unquoted name is case insensitive to every
+      # supported warehouse, but Snowflake lists ITEM for a table written item.
+      #
       # @option qualifiers [String] :catalog optional catalog or equivalent name space.
       #   will be ignored if the adapter doesn't support
       # @option qualifiers [String] :schema optional schema to scope to.
       #   will be ignored if the adapter doesn't support
       # @return [Boolean]
       def table?(table, **qualifiers)
-        tables(**qualifiers).include?(table)
+        tables(**qualifiers).any? { |t| t.casecmp?(table) }
       end
 
       # Get the schema structure of a given a given table_name.

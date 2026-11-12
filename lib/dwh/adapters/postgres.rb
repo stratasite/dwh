@@ -86,11 +86,6 @@ module DWH
         result.values.flatten
       end
 
-      # (see Adapter#table?)
-      def table?(table_name)
-        tables.include?(table_name)
-      end
-
       # (see Adapter#stats)
       def stats(table, date_column: nil, **qualifiers)
         table_name = qualifiers[:schema] ? "#{qualifiers[:schema]}.#{table}" : table
