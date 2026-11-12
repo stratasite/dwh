@@ -13,7 +13,7 @@ class TestTableAndColumn < Minitest::Test
       max_char_length: 100
     )
 
-    assert_equal 'test_name', column.name
+    assert_equal 'TEST_NAME', column.name
     assert_equal 'varchar', column.data_type
     assert_equal 50, column.precision
     assert_equal 0, column.scale
@@ -190,6 +190,15 @@ class TestTableAndColumn < Minitest::Test
   def test_table_size
     table = DWH::Table.new('users', table_stats: DWH::TableStats.new(row_count: 500, date_start: nil, date_end: nil))
     assert_equal 500, table.size
+  end
+
+  def test_column_name_survives_a_round_trip_through_stored_metadata
+    table = DWH::Table.new('item')
+    table << DWH::Column.new(name: 'I_CATEGORY', data_type: 'VARCHAR')
+
+    rebuilt = DWH::Table.from_hash_or_json('item', table.to_h)
+
+    assert_equal 'I_CATEGORY', rebuilt.find_column('i_category').name
   end
 
   def test_table_find_column

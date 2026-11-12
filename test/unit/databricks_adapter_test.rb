@@ -75,6 +75,13 @@ class DatabricksAdapterTest < Minitest::Test
     @adapter = build_adapter
   end
 
+  def test_host_drops_a_pasted_scheme_and_trailing_slash
+    assert_equal 'workspace.cloud.databricks.com',
+                 build_adapter(host: 'https://workspace.cloud.databricks.com/').host
+    assert_equal 'workspace.cloud.databricks.com',
+                 build_adapter(host: 'workspace.cloud.databricks.com').host
+  end
+
   def test_execute_handles_async_poll_and_chunk_fetch
     conn = FakeConnection.new(
       post_responses: [

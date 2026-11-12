@@ -239,7 +239,7 @@ module DWH
 
         columns.each do |col|
           db_table << Column.new(
-            name: col[0]&.downcase,
+            name: col[0],
             data_type: col[1]&.downcase,
             precision: col[2],
             scale: col[3],
@@ -388,8 +388,21 @@ module DWH
             response.body
           end
           message = error_info.is_a?(Hash) ? error_info['message'] : error_info
-          raise ExecutionError, "Snowflake query failed: #{message}"
+          raise ExecutionError, "Snowflake query failed: #{message}#{pat_network_policy_hint(message)}"
         end
+      end
+
+      # Snowflake rejects every PAT request on an account with no network policy, and says only
+      # "Network policy is required." Nothing in that points at the fix, and it is the first
+      # thing a new trial account hits, so spell it out.
+      def pat_network_policy_hint(message)
+        return '' unless config[:auth_mode].to_s == 'pat'
+        return '' unless message.to_s.match?(/network policy is required/i)
+
+        ' — Snowflake only accepts programmatic access tokens from users covered by a network ' \
+          'policy. Create one allowing the IPs this client connects from and attach it to the ' \
+          'user (CREATE NETWORK POLICY ... ALLOWED_IP_LIST=(...); ALTER USER ... SET NETWORK_POLICY=...), ' \
+          'or switch this datasource to key-pair auth (auth_mode: kp).'
       end
 
       def poll(initial_result)

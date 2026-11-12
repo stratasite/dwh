@@ -44,6 +44,11 @@ module DWH
 
       def initialize(config)
         super
+        # Workspace URLs get copied out of the browser, so host arrives as
+        # "https://dbc-xxx.cloud.databricks.com" as often as the bare hostname. Left alone it
+        # reaches Faraday as https://https://... and dies in getaddrinfo on "https", which
+        # tells the user nothing. Every URL here is built as https://#{host}.
+        @config[:host] = @config[:host].to_s.sub(%r{\A\w+://}, '').chomp('/')
         validate_oauth_config
       end
 
@@ -140,7 +145,7 @@ module DWH
 
         columns.each do |col|
           db_table << Column.new(
-            name: col[0]&.downcase,
+            name: col[0],
             data_type: col[1]&.downcase,
             precision: col[2],
             scale: col[3],

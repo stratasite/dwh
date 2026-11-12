@@ -109,11 +109,6 @@ module DWH
         use(config[:database])
       end
 
-      # (see Adapter#table?)
-      def table?(table_name)
-        tables.include?(table_name)
-      end
-
       # (see Adapter#stats)
       def stats(table, date_column: nil, **qualifiers)
         change_current_database(qualifiers[:catalog])

@@ -11,6 +11,11 @@ class AdapterTest < Minitest::Test
         stats << [i, 0, 0]
       end
     end
+
+    # Snowflake reports its table names folded to upper case.
+    def tables(**_qualifiers)
+      %w[ITEM STORE_SALES]
+    end
   end
 
   def setup
@@ -27,6 +32,13 @@ class AdapterTest < Minitest::Test
     assert_raises DWH::ConfigError do
       MyDB.new({ schema: 'ewh' })
     end
+  end
+
+  def test_table_exists_regardless_of_the_case_the_warehouse_reports
+    assert @adapter.table?('item'), 'a lower case name should find an upper case listing'
+    assert @adapter.table?('ITEM'), 'the name as listed should keep working'
+    assert @adapter.table?('Store_Sales')
+    refute @adapter.table?('customer')
   end
 
   def test_adapter_is_using_base
