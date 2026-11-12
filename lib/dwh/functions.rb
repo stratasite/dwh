@@ -54,6 +54,17 @@ module DWH
       gsk(:quote).sub(/@exp/i, exp)
     end
 
+    # Quotes an alias that will later be referenced UNQUOTED, folding it to the
+    # case this warehouse folds unquoted names to so both sides resolve alike.
+    # Only for names we invent; a name the warehouse owns must keep its own case.
+    def quote_identifier(exp)
+      case gsk(:identifier_case).to_s
+      when 'upper' then quote(exp.to_s.upcase)
+      when 'lower' then quote(exp.to_s.downcase)
+      else quote(exp)
+      end
+    end
+
     # Applies adapter specific string literal translation around the given
     # expression. The expression is usually a string value.
     #
