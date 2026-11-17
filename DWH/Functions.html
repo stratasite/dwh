@@ -276,6 +276,29 @@ SQL Server ==&gt; &#39;2025-08-06&#39;</code></pre>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#quote_identifier-instance_method" title="#quote_identifier (instance method)">#<strong>quote_identifier</strong>(exp)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Quotes an alias that will later be referenced UNQUOTED, folding it to the case this warehouse folds unquoted names to so both sides resolve alike.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#string_lit-instance_method" title="#string_lit (instance method)">#<strong>string_lit</strong>(exp)  &#x21d2; Object </a>
     
 
@@ -527,12 +550,12 @@ name expression here.</p>
       <pre class="lines">
 
 
-74
-75
-76</pre>
+85
+86
+87</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/functions.rb', line 74</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/functions.rb', line 85</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_cross_join'>cross_join</span><span class='lparen'>(</span><span class='id identifier rubyid_relation'>relation</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gsk'>gsk</span><span class='lparen'>(</span><span class='symbol'>:cross_join</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>@relation</span><span class='regexp_end'>/i</span></span><span class='comma'>,</span> <span class='id identifier rubyid_relation'>relation</span><span class='rparen'>)</span>
@@ -600,12 +623,12 @@ by key.</p>
       <pre class="lines">
 
 
-82
-83
-84</pre>
+93
+94
+95</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/functions.rb', line 82</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/functions.rb', line 93</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gsk'>gsk</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_settings'>settings</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rbracket'>]</span>
@@ -709,6 +732,56 @@ or table alias.</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="quote_identifier-instance_method">
+  
+    #<strong>quote_identifier</strong>(exp)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Quotes an alias that will later be referenced UNQUOTED, folding it to the
+case this warehouse folds unquoted names to so both sides resolve alike.
+Only for names we invent; a name the warehouse owns must keep its own case.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+60
+61
+62
+63
+64
+65
+66</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/dwh/functions.rb', line 60</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_quote_identifier'>quote_identifier</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='rparen'>)</span>
+  <span class='kw'>case</span> <span class='id identifier rubyid_gsk'>gsk</span><span class='lparen'>(</span><span class='symbol'>:identifier_case</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>upper</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>then</span> <span class='id identifier rubyid_quote'>quote</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='rparen'>)</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>lower</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>then</span> <span class='id identifier rubyid_quote'>quote</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='rparen'>)</span>
+  <span class='kw'>else</span> <span class='id identifier rubyid_quote'>quote</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="string_lit-instance_method">
   
     #<strong>string_lit</strong>(exp)  &#x21d2; <tt>Object</tt> 
@@ -753,12 +826,12 @@ expression. The expression is usually a string value.</p>
       <pre class="lines">
 
 
-61
-62
-63</pre>
+72
+73
+74</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/functions.rb', line 61</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/functions.rb', line 72</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_string_lit'>string_lit</span><span class='lparen'>(</span><span class='id identifier rubyid_exp'>exp</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gsk'>gsk</span><span class='lparen'>(</span><span class='symbol'>:string_literal</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>@exp</span><span class='regexp_end'>/i</span></span><span class='comma'>,</span> <span class='id identifier rubyid_exp'>exp</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&#39;&#39;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -833,7 +906,7 @@ expression. The expression is usually a string value.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Nov 12 11:11:01 2026 by
+  Generated on Tue Nov 17 07:18:46 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
