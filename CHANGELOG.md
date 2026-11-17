@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.6.5] - 2026-11-17
+
+### Fixed
+
+- `quote_identifier` was left out of 0.6.4: it was added to the pull request after that one had already merged, so it never reached main. The app calls it for every inner-pass alias, so on 0.6.4 any query answered in more than one pass raises `undefined method 'quote_identifier'` on every warehouse. Shipping it is what makes strata#465 work.
+
 ## [0.6.4] - 2026-11-11
 
 ### Fixed
