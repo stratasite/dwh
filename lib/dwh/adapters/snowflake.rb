@@ -392,21 +392,35 @@ module DWH
             response.body
           end
           message = error_info.is_a?(Hash) ? error_info['message'] : error_info
-          raise ExecutionError, "Snowflake query failed: #{message}#{pat_network_policy_hint(message)}"
+          raise ExecutionError, "Snowflake query failed: #{message}#{pat_auth_hint(message)}"
         end
       end
 
-      # Snowflake rejects every PAT request on an account with no network policy, and says only
-      # "Network policy is required." Nothing in that points at the fix, and it is the first
-      # thing a new trial account hits, so spell it out.
-      def pat_network_policy_hint(message)
+      # Snowflake's three PAT rejections all name something other than the cause: a
+      # missing policy, the caller's address, or the token. Each needs a different
+      # fix, and the last one is routinely a stale account_identifier rather than a
+      # bad token, so say which is which.
+      def pat_auth_hint(message)
         return '' unless config[:auth_mode].to_s == 'pat'
-        return '' unless message.to_s.match?(/network policy is required/i)
 
-        ' — Snowflake only accepts programmatic access tokens from users covered by a network ' \
-          'policy. Create one allowing the IPs this client connects from and attach it to the ' \
-          'user (CREATE NETWORK POLICY ... ALLOWED_IP_LIST=(...); ALTER USER ... SET NETWORK_POLICY=...), ' \
-          'or switch this datasource to key-pair auth (auth_mode: kp).'
+        case message.to_s
+        when /network policy is required/i
+          ' — Snowflake only accepts programmatic access tokens from users covered by a network ' \
+            'policy. Create one allowing the IPs this client connects from and attach it to the ' \
+            'user (CREATE NETWORK POLICY ... ALLOWED_IP_LIST=(...); ALTER USER ... SET NETWORK_POLICY=...), ' \
+            'or switch this datasource to key-pair auth (auth_mode: kp).'
+        when /not allowed to access/i
+          ' — the address in this message is not in the network policy covering this user. Add it ' \
+            'to the policy (ALTER NETWORK POLICY ... SET ALLOWED_IP_LIST=(...), which replaces the ' \
+            'list, so repeat the addresses you still need), or switch to key-pair auth ' \
+            '(auth_mode: kp), which needs no policy.'
+        when /token is invalid/i
+          ' — the token may have been deleted or expired, or account_identifier ' \
+            "(#{config[:account_identifier]}) may name a different account than the one the token " \
+            'was created on. Snowflake reports both the same way.'
+        else
+          ''
+        end
       end
 
       def poll(initial_result)

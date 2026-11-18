@@ -1,9 +1,12 @@
 ## [Unreleased]
 
+## [0.6.6] - 2026-11-18
+
 ### Fixed
 
 - **Snowflake**: `tables` and `metadata` honour the configured `schema`. Both consulted only an explicit qualifier, so with none they scanned every schema in the database: a listing repeated each table once per schema, and `metadata` returned every column once per schema, building a table with each column duplicated. An explicit qualifier still wins, and with no schema configured the lookups stay unscoped as before.
 - **Snowflake**: `metadata` matches the table name without regard to case. It forced the name to upper, so a table created quoted in lower case came back with no columns at all rather than an error.
+- **Snowflake**: the PAT rejection hints cover all three ways a token is refused, not just a missing network policy. A blocked address is told to add itself to the policy's `ALLOWED_IP_LIST` (and that setting it replaces the list); an invalid token is told it may be deleted or expired, **or** that `account_identifier` may name a different account than the one the token was created on — Snowflake reports both of those identically.
 
 ## [0.6.5] - 2026-11-17
 

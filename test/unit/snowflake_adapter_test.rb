@@ -31,6 +31,29 @@ class SnowflakeAdapterTest < Minitest::Test
                                      **overrides)
   end
 
+  # Each rejection names something other than the cause and needs a different fix.
+  def test_pat_hints_name_the_actual_fix
+    a = adapter(schema: 'PUBLIC')
+    policy = a.send(:pat_auth_hint, 'Fail : Network policy is required.')
+    assert_includes policy, 'CREATE NETWORK POLICY'
+
+    blocked = a.send(:pat_auth_hint, 'Incoming request with IP/Token 1.2.3.4 is not allowed to access Snowflake.')
+    assert_includes blocked, 'ALTER NETWORK POLICY'
+    assert_includes blocked, 'replaces the list'
+
+    # The one that cost an hour: a stale account_identifier reads as a bad token.
+    invalid = a.send(:pat_auth_hint, 'Programmatic access token is invalid.')
+    assert_includes invalid, 'account_identifier'
+    assert_includes invalid, 'org-acct'
+  end
+
+  def test_no_hint_for_an_unrelated_failure_or_other_auth_modes
+    assert_equal '', adapter(schema: 'PUBLIC').send(:pat_auth_hint, 'SQL compilation error: bad syntax')
+    kp = DWH.create(:capturing_snowflake, auth_mode: 'kp', account_identifier: 'org-acct',
+                                          username: 'u', private_key: 'k', database: 'D')
+    assert_equal '', kp.send(:pat_auth_hint, 'Programmatic access token is invalid.')
+  end
+
   # SNOWFLAKE_SAMPLE_DATA carries the same table in several schemas, so a listing
   # that ignores the configured one repeats every name once per schema.
   def test_tables_scopes_to_the_configured_schema
