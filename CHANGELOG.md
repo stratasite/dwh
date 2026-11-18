@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Fixed
+
+- **Snowflake**: `tables` and `metadata` honour the configured `schema`. Both consulted only an explicit qualifier, so with none they scanned every schema in the database: a listing repeated each table once per schema, and `metadata` returned every column once per schema, building a table with each column duplicated. An explicit qualifier still wins, and with no schema configured the lookups stay unscoped as before.
+- **Snowflake**: `metadata` matches the table name without regard to case. It forced the name to upper, so a table created quoted in lower case came back with no columns at all rather than an error.
+
 ## [0.6.5] - 2026-11-17
 
 ### Fixed

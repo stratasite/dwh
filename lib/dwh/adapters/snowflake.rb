@@ -209,6 +209,7 @@ module DWH
       # @return [Array<String>] list of table names
       def tables(**qualifiers)
         catalog, schema = qualifiers.values_at(:catalog, :schema)
+        schema ||= config[:schema]
 
         db = catalog || config[:database]
         sql = "SELECT table_name FROM #{db}.information_schema.tables"
@@ -225,14 +226,17 @@ module DWH
       # (see Adapter#tables)
       def metadata(table, **qualifiers)
         catalog, schema = qualifiers.values_at(:catalog, :schema)
-        db_table = Table.new(table, schema: schema, catalog: catalog)
+        db_table = Table.new(table, schema: schema || config[:schema], catalog: catalog)
         db = db_table.catalog || config[:database]
         sql = <<~SQL
           SELECT column_name, data_type, numeric_precision, numeric_scale, character_maximum_length
           FROM #{db}.information_schema.columns
         SQL
 
-        conditions = ["table_name = '#{db_table.physical_name.upcase}'"]
+        # Compared without case: an unquoted name is folded to upper, but a table
+        # created quoted keeps the case it was made with, and forcing upper here
+        # returned no columns at all rather than an error.
+        conditions = ["UPPER(table_name) = UPPER('#{db_table.physical_name}')"]
         conditions << "table_schema = '#{db_table.schema.upcase}'" if db_table.schema
 
         columns = execute("#{sql} WHERE #{conditions.join(' AND ')}")
