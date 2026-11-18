@@ -1125,7 +1125,6 @@ will be ignored if the adapter doesn&#39;t support</p>
       <pre class="lines">
 
 
-226
 227
 228
 229
@@ -1150,21 +1149,28 @@ will be ignored if the adapter doesn&#39;t support</p>
 248
 249
 250
-251</pre>
+251
+252
+253
+254
+255</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 226</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 227</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_catalog'>catalog</span><span class='comma'>,</span> <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_values_at'>values_at</span><span class='lparen'>(</span><span class='symbol'>:catalog</span><span class='comma'>,</span> <span class='symbol'>:schema</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_db_table'>db_table</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">Table</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Table.html#initialize-instance_method" title="DWH::Table#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>schema:</span> <span class='id identifier rubyid_schema'>schema</span><span class='comma'>,</span> <span class='label'>catalog:</span> <span class='id identifier rubyid_catalog'>catalog</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_db_table'>db_table</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Table.html" title="DWH::Table (class)">Table</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Table.html#initialize-instance_method" title="DWH::Table#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>schema:</span> <span class='id identifier rubyid_schema'>schema</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='label'>catalog:</span> <span class='id identifier rubyid_catalog'>catalog</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_db'>db</span> <span class='op'>=</span> <span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_catalog'>catalog</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:database</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_sql'>sql</span> <span class='op'>=</span> <span class='heredoc_beg'>&lt;&lt;~SQL</span>
 <span class='tstring_content'>    SELECT column_name, data_type, numeric_precision, numeric_scale, character_maximum_length
 </span><span class='tstring_content'>    FROM </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db'>db</span><span class='embexpr_end'>}</span><span class='tstring_content'>.information_schema.columns
 </span><span class='heredoc_end'>  SQL
 </span>
-  <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>table_name = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_physical_name'>physical_name</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='comment'># Compared without case: an unquoted name is folded to upper, but a table
+</span>  <span class='comment'># created quoted keeps the case it was made with, and forcing upper here
+</span>  <span class='comment'># returned no columns at all rather than an error.
+</span>  <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>UPPER(table_name) = UPPER(&#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_physical_name'>physical_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>table_schema = &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_schema'>schema</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_db_table'>db_table</span><span class='period'>.</span><span class='id identifier rubyid_schema'>schema</span>
 
   <span class='id identifier rubyid_columns'>columns</span> <span class='op'>=</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_sql'>sql</span><span class='embexpr_end'>}</span><span class='tstring_content'> WHERE </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_conditions'>conditions</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> AND </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -1305,10 +1311,6 @@ date_start, and date_end.</p>
       <pre class="lines">
 
 
-254
-255
-256
-257
 258
 259
 260
@@ -1320,10 +1322,14 @@ date_start, and date_end.</p>
 266
 267
 268
-269</pre>
+269
+270
+271
+272
+273</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 254</span>
+      <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 258</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stats'>stats</span><span class='lparen'>(</span><span class='id identifier rubyid_table'>table</span><span class='comma'>,</span> <span class='label'>date_column:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_date_fields'>date_fields</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_date_column'>date_column</span>
@@ -1554,13 +1560,15 @@ will be ignored if the adapter doesn&#39;t support</p>
 220
 221
 222
-223</pre>
+223
+224</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/dwh/adapters/snowflake.rb', line 210</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tables'>tables</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_catalog'>catalog</span><span class='comma'>,</span> <span class='id identifier rubyid_schema'>schema</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_values_at'>values_at</span><span class='lparen'>(</span><span class='symbol'>:catalog</span><span class='comma'>,</span> <span class='symbol'>:schema</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_schema'>schema</span> <span class='op'>||=</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:schema</span><span class='rbracket'>]</span>
 
   <span class='id identifier rubyid_db'>db</span> <span class='op'>=</span> <span class='id identifier rubyid_catalog'>catalog</span> <span class='op'>||</span> <span class='id identifier rubyid_config'>config</span><span class='lbracket'>[</span><span class='symbol'>:database</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_sql'>sql</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT table_name FROM </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_db'>db</span><span class='embexpr_end'>}</span><span class='tstring_content'>.information_schema.tables</span><span class='tstring_end'>&quot;</span></span>
@@ -1667,7 +1675,7 @@ connection object or self</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Nov 17 07:18:47 2026 by
+  Generated on Wed Nov 18 07:22:14 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
